@@ -42,3 +42,60 @@ Or
 var result = JsonObjectSerializer.Parse<Item[]>(json);
 ```
 
+## Mapping
+
+
+### Manual
+```cs
+JsonMapping.Default
+        .Add(typeof(MappedItem), "MyInt", "my_int")
+        .Add(typeof(MappedItem), "MyDouble", "my_double")
+        .Add(typeof(MappedItem), "MyBool", "my_bool")
+        .Add(typeof(MappedItem), "MyStrings", "my_strings")
+        .Add(typeof(MappedItem), "Sub", "the_sub")
+        .Add(typeof(MappedSub), "SubItemInt","the_sub_int");
+                
+// then stringify
+```
+
+
+### By Attribute
+
+Define mapping on properties
+
+```cs
+public class Item
+{
+    [JsonMap(JsonElementKey = "my_int")]
+    public int MyInt { get; set; }
+
+    [JsonMap(JsonElementKey = "my_double")]
+    public double MyDouble { get; set; }
+
+    // not modified
+    public string MyString { get; set; }
+
+    // etc.
+
+    [JsonMap(JsonElementKey = "my_strings")]
+    public List<string> MyStrings { get; set; }
+
+    [JsonMap(JsonElementKey = "the_sub")]
+    public SubItem Sub { get; set; }
+}
+public class SubItem
+{
+    [JsonMap(JsonElementKey = "the_sub_int")]
+    public int SubItemInt { get; set; }
+
+    public string SubItemString { get; set; }
+}
+```
+
+Important : set "UseJsonMapAttributes" to "true". By default, it's not active for best performances.
+
+```cs
+JsonObjectSerializer.UseJsonMapAttributes = true;
+
+var json = JsonObjectSerializer.Stringify(item);
+```

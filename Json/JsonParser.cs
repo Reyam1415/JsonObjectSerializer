@@ -103,7 +103,10 @@ namespace Json
                 {
                     if (!isStringOpen)
                     {
-                        result.Add(CreateElement(currentValue));
+                        if (!string.IsNullOrEmpty(currentValue))
+                        {
+                            result.Add(CreateElement(currentValue));
+                        }
                         currentValue = "";
                     }
                     else
@@ -121,7 +124,7 @@ namespace Json
                             result.Add(innerJsonObject);
                             currentValue = "";
                             // move i
-                            i = ((JsonElementObject)innerJsonObject).EndIndex + 1;
+                            i = ((JsonElementObject)innerJsonObject).EndIndex;
                         }
                     }
                     else
@@ -140,7 +143,7 @@ namespace Json
                             result.Add(innerJsonArray);
                             currentValue = "";
                             // move i
-                            i = ((JsonElementArray)innerJsonArray).EndIndex + 1;
+                            i = ((JsonElementArray)innerJsonArray).EndIndex;
                         }
                     }
                     else
@@ -188,6 +191,9 @@ namespace Json
         //"myobj":{"subid":100,"subname":"sub value"},
         //"myarr":[1,"a",true,{"id":5},[2,"b",false,{"susubid":20}]]
         //}
+        // Mapping
+        //{"myint":10} // json
+        // public int MyInt {get;set} // property
         public IJsonElement ParseObject(string json, int objectLevel = 0, int index = 1)
         {
             var result = new JsonElementObject();
@@ -234,22 +240,6 @@ namespace Json
                         currentValue += currentChar;
                     }
                 }
-                // delimiter of json elements if not in a string
-                else if (IsVirguleDelimiter(currentChar)) // ,
-                {
-                    if (!isStringOpen)
-                    {
-                        result[currentKey] = CreateElement(currentValue);
-
-                        currentKey = "";
-                        currentValue = "";
-                        isValue = false;
-                    }
-                    else
-                    {
-                        currentValue += currentChar;
-                    }
-                }
                 else if (IsArrayOpenDelimiter(currentChar)) // [
                 {
                     if (!isStringOpen)
@@ -263,7 +253,7 @@ namespace Json
                             isValue = false;
 
                             // move i
-                            i = ((JsonElementArray)innerJsonArray).EndIndex + 1;
+                            i = ((JsonElementArray)innerJsonArray).EndIndex;
                         }
                     }
                     else
@@ -285,7 +275,7 @@ namespace Json
                             isValue = false;
 
                             // move i
-                            i = ((JsonElementObject)innerJsonObject).EndIndex + 1;
+                            i = ((JsonElementObject)innerJsonObject).EndIndex;
                         }
                     }
                     else
@@ -293,7 +283,49 @@ namespace Json
                         currentValue += currentChar;
                     }
                 }
+                // delimiter of json elements if not in a string
+                else if (IsVirguleDelimiter(currentChar)) // ,
+                {
+                    if (!isStringOpen)
+                    {
+                        if (!string.IsNullOrEmpty(currentKey) && !string.IsNullOrEmpty(currentValue))
+                        {
+                            result[currentKey] = CreateElement(currentValue);
+                        }
+
+                        currentKey = "";
+                        currentValue = "";
+                        isValue = false;
+                    }
+                    else
+                    {
+                        currentValue += currentChar;
+                    }
+                }
                 else if (IsObjectCloseDelimiter(currentChar)) // }
+                {
+                    if (!isStringOpen)
+                    {
+                        // assign last values
+                        if (!string.IsNullOrEmpty(currentKey) && !string.IsNullOrEmpty(currentValue))
+                        {
+                            result[currentKey] = CreateElement(currentValue);
+                            result.EndIndex = i;
+                        }
+
+                        // try add object
+                        if (objectLevel > 0)
+                        {
+                            result.EndIndex = i;
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        currentValue += currentChar;
+                    }
+                }
+                else if (IsArrayCloseDelimiter(currentChar)) // ]
                 {
                     if (!isStringOpen)
                     {

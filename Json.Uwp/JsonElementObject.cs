@@ -6,8 +6,8 @@ namespace Json
     public class JsonElementObject : Dictionary<string, IJsonElement>, IJsonElement
     {
         public JsonElementType ElementType { get { return JsonElementType.Object; } }
-        public int StartIndex { get; set; }
-        public int EndIndex { get; set; }
+        internal int StartIndex;
+        internal int EndIndex;
 
         public static IJsonParser JsonParser = new JsonParser();
 

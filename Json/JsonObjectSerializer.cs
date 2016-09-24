@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Linq;
 
 namespace Json
-{ 
+{
     public class JsonObjectSerializer
     {
         private static bool IsEnumerable(Type type)
@@ -73,6 +74,8 @@ namespace Json
             var caller = "JsonObjectSerializer";
             Debug.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} {severity} {caller} {message}");
         }
+
+        public static bool UseJsonMapAttributes { get; set; } = false;
 
         private static void ParseJsonArrayToArray(JsonElementArray sourceJsonArray, Array resultArray, Type singleItemType)
         {
@@ -256,16 +259,36 @@ namespace Json
             }
         }
 
+        private static PropertyInfo GetProperty(Dictionary<string, PropertyInfo> mapping, string jsonElementKey)
+        {
+            foreach (var item in mapping)
+            {
+                if (item.Key == jsonElementKey)
+                {
+                    return item.Value;
+                }
+            }
+            return null;
+        }
+
+        // Mapping
+        //{"myint":10} // json
+        // public int MyInt {get;set} // property
         private static void ParseJsonObjectToObject(JsonElementObject sourceJsonObject, object resultObject)
         {
+            var mapping = ResolveMapping(resultObject.GetType());
+
             foreach (var item in sourceJsonObject)
             {
                 if (item.Value.ElementType == JsonElementType.String)
                 {
+                    var key = item.Key;
+
                     // json value
-                    var valueResult = ((JsonElementString)sourceJsonObject[item.Key]).Value;
+                    var valueResult = ((JsonElementString)sourceJsonObject[key]).Value;
                     // object property
-                    var property = resultObject.GetType().GetProperty(item.Key);
+
+                    var property = mapping[key];
                     if (property != null)
                     {
                         if (IsEnum(property.PropertyType))
@@ -310,10 +333,11 @@ namespace Json
                 }
                 else if (item.Value.ElementType == JsonElementType.Number)
                 {
+                    var key = item.Key;
                     // json value
-                    var valueResult = ((JsonElementNumber)sourceJsonObject[item.Key]).Value;
+                    var valueResult = ((JsonElementNumber)sourceJsonObject[key]).Value;
                     // object property
-                    var property = resultObject.GetType().GetProperty(item.Key);
+                    var property = mapping[key];
                     if (property != null)
                     {
                         if (IsInt(property.PropertyType))
@@ -332,10 +356,11 @@ namespace Json
                 }
                 else if (item.Value.ElementType == JsonElementType.Boolean)
                 {
+                    var key = item.Key;
                     // json value
-                    var valueResult = ((JsonElementBool)sourceJsonObject[item.Key]).Value;
+                    var valueResult = ((JsonElementBool)sourceJsonObject[key]).Value;
                     // object property
-                    var property = resultObject.GetType().GetProperty(item.Key);
+                    var property = mapping[key];
                     if (property != null)
                     {
                         property.SetValue(resultObject, valueResult);
@@ -347,10 +372,11 @@ namespace Json
                 }
                 else if (item.Value.ElementType == JsonElementType.Array)
                 {
+                    var key = item.Key;
                     // named inner json array
-                    var innerJsonArray = ((JsonElementArray)sourceJsonObject[item.Key]);
+                    var innerJsonArray = ((JsonElementArray)sourceJsonObject[key]);
                     // object property, get by name
-                    var property = resultObject.GetType().GetProperty(item.Key);
+                    var property = mapping[key];
                     if (property != null)
                     {
                         // Array ? or generic list
@@ -392,11 +418,12 @@ namespace Json
                 }
                 else if (item.Value.ElementType == JsonElementType.Object)
                 {
+                    var key = item.Key;
                     // named inner json object "myitem" : { "inner" : "inner value" },
-                    var innerJsonObject = ((JsonElementObject)sourceJsonObject[item.Key]);
+                    var innerJsonObject = ((JsonElementObject)sourceJsonObject[key]);
 
                     // find type by name example : "myitem" (name) > Item (type)
-                    var property = resultObject.GetType().GetProperty(item.Key);
+                    var property = mapping[key];
                     // typed
                     if (property != null)
                     {
@@ -543,31 +570,75 @@ namespace Json
             }
         }
 
+        private static Dictionary<string, PropertyInfo> ResolveMapping(Type type)
+        {
+            var result = new Dictionary<string, PropertyInfo>();
+
+            var propertiesInfos = type.GetProperties().ToList<PropertyInfo>();
+            foreach (var property in propertiesInfos)
+            {
+                bool isFound = false;
+                // Attribute
+                if (UseJsonMapAttributes)
+                {
+                    var attribute = Attribute.GetCustomAttribute(property, typeof(JsonMapAttribute)) as JsonMapAttribute;
+                    if (attribute != null)
+                    {
+                        // add column name / property
+                        var keyByAttribute = attribute.JsonElementKey;
+                        if (string.IsNullOrEmpty(keyByAttribute)) throw new ArgumentException("No ColumnName found on MapAttribute. Property " + property.Name + " of " + type.Name);
+                        result[keyByAttribute] = property;
+                        isFound = true;
+                    }
+                }
+
+                // manual mapping
+                var keyByManual = JsonMapping.Default.GetJsonElementKey(type, property.Name);
+                if (!string.IsNullOrEmpty(keyByManual))
+                {
+                    result[keyByManual] = property;
+                    isFound = true;
+                }
+
+                // not found with attribute or manual
+                if (!isFound)
+                {
+                    var defaultKey = property.Name;
+                    result[defaultKey] = property;
+                }
+
+            }
+            return result;
+        }
+
         private static void InspectObject(object obj, JsonElementObject resultJsonObject)
         {
-            var objProperties = obj.GetType().GetRuntimeProperties();
-            foreach (var property in objProperties)
+            var mapping = ResolveMapping(obj.GetType());
+
+            foreach (var item in mapping)
             {
+                var key = item.Key;
+                var property = item.Value;
                 var propertyType = property.PropertyType;
                 if (IsString(propertyType))
                 {
-                    resultJsonObject[property.Name] = JsonElement.CreateString((string)property.GetValue(obj));
+                    resultJsonObject[key] = JsonElement.CreateString((string)property.GetValue(obj));
                 }
                 else if (IsInt(propertyType))
                 {
-                    resultJsonObject[property.Name] = JsonElement.CreateNumber((int)property.GetValue(obj));
+                    resultJsonObject[key] = JsonElement.CreateNumber((int)property.GetValue(obj));
                 }
                 else if (IsDouble(propertyType))
                 {
-                    resultJsonObject[property.Name] = JsonElement.CreateNumber((double)property.GetValue(obj));
+                    resultJsonObject[key] = JsonElement.CreateNumber((double)property.GetValue(obj));
                 }
                 else if (IsBool(propertyType))
                 {
-                    resultJsonObject[property.Name] = JsonElement.CreateBoolean((bool)property.GetValue(obj));
+                    resultJsonObject[key] = JsonElement.CreateBoolean((bool)property.GetValue(obj));
                 }
                 else if (IsDateTime(propertyType) || IsEnum(propertyType))
                 {
-                    resultJsonObject[property.Name] = JsonElement.CreateString(property.GetValue(obj).ToString());
+                    resultJsonObject[key] = JsonElement.CreateString(property.GetValue(obj).ToString());
                 }
                 else if (IsEnumerable(propertyType))
                 {
@@ -576,7 +647,7 @@ namespace Json
                     if (innerEnumerable != null)
                     {
                         InspectList((IEnumerable)innerEnumerable, innerJsonArray);
-                        resultJsonObject[property.Name] = innerJsonArray;
+                        resultJsonObject[key] = innerJsonArray;
                     }
                 }
                 else if (IsObject(propertyType))
@@ -586,7 +657,7 @@ namespace Json
                     if (innerObj != null)
                     {
                         InspectObject(innerObj, innerJsonObject);
-                        resultJsonObject[property.Name] = innerJsonObject;
+                        resultJsonObject[key] = innerJsonObject;
                     }
                 }
             }

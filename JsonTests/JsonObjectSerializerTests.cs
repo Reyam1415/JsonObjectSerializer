@@ -53,9 +53,33 @@ namespace JsonTests
             };
 
             var json = JsonObjectSerializer.Stringify(items);
-
             var result = JsonObjectSerializer.Parse<List<Item>>(json);
-
+            Assert.AreEqual(result[0].MyInt, 10);
+            Assert.AreEqual(result[0].MyDouble, 5.5);
+            Assert.AreEqual(result[0].MyString, "my value string");
+            Assert.AreEqual(result[0].MyBool, true);
+            Assert.AreEqual(result[0].Sub.SubItemInt, 50);
+            Assert.AreEqual(result[0].Sub.SubItemString, "sub item value");
+            Assert.AreEqual(result[0].MyStrings[0], "a");
+            Assert.AreEqual(result[0].MyStrings[1], "b");
+            Assert.AreEqual(result[0].MyStrings[2], "c");
+            Assert.AreEqual(result[0].Others[0].OtherInt, 100);
+            Assert.AreEqual(result[0].Others[0].OtherName, "other 1");
+            Assert.AreEqual(result[0].Others[1].OtherInt, 200);
+            Assert.AreEqual(result[0].Others[1].OtherName, "other 2");
+            Assert.AreEqual(result[1].MyInt, 20);
+            Assert.AreEqual(result[1].MyDouble, 11.5);
+            Assert.AreEqual(result[1].MyString, "my value string 2");
+            Assert.AreEqual(result[1].MyBool, false);
+            Assert.AreEqual(result[1].Sub.SubItemInt, 70);
+            Assert.AreEqual(result[1].Sub.SubItemString, "sub item value 2");
+            Assert.AreEqual(result[1].MyStrings[0], "x");
+            Assert.AreEqual(result[1].MyStrings[1], "y");
+            Assert.AreEqual(result[1].MyStrings[2], "z");
+            Assert.AreEqual(result[1].Others[0].OtherInt, 100);
+            Assert.AreEqual(result[1].Others[0].OtherName, "other a");
+            Assert.AreEqual(result[1].Others[1].OtherInt, 200);
+            Assert.AreEqual(result[1].Others[1].OtherName, "other b");
         }
 
         [TestMethod]
@@ -83,6 +107,19 @@ namespace JsonTests
             var json = JsonObjectSerializer.Stringify(item);
 
             var result = JsonObjectSerializer.Parse<Item>(json);
+            Assert.AreEqual(result.MyInt, 10);
+            Assert.AreEqual(result.MyDouble, 5.5);
+            Assert.AreEqual(result.MyString, "my value string");
+            Assert.AreEqual(result.MyBool, true);
+            Assert.AreEqual(result.Sub.SubItemInt, 50);
+            Assert.AreEqual(result.Sub.SubItemString, "sub item value");
+            Assert.AreEqual(result.MyStrings[0], "a");
+            Assert.AreEqual(result.MyStrings[1], "b");
+            Assert.AreEqual(result.MyStrings[2], "c");
+            Assert.AreEqual(result.Others[0].OtherInt, 100);
+            Assert.AreEqual(result.Others[0].OtherName, "other 1");
+            Assert.AreEqual(result.Others[1].OtherInt, 200);
+            Assert.AreEqual(result.Others[1].OtherName, "other 2");
         }
 
         [TestMethod]

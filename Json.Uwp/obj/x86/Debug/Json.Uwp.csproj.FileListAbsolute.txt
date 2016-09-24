@@ -1,0 +1,17 @@
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\bin\x86\Debug\Json.Uwp.dll
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\bin\x86\Debug\Json.Uwp.pdb
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\bin\x86\Debug\Json.Uwp.pri
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\Json.Uwp.csprojResolveAssemblyReference.cache
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\Json.Uwp.dll
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\Json.Uwp.pdb
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\priconfig.xml
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\priconfig.xml.intermediate
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\layout.resfiles
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\layout.resfiles.intermediate
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\resources.resfiles
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\resources.resfiles.intermediate
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\pri.resfiles
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\pri.resfiles.intermediate
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\qualifiers.txt
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\qualifiers.txt.intermediate
+c:\users\romag\documents\visual studio 2015\Projects\Json\Json.Uwp\obj\x86\Debug\MultipleQualifiersPerDimensionFound.txt
