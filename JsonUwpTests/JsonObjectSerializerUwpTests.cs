@@ -286,7 +286,7 @@ namespace JsonUwpTests
             Assert.AreEqual(result.MyString, "My string value");
             Assert.AreEqual(result.MyEnumValue, MyEnum.EnumValue2);
         }
-
+        
         public class ItemWithEnum
         {
             public string MyString { get; set; }
@@ -345,7 +345,30 @@ namespace JsonUwpTests
             Assert.AreEqual(result2[1].Year, 2000);
         }
 
+        [TestMethod]
+        public void Should_Stringify_And_Parse_Doubles()
+        {
+            var items = new List<ItemWithDouble>();
+            for (int i = 0; i < 5; i++)
+            {
+                var item = new ItemWithDouble
+                {
+                    MyDouble = (i + 1) * 3.14
+                };
+                items.Add(item);
+            }
 
+            var json = JsonObjectSerializer.Stringify(items);
+            var result = JsonObjectSerializer.Parse<List<ItemWithDouble>>(json);
+            Assert.AreEqual(result[0].MyDouble, 3.14);
+            Assert.AreEqual(result[1].MyDouble, 6.28);
+            Assert.AreEqual(result[2].MyDouble, 9.42);
+            Assert.AreEqual(result[3].MyDouble, 12.56);
+        }
+        public class ItemWithDouble
+        {
+            public double MyDouble { get; set; }
+        }
 
         [TestMethod]
         public void Should_Stringify_An_Object()

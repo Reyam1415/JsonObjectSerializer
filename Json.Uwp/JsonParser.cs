@@ -13,8 +13,8 @@ namespace Json
         private const char KeyValueDelimiter = ':';
         private const char VirguleDelimiter = ',';
         private const char StringDelimiterCanceler = '\\';
-        private const string NumberPattern = "^([0-9]+(?:.[0-9])?)$";
-        private const string BoolPattern = "(true|false)"; // i
+        private const string NumberPattern = "^([0-9]+(?:.[0-9]+)?)$";
+        private const string BoolPattern = "^(true|false)$"; // i
 
         private bool IsObjectOpenDelimiter(char c)
         {
