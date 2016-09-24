@@ -19,52 +19,75 @@ namespace PerformancesWpfTests
             InitializeComponent();
         }
 
+        int testCount = 400;
+
         private void TestJsonObjectParser()
         {
             var watcher = new Stopwatch();
+            var stringifyWatcher = new Stopwatch();
+            var parseWatcher = new Stopwatch();
+
             watcher.Start();
 
-            var items = Service.GetItems(200);
+            var items = Service.GetItems(testCount);
 
+            stringifyWatcher.Start();
             var json = JsonObjectSerializer.Stringify(items);
+            stringifyWatcher.Stop();
 
+            parseWatcher.Start();
             var result = JsonObjectSerializer.Parse<List<Item>>(json);
+            parseWatcher.Stop();
 
             watcher.Stop();
-            ListView.Items.Add("JsonObject : " + watcher.Elapsed.Milliseconds.ToString() + "ms");
+            ListView.Items.Add($"[JsonObject] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
             DataListView.ItemsSource = result;
         }
 
         private void TestDataContractJsonSerializerParser()
         {
             var watcher = new Stopwatch();
+            var stringifyWatcher = new Stopwatch();
+            var parseWatcher = new Stopwatch();
+
             watcher.Start();
 
-            var items = Service.GetItems(200);
+            var items = Service.GetItems(testCount);
             var knownTypes = new List<Type> { typeof(Item), typeof(OtherItem), typeof(SubItem),typeof(SubSubItem), typeof(List<Item>), typeof(List<OtherItem>) };
 
-            var json = DataJsonSerializer.Stringify(items,knownTypes);
+            stringifyWatcher.Start();
+            var json = DataJsonSerializer.Stringify(items, knownTypes);
+            stringifyWatcher.Stop();
 
-            var result = DataJsonSerializer.Parse<List<Item>>(json,knownTypes);
+            parseWatcher.Start();
+            var result = DataJsonSerializer.Parse<List<Item>>(json, knownTypes);
+            parseWatcher.Stop();
 
             watcher.Stop();
-            ListView.Items.Add("DataContractJsonSerializer : " + watcher.Elapsed.Milliseconds.ToString() + "ms");
+            ListView.Items.Add($"[DataContract] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
             DataListView.ItemsSource = result;
         }
 
         private void TestJsonNetParser()
         {
             var watcher = new Stopwatch();
+            var stringifyWatcher = new Stopwatch();
+            var parseWatcher = new Stopwatch();
+
             watcher.Start();
 
-            var items = Service.GetItems(200);
+            var items = Service.GetItems(testCount);
 
+            stringifyWatcher.Start();
             var json = JsonConvert.SerializeObject(items);
+            stringifyWatcher.Stop();
 
+            parseWatcher.Start();
             var result = JsonConvert.DeserializeObject<List<Item>>(json);
+            parseWatcher.Stop();
 
             watcher.Stop();
-            ListView.Items.Add("Json.Net : " + watcher.Elapsed.Milliseconds.ToString() + "ms");
+            ListView.Items.Add($"[Json.Net] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
             DataListView.ItemsSource = result;
         }
 

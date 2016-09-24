@@ -9,6 +9,10 @@ namespace Json
 {
     public class JsonObjectSerializer
     {
+        private static Dictionary<Type, Dictionary<string, PropertyInfo>> cache = new Dictionary<Type, Dictionary<string, PropertyInfo>>();
+
+        public static bool UseJsonMapAttributes { get; set; } = false;
+
         private static bool IsEnumerable(Type type)
         {
             return typeof(IEnumerable).IsAssignableFrom(type);
@@ -74,8 +78,6 @@ namespace Json
             var caller = "JsonObjectSerializer";
             Debug.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} {severity} {caller} {message}");
         }
-
-        public static bool UseJsonMapAttributes { get; set; } = false;
 
         private static void ParseJsonArrayToArray(JsonElementArray sourceJsonArray, Array resultArray, Type singleItemType)
         {
@@ -257,18 +259,6 @@ namespace Json
                     resultList.Add(valueResult);
                 }
             }
-        }
-
-        private static PropertyInfo GetProperty(Dictionary<string, PropertyInfo> mapping, string jsonElementKey)
-        {
-            foreach (var item in mapping)
-            {
-                if (item.Key == jsonElementKey)
-                {
-                    return item.Value;
-                }
-            }
-            return null;
         }
 
         // Mapping
@@ -572,43 +562,52 @@ namespace Json
 
         private static Dictionary<string, PropertyInfo> ResolveMapping(Type type)
         {
-            var result = new Dictionary<string, PropertyInfo>();
-
-            var propertiesInfos = type.GetProperties().ToList<PropertyInfo>();
-            foreach (var property in propertiesInfos)
+            if (cache.ContainsKey(type))
             {
-                bool isFound = false;
-                // Attribute
-                if (UseJsonMapAttributes)
-                {
-                    var attribute = property.GetCustomAttribute<JsonMapAttribute>() as JsonMapAttribute;
-                    if (attribute != null)
-                    {
-                        // add column name / property
-                        var keyByAttribute = attribute.JsonElementKey;
-                        if (string.IsNullOrEmpty(keyByAttribute)) throw new ArgumentException("No ColumnName found on MapAttribute. Property " + property.Name + " of " + type.Name);
-                        result[keyByAttribute] = property;
-                        isFound = true;
-                    }
-                }
-
-                // manual mapping
-                var keyByManual = JsonMapping.Default.GetJsonElementKey(type, property.Name);
-                if (!string.IsNullOrEmpty(keyByManual))
-                {
-                    result[keyByManual] = property;
-                    isFound = true;
-                }
-
-                // not found with attribute or manual
-                if (!isFound)
-                {
-                    var defaultKey = property.Name;
-                    result[defaultKey] = property;
-                }
-
+                return cache[type];
             }
-            return result;
+            else
+            {
+                var result = new Dictionary<string, PropertyInfo>();
+
+                var propertiesInfos = type.GetProperties().ToList<PropertyInfo>();
+                foreach (var property in propertiesInfos)
+                {
+                    bool isFound = false;
+                    // Attribute
+                    if (UseJsonMapAttributes)
+                    {
+                        var attribute = property.GetCustomAttribute<JsonMapAttribute>() as JsonMapAttribute;
+                        if (attribute != null)
+                        {
+                            // add column name / property
+                            var keyByAttribute = attribute.JsonElementKey;
+                            if (string.IsNullOrEmpty(keyByAttribute)) throw new ArgumentException("No ColumnName found on MapAttribute. Property " + property.Name + " of " + type.Name);
+                            result[keyByAttribute] = property;
+                            isFound = true;
+                        }
+                    }
+                    // manual mapping
+                    if (JsonMapping.Default.Count > 0)
+                    {
+                        var keyByManual = JsonMapping.Default.GetJsonElementKey(type, property.Name);
+                        if (!string.IsNullOrEmpty(keyByManual))
+                        {
+                            result[keyByManual] = property;
+                            isFound = true;
+                        }
+                    }
+                    // not found with attribute or manual
+                    if (!isFound)
+                    {
+                        var defaultKey = property.Name;
+                        result[defaultKey] = property;
+                    }
+
+                }
+                cache[type] = result;
+                return result;
+            }
         }
 
         private static void InspectObject(object obj, JsonElementObject resultJsonObject)

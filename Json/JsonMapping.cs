@@ -31,6 +31,11 @@ namespace Json
             get { return Singleton<JsonMapping>.Instance; }
         }
 
+        public int Count
+        {
+            get { return mapping.Count; }
+        }
+
         private Dictionary<Type, Dictionary<string,JsonMapItem>> mapping = new Dictionary<Type, Dictionary<string, JsonMapItem>>();
 
         private bool IsValid(string input)
@@ -106,9 +111,10 @@ namespace Json
             return null;
         }
 
-        public int Count()
+
+        public void Clear()
         {
-            return mapping.Count;
+            mapping.Clear();
         }
     }
 }

@@ -11,6 +11,10 @@ Support :
     - Uwp
     - etc.
 
+Installation with NuGet
+```
+PM> Install-Package JsonObjectSerializer
+```
 
 ## Serialization (from object(s) to Json)
 
