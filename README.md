@@ -3,12 +3,12 @@ Json Serializer for .NET projects (DOTNET)
 
 
 Support :
-- enum, date, string, number, object, array
+- enum, date, string, number, boolean, object, array
 - recursive
 - Available for :
     - Wpf
     - Windows forms
-    - Uwp, WinRT
+    - Uwp
     - etc.
 
 
