@@ -48,12 +48,12 @@ var result = JsonObjectSerializer.Parse<Item[]>(json);
 ### Manual
 ```cs
 JsonMapping.Default
-        .Add(typeof(MappedItem), "MyInt", "my_int")
-        .Add(typeof(MappedItem), "MyDouble", "my_double")
-        .Add(typeof(MappedItem), "MyBool", "my_bool")
-        .Add(typeof(MappedItem), "MyStrings", "my_strings")
-        .Add(typeof(MappedItem), "Sub", "the_sub")
-        .Add(typeof(MappedSub), "SubItemInt","the_sub_int");
+        .Add(typeof(Item), "MyInt", "my_int")
+        .Add(typeof(Item), "MyDouble", "my_double")
+        .Add(typeof(Item), "MyBool", "my_bool")
+        .Add(typeof(Item), "MyStrings", "my_strings")
+        .Add(typeof(Item), "Sub", "the_sub")
+        .Add(typeof(SubItem), "SubItemInt","the_sub_int");
                 
 // then stringify
 ```
