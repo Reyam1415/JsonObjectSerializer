@@ -34,7 +34,7 @@ namespace PerformancesWpfTests
 
             watcher.Start();
 
-            var items = Service.GetItems(5);
+            var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
 
             stringifyWatcher.Start();
             var json = JsonObjectSerializer.Stringify(items);
@@ -83,13 +83,13 @@ namespace PerformancesWpfTests
 
             watcher.Start();
 
-           // var items = await Service.GetItemsAsync(Convert.ToInt32(TestCountTextBox.Text));
+            var items = await Service.GetItemsAsync(Convert.ToInt32(TestCountTextBox.Text));
 
             stringifyWatcher.Start();
-            //var json = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(items));
+            var json = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(items));
             stringifyWatcher.Stop();
 
-            var json = await ReadFileFromApplicationAsync("items.json");
+            //var json = await ReadFileFromApplicationAsync("items.json");
 
             parseWatcher.Start();
             var result = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<List<Item>>(json));
