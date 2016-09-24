@@ -8,6 +8,7 @@ Support :
 - Available for :
     - Wpf
     - Windows forms
+    - Uwp, WinRT
     - etc.
 
 

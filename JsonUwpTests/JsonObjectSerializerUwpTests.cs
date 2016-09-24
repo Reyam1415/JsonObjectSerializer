@@ -1,13 +1,13 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System.Collections.Generic;
 using Json;
 using System.Linq;
 
-namespace JsonTests
+namespace JsonUwpTests
 {
     [TestClass]
-    public class JsonObjectSerializerTests
+    public class JsonObjectSerializerUwpTests
     {
         [TestMethod]
         public void Should_Stringify_And_Parse_An_Array()
@@ -361,6 +361,4 @@ namespace JsonTests
         public int SubItemInt { get; set; }
         public string SubItemString { get; set; }
     }
-
-
 }
