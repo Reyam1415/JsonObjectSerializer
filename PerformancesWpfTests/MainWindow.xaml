@@ -13,9 +13,10 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel HorizontalAlignment="Left">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Test count:" />
-                <TextBox x:Name="TestCountTextBox" Text="100"></TextBox>
+            <StackPanel Orientation="Horizontal"  >
+                <TextBlock Text="Test count:"   Margin="12,6"/>
+                <TextBox x:Name="TestCountTextBox" Text="100"  Margin="0,6"></TextBox>
+                <CheckBox x:Name="CheckBox" IsChecked="False" Margin="12,6">Show data?</CheckBox>
             </StackPanel>
             <Button Click="OnTestJsonObject">Test with JsonObjectSerializer</Button>
             <Button Click="OnTestDataContractJsonSerializer">Test with DataContractJsonSerializer</Button>

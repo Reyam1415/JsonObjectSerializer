@@ -2,11 +2,8 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Remoting.Messaging;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,9 +11,6 @@ using WpfLib.Services;
 
 namespace PerformancesWpfTests
 {
-    /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -32,15 +26,13 @@ namespace PerformancesWpfTests
             var stringifyWatcher = new Stopwatch();
             var parseWatcher = new Stopwatch();
 
-            watcher.Start();
-
             var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
+
+            watcher.Start();
 
             stringifyWatcher.Start();
             var json = JsonObjectSerializer.Stringify(items);
             stringifyWatcher.Stop();
-
-            //var json = await ReadFileFromApplicationAsync("items.json");
 
             parseWatcher.Start();
             var result = JsonObjectSerializer.Parse<List<Item>>(json);
@@ -48,7 +40,8 @@ namespace PerformancesWpfTests
 
             watcher.Stop();
             ListView.Items.Add($"[JsonObject] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
-            DataListView.ItemsSource = result;
+            if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
+            else DataListView.ItemsSource = null;
         }
 
         private void TestDataContractJsonSerializerParser()
@@ -57,10 +50,10 @@ namespace PerformancesWpfTests
             var stringifyWatcher = new Stopwatch();
             var parseWatcher = new Stopwatch();
 
-            watcher.Start();
-
-            var items =  Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
+            var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
             var knownTypes = new List<Type> { typeof(Item), typeof(OtherItem), typeof(SubItem), typeof(SubSubItem), typeof(List<Item>), typeof(List<OtherItem>) };
+
+            watcher.Start();
 
             stringifyWatcher.Start();
             var json = DataJsonSerializer.Stringify(items, knownTypes);
@@ -72,32 +65,32 @@ namespace PerformancesWpfTests
 
             watcher.Stop();
             ListView.Items.Add($"[DataContract] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
-            DataListView.ItemsSource = result;
+            if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
+            else DataListView.ItemsSource = null;
         }
 
-        private async void TestJsonNetParser()
+        private void TestJsonNetParser()
         {
             var watcher = new Stopwatch();
             var stringifyWatcher = new Stopwatch();
             var parseWatcher = new Stopwatch();
 
+            var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
+
             watcher.Start();
 
-            var items = await Service.GetItemsAsync(Convert.ToInt32(TestCountTextBox.Text));
-
             stringifyWatcher.Start();
-            var json = await Task.Factory.StartNew(() => JsonConvert.SerializeObject(items));
+            var json = JsonConvert.SerializeObject(items);
             stringifyWatcher.Stop();
 
-            //var json = await ReadFileFromApplicationAsync("items.json");
-
             parseWatcher.Start();
-            var result = await Task.Factory.StartNew(() => JsonConvert.DeserializeObject<List<Item>>(json));
+            var result = JsonConvert.DeserializeObject<List<Item>>(json);
             parseWatcher.Stop();
 
             watcher.Stop();
             ListView.Items.Add($"[Json.Net] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
-            DataListView.ItemsSource = result;
+            if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
+            else DataListView.ItemsSource = null;
         }
 
         private void OnTestJsonObject(object sender, RoutedEventArgs e)
@@ -113,21 +106,6 @@ namespace PerformancesWpfTests
         private void OnTestJsonNet(object sender, RoutedEventArgs e)
         {
             TestJsonNetParser();
-        }
-
-        protected async Task<string> ReadFileFromApplicationAsync(string configFile)
-        {
-            try
-            {
-                using (var reader = new StreamReader(configFile))
-                {
-                    return await reader.ReadToEndAsync();
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                throw new ArgumentException($"Config file '{configFile}' does not found");
-            }
         }
     }
 

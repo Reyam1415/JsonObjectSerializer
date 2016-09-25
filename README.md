@@ -3,7 +3,7 @@ Json Serializer for .NET projects (DOTNET)
 
 
 Support :
-- enum, date, string, number, boolean, object, array
+- string, number, boolean, date, enum, nullables, object, array
 - recursive
 - Available for :
     - Wpf
@@ -29,6 +29,12 @@ var json = JsonObjectSerializer.Stringify(item);
 A list / array
 ```cs
 var json = JsonObjectSerializer.Stringify(items);
+```
+
+### Indented
+
+```cs
+var json = JsonObjectSerializer.Stringify(item, true);
 ```
 
 
@@ -105,3 +111,5 @@ JsonObjectSerializer.UseJsonMapAttributes = true;
 
 var json = JsonObjectSerializer.Stringify(item);
 ```
+
+

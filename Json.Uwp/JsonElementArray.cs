@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace Json
 {
@@ -11,42 +13,95 @@ namespace Json
 
         public static IJsonParser JsonParser = new JsonParser();
 
-        public string Stringify()
+        public string Stringify(bool indented = false)
         {
-            string result = "[";
+            if (!indented)
+            {
+                using (var writer = new StringWriter())
+                {
+                    writer.Write("[");
 
+                    bool firstElement = true;
+                    foreach (var jsonElement in this)
+                    {
+                        if (!firstElement) writer.Write(",");
+                        if (jsonElement.ElementType == JsonElementType.String)
+                        {
+                            writer.Write("\"" + ((JsonElementString)jsonElement).Value.ToString() + "\"");
+                        }
+                        else if (jsonElement.ElementType == JsonElementType.Boolean)
+                        {
+                            writer.Write(((JsonElementBool)jsonElement).Value.ToString().ToLower());
+                        }
+                        else if (jsonElement.ElementType == JsonElementType.Number)
+                        {
+                            writer.Write(((JsonElementNumber)jsonElement).Value);
+                        }
+                        else if (jsonElement.ElementType == JsonElementType.Object)
+                        {
+                            var json = ((JsonElementObject)jsonElement).Stringify();
+                            writer.Write(json);
+                        }
+                        else if (jsonElement.ElementType == JsonElementType.Array)
+                        {
+                            var json = ((JsonElementArray)jsonElement).Stringify();
+                            writer.Write(json);
+                        }
+                        firstElement = false;
+                    }
+                    writer.Write("]");
+                    return writer.ToString();
+                }
+            }
+            else return StringifyIndented();
+        }
+
+        private static void AppendTabs(StringBuilder writer, int count)
+        {
+            for (int i = 0; i < count; i++) writer.Append("   ");
+        }
+
+        internal string StringifyIndented(int level = 1)
+        {
+            var writer = new StringBuilder();
+
+            writer.Append("[");
             bool firstElement = true;
             foreach (var jsonElement in this)
             {
-                if (!firstElement) result += ",";
+                if (!firstElement) writer.Append(",\r");
+                else writer.Append("\r");
+
+                AppendTabs(writer, level);
+
                 if (jsonElement.ElementType == JsonElementType.String)
                 {
-                    result += "\"" + ((JsonElementString)jsonElement).Value.ToString() + "\"";
+                    writer.Append("\"" + ((JsonElementString)jsonElement).Value.ToString() + "\"");
                 }
                 else if (jsonElement.ElementType == JsonElementType.Boolean)
                 {
-                    result += ((JsonElementBool)jsonElement).Value.ToString().ToLower();
+                    writer.Append(((JsonElementBool)jsonElement).Value.ToString().ToLower());
                 }
                 else if (jsonElement.ElementType == JsonElementType.Number)
                 {
-                    result += ((JsonElementNumber)jsonElement).Value;
+                    writer.Append(((JsonElementNumber)jsonElement).Value);
                 }
                 else if (jsonElement.ElementType == JsonElementType.Object)
                 {
-                    var json = ((JsonElementObject)jsonElement).Stringify();
-                    result += json;
+                    var json = ((JsonElementObject)jsonElement).StringifyIndented(level + 1);
+                    writer.Append(json);
                 }
                 else if (jsonElement.ElementType == JsonElementType.Array)
                 {
-                    var json = ((JsonElementArray)jsonElement).Stringify();
-                    result += json;
+                    var json = ((JsonElementArray)jsonElement).StringifyIndented(level + 1);
+                    writer.Append(json);
                 }
                 firstElement = false;
             }
-
-            result += "]";
-
-            return result;
+            writer.Append(Environment.NewLine);
+            AppendTabs(writer, level - 1);
+            writer.Append("]");
+            return writer.ToString();
         }
 
         public static bool TryParse(string json, out JsonElementArray rootJsonArray)

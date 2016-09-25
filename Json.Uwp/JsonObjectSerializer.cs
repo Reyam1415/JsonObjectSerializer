@@ -7,71 +7,93 @@ using System.Linq;
 
 namespace Json
 {
-    public class JsonObjectSerializer
+    public class TypeHelper
     {
-        private static Dictionary<Type, Dictionary<string, PropertyInfo>> cache = new Dictionary<Type, Dictionary<string, PropertyInfo>>();
-
-        public static bool UseJsonMapAttributes { get; set; } = false;
-
-        private static bool IsEnumerable(Type type)
+        public static bool IsBaseType(Type type)
+        {
+            return IsString(type) || IsDateTime(type) || IsInt(type) || IsDouble(type) || IsBool(type) || IsEnum(type) || IsNullable(type);
+        }
+        public static bool IsEnumerable(Type type)
         {
             return typeof(IEnumerable).IsAssignableFrom(type);
         }
 
-        private static bool IsString(Type type)
+        public static bool IsString(Type type)
         {
             return type == typeof(string);
         }
 
-        private static bool IsNumber(Type type)
+        public static bool IsNumber(Type type)
         {
             return type == typeof(int) || type == typeof(double);
         }
 
-        private static bool IsInt(Type type)
+        public static bool IsInt(Type type)
         {
             return type == typeof(int);
         }
 
-        private static bool IsDouble(Type type)
+        public static bool IsDouble(Type type)
         {
             return type == typeof(double);
         }
 
-        private static bool IsBool(Type type)
+        public static bool IsBool(Type type)
         {
             return type == typeof(bool);
         }
 
-        private static bool IsDateTime(Type type)
+        public static bool IsDateTime(Type type)
         {
             return type == typeof(DateTime);
         }
 
-        private static bool IsObject(Type type)
+        public static bool IsObject(Type type)
         {
             return typeof(object).IsAssignableFrom(type);
         }
 
-        private static bool IsArray(Type type)
+        public static bool IsArray(Type type)
         {
             return type.IsArray;
         }
 
-        private static bool IsGenericType(Type type)
+        public static bool IsGenericType(Type type)
         {
             return type.GetTypeInfo().IsGenericType;
         }
 
-        private static bool IsDictionary(Type type)
+        public static bool IsDictionary(Type type)
         {
             return type == typeof(Dictionary<string, object>);
         }
 
-        private static bool IsEnum(Type type)
+        public static bool IsEnum(Type type)
         {
             return type.GetTypeInfo().IsEnum;
         }
+
+        public static bool IsNullable(Type type)
+        {
+            return Nullable.GetUnderlyingType(type) != null;
+        }
+    }
+
+    public class ParsedItem
+    {
+        public Type Type { get; set; }
+        public object Item { get; set; }
+    }
+
+    public class JsonObjectSerializer
+    {
+        private static Dictionary<Type, Dictionary<string, PropertyInfo>> typesCache =
+            new Dictionary<Type, Dictionary<string, PropertyInfo>>();
+
+        private static Dictionary<string, ParsedItem> parsedJsonCache =
+            new Dictionary<string, ParsedItem>();
+
+        public static bool UseJsonMapAttributes { get; set; } = false;
 
         private static void DebugWrite(string message, string severity = "Warning")
         {
@@ -79,61 +101,102 @@ namespace Json
             Debug.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} {severity} {caller} {message}");
         }
 
+        private static Dictionary<string, PropertyInfo> ResolveMapping(Type type)
+        {
+            if (typesCache.ContainsKey(type))
+            {
+                return typesCache[type];
+            }
+            else
+            {
+                var result = new Dictionary<string, PropertyInfo>();
+
+                var propertiesInfos = type.GetProperties().ToList();
+                foreach (var property in propertiesInfos)
+                {
+                    bool isFound = false;
+                    // Attribute
+                    if (UseJsonMapAttributes)
+                    {
+                        var attribute = property.GetCustomAttribute<JsonMapAttribute>() as JsonMapAttribute;
+                        if (attribute != null)
+                        {
+                            // add json element key / property
+                            var keyByAttribute = attribute.JsonElementKey;
+                            if (string.IsNullOrEmpty(keyByAttribute)) throw new ArgumentException("No ColumnName found on MapAttribute. Property " + property.Name + " of " + type.Name);
+                            result[keyByAttribute] = property;
+                            isFound = true;
+                        }
+                    }
+                    // manual mapping
+                    if (JsonMapping.Default.Count > 0)
+                    {
+                        var keyByManual = JsonMapping.Default.GetJsonElementKey(type, property.Name);
+                        if (!string.IsNullOrEmpty(keyByManual))
+                        {
+                            result[keyByManual] = property;
+                            isFound = true;
+                        }
+                    }
+                    // not found with attribute or manual
+                    if (!isFound)
+                    {
+                        var defaultKey = property.Name;
+                        result[defaultKey] = property;
+                    }
+
+                }
+                typesCache[type] = result;
+                return result;
+            }
+        }
+
         private static void ParseJsonArrayToArray(JsonElementArray sourceJsonArray, Array resultArray, Type singleItemType)
         {
             int index = 0;
             foreach (var jsonElement in sourceJsonArray)
             {
+                var jsonElementType = jsonElement.ElementType;
+
                 // json array of string "strings" : [ "a, "b", "c" ]
-                if (jsonElement.ElementType == JsonElementType.String)
+                if (jsonElementType == JsonElementType.String)
                 {
-                    // json value
+                    // json
                     var valueResult = ((JsonElementString)jsonElement).Value;
-                    // 
-                    if (IsString(singleItemType))
+                    // object
+                    if (TypeHelper.IsString(singleItemType))
                     {
                         resultArray.SetValue(valueResult, index);
                         index++;
                     }
-                    else if (IsDateTime(singleItemType))
+                    else if (TypeHelper.IsDateTime(singleItemType))
                     {
-                        DateTime dateTimeResult = default(DateTime);
-                        if (DateTime.TryParse(valueResult, out dateTimeResult))
-                        {
-                            try
-                            {
-                                resultArray.SetValue(dateTimeResult, index);
-                                index++;
-                            }
-                            catch (Exception)
-                            {
-                                DebugWrite($"Cannot set datetime value for : {valueResult}");
-                            }
-                        }
+                        resultArray.SetValue(DateTime.Parse(valueResult), index);
+                        index++;
                     }
                 }
-                else if (jsonElement.ElementType == JsonElementType.Number)
+                else if (jsonElementType == JsonElementType.Number)
                 {
-                    // json value
+                    // json 
                     var valueResult = ((JsonElementNumber)jsonElement).Value;
-                    // 
-                    if (IsInt(singleItemType)) resultArray.SetValue((int)valueResult, index);
-                    else resultArray.SetValue((double)valueResult, index);
+                    // object
+                    if (TypeHelper.IsInt(singleItemType)) resultArray.SetValue((int)valueResult, index);
+                    else resultArray.SetValue(valueResult, index);
                     index++;
                 }
-                else if (jsonElement.ElementType == JsonElementType.Boolean)
+                else if (jsonElementType == JsonElementType.Boolean)
                 {
-                    // json value
+                    // json 
                     var valueResult = ((JsonElementBool)jsonElement).Value;
-                    // 
+                    // object
                     resultArray.SetValue(valueResult, index);
                     index++;
                 }
-                else if (jsonElement.ElementType == JsonElementType.Object)
+                else if (jsonElementType == JsonElementType.Object)
                 {
-                    // json value
+                    // json 
                     var jsonObject = (JsonElementObject)jsonElement;
-
+                    // object
                     var valueResult = Activator.CreateInstance(singleItemType);
                     if (valueResult != null)
                     {
@@ -146,12 +209,12 @@ namespace Json
                         DebugWrite($"Cannot create instance for JsonObject : {jsonObject.Stringify()}");
                     }
                 }
-                else if (jsonElement.ElementType == JsonElementType.Array)
+                else if (jsonElementType == JsonElementType.Array)
                 {
-                    // json value
+                    // json 
                     var jsonArray = (JsonElementArray)jsonElement;
-
-                    if (IsArray(singleItemType))
+                    // object
+                    if (TypeHelper.IsArray(singleItemType))
                     {
                         var innerSingleItemType = singleItemType.GetTypeInfo().GetElementType();
                         if (innerSingleItemType != null)
@@ -166,7 +229,7 @@ namespace Json
                             DebugWrite($"Cannot create array for JsonArray : {jsonArray.Stringify()}");
                         }
                     }
-                    else if (IsGenericType(singleItemType))
+                    else if (TypeHelper.IsGenericType(singleItemType))
                     {
                         var innerSingleItemType = singleItemType.GetGenericArguments()[0];
                         if (innerSingleItemType != null)
@@ -191,11 +254,13 @@ namespace Json
         {
             foreach (var jsonElement in sourceJsonArray)
             {
+                var jsonElementType = jsonElement.ElementType;
 
-                if (jsonElement.ElementType == JsonElementType.Object)
+                if (jsonElementType == JsonElementType.Object)
                 {
+                    // json
                     var jsonObject = (JsonElementObject)jsonElement;
-
+                    // object
                     var resultObject = Activator.CreateInstance(singleItemType);
                     if (resultObject != null)
                     {
@@ -207,10 +272,11 @@ namespace Json
                         DebugWrite($"Cannot create instance for JsonObject : {jsonObject.Stringify()}");
                     }
                 }
-                else if (jsonElement.ElementType == JsonElementType.Array)
+                else if (jsonElementType == JsonElementType.Array)
                 {
+                    // json
                     var jsonArray = (JsonElementArray)jsonElement;
-
+                    // object
                     var innerSingleItemType = singleItemType.GetTypeInfo().GetElementType();
                     if (innerSingleItemType != null)
                     {
@@ -224,38 +290,33 @@ namespace Json
                     }
                 }
                 // json array of string "strings" : [ "a, "b", "c" ]
-                else if (jsonElement.ElementType == JsonElementType.String)
+                else if (jsonElementType == JsonElementType.String)
                 {
+                    // json
                     var valueResult = ((JsonElementString)jsonElement).Value;
-                    if (IsString(singleItemType))
+                    // object
+                    if (TypeHelper.IsString(singleItemType))
                     {
                         resultList.Add(valueResult);
                     }
-                    else if (IsDateTime(singleItemType))
+                    else if (TypeHelper.IsDateTime(singleItemType))
                     {
-                        DateTime dateTimeResult = default(DateTime);
-                        if (DateTime.TryParse(valueResult, out dateTimeResult))
-                        {
-                            try
-                            {
-                                resultList.Add(dateTimeResult);
-                            }
-                            catch (Exception)
-                            {
-                                DebugWrite($"Cannot set datetime value for : {valueResult}");
-                            }
-                        }
+                        resultList.Add(DateTime.Parse(valueResult));
                     }
                 }
-                else if (jsonElement.ElementType == JsonElementType.Number)
+                else if (jsonElementType == JsonElementType.Number)
                 {
+                    // json
                     var valueResult = ((JsonElementNumber)jsonElement).Value;
-                    if (IsInt(singleItemType)) resultList.Add((int)valueResult);
+                    // object
+                    if (TypeHelper.IsInt(singleItemType)) resultList.Add((int)valueResult);
                     else resultList.Add(valueResult);
                 }
-                else if (jsonElement.ElementType == JsonElementType.Boolean)
+                else if (jsonElementType == JsonElementType.Boolean)
                 {
+                    // json
                     var valueResult = ((JsonElementBool)jsonElement).Value;
+                    // object
                     resultList.Add(valueResult);
                 }
             }
@@ -270,123 +331,94 @@ namespace Json
 
             foreach (var item in sourceJsonObject)
             {
-                if (item.Value.ElementType == JsonElementType.String)
+                var key = item.Key;
+                var property = mapping[key];
+                if (property != null)
                 {
-                    var key = item.Key;
+                    var propertyType = property.PropertyType;
+                    var jsonElementType = item.Value.ElementType;
 
-                    // json value
-                    var valueResult = ((JsonElementString)sourceJsonObject[key]).Value;
-                    // object property
-
-                    var property = mapping[key];
-                    if (property != null)
+                    if (jsonElementType == JsonElementType.String)
                     {
-                        if (IsEnum(property.PropertyType))
+                        // json
+                        var valueResult = ((JsonElementString)sourceJsonObject[key]).Value;
+                        // object
+                        if (TypeHelper.IsEnum(propertyType))
                         {
-                            try
-                            {
-                                var enumResult = Enum.Parse(property.PropertyType, valueResult);
-                                property.SetValue(resultObject, enumResult);
-                            }
-                            catch (Exception)
-                            {
-                                DebugWrite($"Cannot set enum for : {valueResult}");
-                            }
+                            property.SetValue(resultObject, Enum.Parse(propertyType, valueResult));
                         }
                         else
                         {
-                            if (IsString(property.PropertyType))
+                            if (TypeHelper.IsString(propertyType))
                             {
                                 property.SetValue(resultObject, valueResult);
                             }
-                            else if (IsDateTime(property.PropertyType))
+                            else if (TypeHelper.IsDateTime(propertyType))
                             {
-                                DateTime dateTimeResult = default(DateTime);
-                                if (DateTime.TryParse(valueResult, out dateTimeResult))
+                                property.SetValue(resultObject, DateTime.Parse(valueResult));
+                            }
+                            else if (TypeHelper.IsNullable(propertyType))
+                            {
+                                var innerPropertyType = Nullable.GetUnderlyingType(propertyType);
+                                if (TypeHelper.IsDateTime(innerPropertyType))
                                 {
-                                    try
-                                    {
-                                        property.SetValue(resultObject, dateTimeResult);
-                                    }
-                                    catch (Exception)
-                                    {
-                                        DebugWrite($"Cannot set datetime value for : {valueResult} with {property.Name}");
-                                    }
+                                    property.SetValue(resultObject, DateTime.Parse(valueResult));
                                 }
                             }
                         }
                     }
-                    else
+                    else if (jsonElementType == JsonElementType.Number)
                     {
-                        DebugWrite($"Cannot find property for : {resultObject.GetType().Name}");
-                    }
-                }
-                else if (item.Value.ElementType == JsonElementType.Number)
-                {
-                    var key = item.Key;
-                    // json value
-                    var valueResult = ((JsonElementNumber)sourceJsonObject[key]).Value;
-                    // object property
-                    var property = mapping[key];
-                    if (property != null)
-                    {
-                        if (IsInt(property.PropertyType))
+                        // json
+                        var valueResult = ((JsonElementNumber)sourceJsonObject[key]).Value;
+                        // object 
+                        if (TypeHelper.IsInt(propertyType))
                         {
                             property.SetValue(resultObject, (int)valueResult);
                         }
-                        else if (IsDouble(property.PropertyType))
+                        else if (TypeHelper.IsDouble(propertyType))
                         {
-                            property.SetValue(resultObject, (double)valueResult);
+                            property.SetValue(resultObject, valueResult);
+                        }
+                        else if (TypeHelper.IsNullable(propertyType))
+                        {
+                            var innerPropertyType = Nullable.GetUnderlyingType(propertyType);
+                            if (TypeHelper.IsInt(innerPropertyType))
+                            {
+                                property.SetValue(resultObject, (int)valueResult);
+                            }
+                            else if (TypeHelper.IsDouble(innerPropertyType))
+                            {
+                                property.SetValue(resultObject, valueResult);
+                            }
                         }
                     }
-                    else
+                    else if (jsonElementType == JsonElementType.Boolean)
                     {
-                        DebugWrite($"Cannot find property for : {resultObject.GetType().Name}");
-                    }
-                }
-                else if (item.Value.ElementType == JsonElementType.Boolean)
-                {
-                    var key = item.Key;
-                    // json value
-                    var valueResult = ((JsonElementBool)sourceJsonObject[key]).Value;
-                    // object property
-                    var property = mapping[key];
-                    if (property != null)
-                    {
+                        // json
+                        var valueResult = ((JsonElementBool)sourceJsonObject[key]).Value;
+                        // object 
                         property.SetValue(resultObject, valueResult);
                     }
-                    else
+                    else if (jsonElementType == JsonElementType.Array)
                     {
-                        DebugWrite($"Cannot find property for : {resultObject.GetType().Name}");
-                    }
-                }
-                else if (item.Value.ElementType == JsonElementType.Array)
-                {
-                    var key = item.Key;
-                    // named inner json array
-                    var innerJsonArray = ((JsonElementArray)sourceJsonObject[key]);
-                    // object property, get by name
-                    var property = mapping[key];
-                    if (property != null)
-                    {
+                        // named inner json array
+                        var innerJsonArray = ((JsonElementArray)sourceJsonObject[key]);
+                        // object property, get by name
                         // Array ? or generic list
-                        if (IsArray(property.PropertyType))
+                        if (TypeHelper.IsArray(propertyType))
                         {
-                            var singleItemType = property.PropertyType.GetTypeInfo().GetElementType();
+                            var singleItemType = propertyType.GetTypeInfo().GetElementType();
                             if (singleItemType != null)
                             {
                                 var valueResult = Array.CreateInstance(singleItemType, innerJsonArray.Count);
                                 ParseJsonArrayToArray(innerJsonArray, valueResult, singleItemType);
                                 property.SetValue(resultObject, valueResult);
                             }
-                            else
-                            {
-                                DebugWrite($"Cannot create array for JsonArray : {innerJsonArray.Stringify()}");
-                            }
                         }
-                        else if (IsGenericType(property.PropertyType))
+                        else if (TypeHelper.IsGenericType(propertyType))
                         {
-                            var singleItemType = property.PropertyType.GetGenericArguments()[0];
+                            var singleItemType = propertyType.GetGenericArguments()[0];
                             if (singleItemType != null)
                             {
                                 var listType = typeof(List<>).MakeGenericType(singleItemType);
@@ -395,54 +427,35 @@ namespace Json
                                 ParseJsonArrayToList(innerJsonArray, (IList)valueResult, singleItemType);
                                 property.SetValue(resultObject, valueResult);
                             }
-                            else
-                            {
-                                DebugWrite($"Cannot create generic list for JsonArray : {innerJsonArray.Stringify()}");
-                            }
                         }
                     }
-                    else
+                    else if (jsonElementType == JsonElementType.Object)
                     {
-                        DebugWrite($"Cannot find property for JsonArray : {innerJsonArray.Stringify()} in {resultObject.GetType().Name}");
-                    }
-                }
-                else if (item.Value.ElementType == JsonElementType.Object)
-                {
-                    var key = item.Key;
-                    // named inner json object "myitem" : { "inner" : "inner value" },
-                    var innerJsonObject = ((JsonElementObject)sourceJsonObject[key]);
+                        // named inner json object "myitem" : { "inner" : "inner value" },
+                        var innerJsonObject = ((JsonElementObject)sourceJsonObject[key]);
 
-                    // find type by name example : "myitem" (name) > Item (type)
-                    var property = mapping[key];
-                    // typed
-                    if (property != null)
-                    {
                         // create anonymous dictionary string, object ?
-                        if (IsDictionary(property.PropertyType)) // dynamic
+                        if (TypeHelper.IsDictionary(propertyType)) // dynamic
                         {
                             // source : jsonObject, target : dictionary<string,object>
                             var innerDictionary = new Dictionary<string, object>();
                             ParseJsonObjectToDictionary(innerJsonObject, innerDictionary);
                             property.SetValue(resultObject, innerDictionary);
                         }
-                        else if (IsObject(property.PropertyType))
+                        else if (TypeHelper.IsObject(propertyType))
                         {
-                            var innerObject = Activator.CreateInstance(property.PropertyType);
+                            var innerObject = Activator.CreateInstance(propertyType);
                             if (innerObject != null)
                             {
                                 ParseJsonObjectToObject(innerJsonObject, innerObject);
                                 property.SetValue(resultObject, innerObject);
                             }
-                            else
-                            {
-                                DebugWrite($"Cannot create instance for JsonObject : {innerJsonObject.Stringify()}");
-                            }
                         }
                     }
-                    else
-                    {
-                        DebugWrite($"Cannot find property for JsonObject : {innerJsonObject.Stringify()} in {resultObject.GetType().Name}");
-                    }
+                }
+                else
+                {
+                    DebugWrite($"Cannot find property for {resultObject.GetType().Name} and json key {key}");
                 }
             }
         }
@@ -453,7 +466,9 @@ namespace Json
             {
                 if (item.Value.ElementType == JsonElementType.String)
                 {
+                    // json
                     var valueResult = ((JsonElementString)jsonObject[item.Key]).Value;
+                    // object
                     resultDictionary[item.Key] = valueResult;
                 }
                 else if (item.Value.ElementType == JsonElementType.Number)
@@ -481,43 +496,107 @@ namespace Json
         // return an object
         public static T Parse<T>(string json)
         {
-            var resultType = typeof(T);
-            if (IsEnumerable(resultType))
+            var objType = typeof(T);
+            if (parsedJsonCache.ContainsKey(json) && parsedJsonCache[json].Type == objType)
             {
-                JsonElementArray rootJsonArray = null;
-                if (JsonElementArray.TryParse(json, out rootJsonArray))
-                {
-                    if (IsArray(resultType))
-                    {
-                        var singleItemType = typeof(T).GetTypeInfo().GetElementType();
-                        var resultArray = Array.CreateInstance(singleItemType, rootJsonArray.Count);
-
-                        ParseJsonArrayToArray(rootJsonArray, resultArray, singleItemType);
-                        return (T)(object)resultArray;
-                    }
-                    else if (IsGenericType(resultType))
-                    {
-                        var singleItemType = resultType.GetGenericArguments()[0];
-                        var listType = typeof(List<>).MakeGenericType(singleItemType);
-                        var resultList = Activator.CreateInstance(listType);
-
-                        ParseJsonArrayToList(rootJsonArray, (IList)resultList, singleItemType);
-
-                        return (T)(object)resultList;
-                    }
-                }
+                return (T)(object)parsedJsonCache[json].Item;
             }
             else
             {
-                var resultObject = Activator.CreateInstance(typeof(T));
-                JsonElementObject rootJsonObject = null;
-                if (JsonElementObject.TryParse(json, out rootJsonObject))
+                if (TypeHelper.IsBaseType(objType))
                 {
-                    ParseJsonObjectToObject(rootJsonObject, resultObject);
-                    return (T)resultObject;
+                    if (TypeHelper.IsString(objType))
+                    {
+                        return (T)(object)json;
+                    }
+                    if (TypeHelper.IsEnum(objType))
+                    {
+                        return (T)(object)Enum.Parse(objType, json);
+                    }
+                    if (TypeHelper.IsDateTime(objType))
+                    {
+                        return (T)(object)DateTime.Parse(json);
+                    }
+                    else if (TypeHelper.IsInt(objType))
+                    {
+                        return (T)(object)int.Parse(json);
+                    }
+                    else if (TypeHelper.IsDouble(objType))
+                    {
+                        var value = json.Replace('.', ',');
+                        return (T)(object)double.Parse(value);
+                    }
+                    else if (TypeHelper.IsBool(objType))
+                    {
+                        return (T)(object)bool.Parse(json);
+                    }
+                    else if (TypeHelper.IsNullable(objType))
+                    {
+                        if (json == "null") return (T)(object)null;
+
+                        var innerPropertyType = Nullable.GetUnderlyingType(objType);
+                        if (TypeHelper.IsDateTime(innerPropertyType))
+                        {
+                            return (T)(object)DateTime.Parse(json);
+                        }
+                        else if (TypeHelper.IsInt(innerPropertyType))
+                        {
+                            return (T)(object)int.Parse(json);
+                        }
+                        else if (TypeHelper.IsDouble(innerPropertyType))
+                        {
+                            var value = json.Replace('.', ',');
+                            return (T)(object)double.Parse(value);
+                        }
+                        else if (TypeHelper.IsBool(innerPropertyType))
+                        {
+                            return (T)(object)bool.Parse(json);
+                        }
+                    }
                 }
+                else if (TypeHelper.IsEnumerable(objType))
+                {
+                    JsonElementArray rootJsonArray = null;
+                    if (JsonElementArray.TryParse(json, out rootJsonArray))
+                    {
+                        if (TypeHelper.IsArray(objType))
+                        {
+                            var singleItemType = typeof(T).GetTypeInfo().GetElementType();
+                            var resultArray = Array.CreateInstance(singleItemType, rootJsonArray.Count);
+
+                            ParseJsonArrayToArray(rootJsonArray, resultArray, singleItemType);
+                            return (T)(object)resultArray;
+                        }
+                        else if (TypeHelper.IsGenericType(objType))
+                        {
+                            var singleItemType = objType.GetGenericArguments()[0];
+                            var listType = typeof(List<>).MakeGenericType(singleItemType);
+                            var resultList = Activator.CreateInstance(listType);
+
+                            ParseJsonArrayToList(rootJsonArray, (IList)resultList, singleItemType);
+
+                            parsedJsonCache[json] = new ParsedItem { Type = objType, Item = resultList };
+
+                            return (T)(object)resultList;
+                        }
+                        return default(T);
+                    }
+                }
+                else
+                {
+                    var resultObject = Activator.CreateInstance(typeof(T));
+                    JsonElementObject rootJsonObject = null;
+                    if (JsonElementObject.TryParse(json, out rootJsonObject))
+                    {
+                        ParseJsonObjectToObject(rootJsonObject, resultObject);
+
+                        parsedJsonCache[json] = new ParsedItem { Type = objType, Item = resultObject };
+
+                        return (T)resultObject;
+                    }
+                }
+                return default(T);
             }
-            return default(T);
         }
 
         private static void InspectList(IEnumerable list, JsonElementArray resultJsonArray)
@@ -525,88 +604,38 @@ namespace Json
             foreach (var item in list)
             {
                 var itemType = item.GetType();
-                if (IsString(itemType))
+                if (TypeHelper.IsString(itemType))
                 {
                     resultJsonArray.Add(JsonElement.CreateString((string)item));
                 }
-                else if (IsInt(itemType))
+                else if (TypeHelper.IsInt(itemType))
                 {
                     resultJsonArray.Add(JsonElement.CreateNumber((int)item));
                 }
-                else if (IsDouble(itemType))
+                else if (TypeHelper.IsDouble(itemType))
                 {
                     resultJsonArray.Add(JsonElement.CreateNumber((double)item));
                 }
-                else if (IsBool(itemType))
+                else if (TypeHelper.IsBool(itemType))
                 {
                     resultJsonArray.Add(JsonElement.CreateBoolean((bool)item));
                 }
-                else if (IsDateTime(itemType))
+                else if (TypeHelper.IsDateTime(itemType))
                 {
                     resultJsonArray.Add(JsonElement.CreateString(item.ToString()));
                 }
-                else if (IsEnumerable(itemType))
+                else if (TypeHelper.IsEnumerable(itemType))
                 {
                     JsonElementArray jsonArray = new JsonElementArray();
                     InspectList((IEnumerable)item, jsonArray);
                     resultJsonArray.Add(jsonArray);
                 }
-                else if (IsObject(itemType))
+                else if (TypeHelper.IsObject(itemType))
                 {
                     JsonElementObject innerObject = new JsonElementObject();
                     InspectObject(item, innerObject);
                     resultJsonArray.Add(innerObject);
                 }
-            }
-        }
-
-        private static Dictionary<string, PropertyInfo> ResolveMapping(Type type)
-        {
-            if (cache.ContainsKey(type))
-            {
-                return cache[type];
-            }
-            else
-            {
-                var result = new Dictionary<string, PropertyInfo>();
-
-                var propertiesInfos = type.GetProperties().ToList<PropertyInfo>();
-                foreach (var property in propertiesInfos)
-                {
-                    bool isFound = false;
-                    // Attribute
-                    if (UseJsonMapAttributes)
-                    {
-                        var attribute = property.GetCustomAttribute<JsonMapAttribute>() as JsonMapAttribute;
-                        if (attribute != null)
-                        {
-                            // add column name / property
-                            var keyByAttribute = attribute.JsonElementKey;
-                            if (string.IsNullOrEmpty(keyByAttribute)) throw new ArgumentException("No ColumnName found on MapAttribute. Property " + property.Name + " of " + type.Name);
-                            result[keyByAttribute] = property;
-                            isFound = true;
-                        }
-                    }
-                    // manual mapping
-                    if (JsonMapping.Default.Count > 0)
-                    {
-                        var keyByManual = JsonMapping.Default.GetJsonElementKey(type, property.Name);
-                        if (!string.IsNullOrEmpty(keyByManual))
-                        {
-                            result[keyByManual] = property;
-                            isFound = true;
-                        }
-                    }
-                    // not found with attribute or manual
-                    if (!isFound)
-                    {
-                        var defaultKey = property.Name;
-                        result[defaultKey] = property;
-                    }
-
-                }
-                cache[type] = result;
-                return result;
             }
         }
 
@@ -619,43 +648,59 @@ namespace Json
                 var key = item.Key;
                 var property = item.Value;
                 var propertyType = property.PropertyType;
-                if (IsString(propertyType))
+                var value = property.GetValue(obj);
+                if (value != null)
                 {
-                    resultJsonObject[key] = JsonElement.CreateString((string)property.GetValue(obj));
-                }
-                else if (IsInt(propertyType))
-                {
-                    resultJsonObject[key] = JsonElement.CreateNumber((int)property.GetValue(obj));
-                }
-                else if (IsDouble(propertyType))
-                {
-                    resultJsonObject[key] = JsonElement.CreateNumber((double)property.GetValue(obj));
-                }
-                else if (IsBool(propertyType))
-                {
-                    resultJsonObject[key] = JsonElement.CreateBoolean((bool)property.GetValue(obj));
-                }
-                else if (IsDateTime(propertyType) || IsEnum(propertyType))
-                {
-                    resultJsonObject[key] = JsonElement.CreateString(property.GetValue(obj).ToString());
-                }
-                else if (IsEnumerable(propertyType))
-                {
-                    JsonElementArray innerJsonArray = new JsonElementArray();
-                    var innerEnumerable = property.GetValue(obj);
-                    if (innerEnumerable != null)
+                    if (TypeHelper.IsString(propertyType))
                     {
-                        InspectList((IEnumerable)innerEnumerable, innerJsonArray);
+                        resultJsonObject[key] = JsonElement.CreateString((string)value);
+                    }
+                    else if (TypeHelper.IsInt(propertyType))
+                    {
+                        resultJsonObject[key] = JsonElement.CreateNumber((int)value);
+                    }
+                    else if (TypeHelper.IsDouble(propertyType))
+                    {
+                        resultJsonObject[key] = JsonElement.CreateNumber((double)value);
+                    }
+                    else if (TypeHelper.IsBool(propertyType))
+                    {
+                        resultJsonObject[key] = JsonElement.CreateBoolean((bool)value);
+                    }
+                    else if (TypeHelper.IsDateTime(propertyType) || TypeHelper.IsEnum(propertyType))
+                    {
+                        resultJsonObject[key] = JsonElement.CreateString(value.ToString());
+                    }
+                    else if (TypeHelper.IsNullable(propertyType))
+                    {
+                        var innerPropertyType = Nullable.GetUnderlyingType(propertyType);
+                        if (TypeHelper.IsInt(innerPropertyType))
+                        {
+                            resultJsonObject[key] = JsonElement.CreateNumber((int)value);
+                        }
+                        else if (TypeHelper.IsDouble(innerPropertyType))
+                        {
+                            resultJsonObject[key] = JsonElement.CreateNumber((double)value);
+                        }
+                        else if (TypeHelper.IsBool(innerPropertyType))
+                        {
+                            resultJsonObject[key] = JsonElement.CreateBoolean((bool)value);
+                        }
+                        else if (TypeHelper.IsDateTime(innerPropertyType) || TypeHelper.IsEnum(innerPropertyType))
+                        {
+                            resultJsonObject[key] = JsonElement.CreateString(value.ToString());
+                        }
+                    }
+                    else if (TypeHelper.IsEnumerable(propertyType))
+                    {
+                        var innerJsonArray = new JsonElementArray();
+                        InspectList((IEnumerable)value, innerJsonArray);
                         resultJsonObject[key] = innerJsonArray;
                     }
-                }
-                else if (IsObject(propertyType))
-                {
-                    JsonElementObject innerJsonObject = new JsonElementObject();
-                    var innerObj = (object)property.GetValue(obj);
-                    if (innerObj != null)
+                    else if (TypeHelper.IsObject(propertyType))
                     {
-                        InspectObject(innerObj, innerJsonObject);
+                        var innerJsonObject = new JsonElementObject();
+                        InspectObject(value, innerJsonObject);
                         resultJsonObject[key] = innerJsonObject;
                     }
                 }
@@ -664,25 +709,51 @@ namespace Json
 
         // receive an object
         // return a string
-        public static string Stringify(object obj)
+        public static string Stringify(object obj, bool indented = false)
         {
+            if (obj == null) return "null";
+
             var objType = obj.GetType();
-            if (IsEnumerable(objType))
+
+            if (TypeHelper.IsBaseType(objType))
             {
-                JsonElementArray result = new JsonElementArray();
+                if (TypeHelper.IsString(objType) || TypeHelper.IsDateTime(objType) || TypeHelper.IsEnum(objType))
+                {
+                    return obj.ToString();
+                }
+                else if (TypeHelper.IsInt(objType) || TypeHelper.IsDouble(objType))
+                {
+                    var result = obj.ToString().Replace(',', '.');
+                    return result;
+                }
+                else if (TypeHelper.IsBool(objType))
+                {
+                    return obj.ToString().ToLower();
+                }
+            }
+            else if (TypeHelper.IsEnumerable(objType))
+            {
+                var result = new JsonElementArray();
                 InspectList((IEnumerable)obj, result);
 
-                var json = result.Stringify();
+                var json = result.Stringify(indented);
                 return json;
             }
             else
             {
-                JsonElementObject result = new JsonElementObject();
+                var result = new JsonElementObject();
                 InspectObject(obj, result);
 
-                var json = result.Stringify();
+                var json = result.Stringify(indented);
                 return json;
             }
+            return default(string);
+        }
+
+        public static void ClearCaches()
+        {
+            parsedJsonCache.Clear();
+            typesCache.Clear();
         }
     }
 }

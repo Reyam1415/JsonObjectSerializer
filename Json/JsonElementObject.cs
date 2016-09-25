@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
 namespace Json
 {
 
@@ -11,43 +14,101 @@ namespace Json
 
         public static IJsonParser JsonParser = new JsonParser();
 
-        public string Stringify()
+        public string Stringify(bool indented = false)
         {
-            string result = "{";
+            if (!indented)
+            {
+                using (var writer = new StringWriter())
+                {
+                    writer.Write("{");
 
+                    bool firstElement = true;
+                    foreach (var jsonElement in this)
+                    {
+                        if (!firstElement) writer.Write(",");
+                        if (jsonElement.Value.ElementType == JsonElementType.String)
+                        {
+                            writer.Write("\"" + jsonElement.Key + "\":\"" + ((JsonElementString)jsonElement.Value).Value + "\"");
+                        }
+                        else if (jsonElement.Value.ElementType == JsonElementType.Boolean)
+                        {
+                            writer.Write("\"" + jsonElement.Key + "\":" + ((JsonElementBool)jsonElement.Value).Value.ToString().ToLower());
+                        }
+                        else if (jsonElement.Value.ElementType == JsonElementType.Number)
+                        {
+                            string value = ((JsonElementNumber)jsonElement.Value).Value.ToString();
+                            value = value.Replace(',', '.');
+                            writer.Write("\"" + jsonElement.Key + "\":" + value);
+                        }
+                        else if (jsonElement.Value.ElementType == JsonElementType.Object)
+                        {
+                            var json = ((JsonElementObject)jsonElement.Value).Stringify();
+
+                            writer.Write("\"" + jsonElement.Key + "\":" + json);
+                        }
+                        else if (jsonElement.Value.ElementType == JsonElementType.Array)
+                        {
+                            var json = ((JsonElementArray)jsonElement.Value).Stringify();
+                            writer.Write("\"" + jsonElement.Key + "\":" + json);
+                        }
+                        firstElement = false;
+                    }
+                    writer.Write("}");
+                    return writer.ToString();
+                }
+            }
+            else return StringifyIndented();
+        }
+
+        private static void AppendTabs(StringBuilder writer, int count)
+        {
+            for (int i = 0; i < count; i++) writer.Append("   ");
+        }
+
+        internal string StringifyIndented(int level = 1)
+        {
+            var writer = new StringBuilder();
+
+            writer.Append("{");
             bool firstElement = true;
             foreach (var jsonElement in this)
             {
-                if (!firstElement) result += ",";
+                if (!firstElement) writer.Append(",\r");
+                else writer.Append("\r");
+
+                AppendTabs(writer, level);
+
                 if (jsonElement.Value.ElementType == JsonElementType.String)
                 {
-                    result += "\"" + jsonElement.Key + "\":\"" + ((JsonElementString)jsonElement.Value).Value + "\"";
+                    writer.Append("\"" + jsonElement.Key + "\": \"" + ((JsonElementString)jsonElement.Value).Value + "\"");
                 }
                 else if (jsonElement.Value.ElementType == JsonElementType.Boolean)
                 {
-                    result += "\"" + jsonElement.Key + "\":" + ((JsonElementBool)jsonElement.Value).Value.ToString().ToLower();
+                    writer.Append("\"" + jsonElement.Key + "\": " + ((JsonElementBool)jsonElement.Value).Value.ToString().ToLower());
                 }
                 else if (jsonElement.Value.ElementType == JsonElementType.Number)
                 {
                     string value = ((JsonElementNumber)jsonElement.Value).Value.ToString();
                     value = value.Replace(',', '.');
-                    result += "\"" + jsonElement.Key + "\":" + value;
+                    writer.Append("\"" + jsonElement.Key + "\": " + value);
                 }
                 else if (jsonElement.Value.ElementType == JsonElementType.Object)
                 {
-                    var json = ((JsonElementObject)jsonElement.Value).Stringify();
+                    var json = ((JsonElementObject)jsonElement.Value).StringifyIndented(level + 1);
 
-                    result += "\"" + jsonElement.Key + "\":" + json;
+                    writer.Append("\"" + jsonElement.Key + "\": " + json);
                 }
                 else if (jsonElement.Value.ElementType == JsonElementType.Array)
                 {
-                    var json = ((JsonElementArray)jsonElement.Value).Stringify();
-                    result += "\"" + jsonElement.Key + "\":" + json;
+                    var json = ((JsonElementArray)jsonElement.Value).StringifyIndented(level + 1);
+                    writer.Append("\"" + jsonElement.Key + "\": " + json);
                 }
                 firstElement = false;
             }
-            result += "}";
-            return result;
+            writer.Append(Environment.NewLine);
+            AppendTabs(writer, level - 1);
+            writer.Append("}");
+            return writer.ToString();         
         }
 
         public static bool TryParse(string json, out JsonElementObject rootJsonObject)
@@ -59,8 +120,10 @@ namespace Json
                 rootJsonObject = (JsonElementObject)result;
                 return true;
             }
-            catch (Exception)
-            { }
+            catch (Exception ex)
+            {
+                var x = 10;
+            }
             rootJsonObject = null;
             return false;
         }
