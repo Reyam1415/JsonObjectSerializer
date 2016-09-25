@@ -31,7 +31,7 @@ A list / array
 var json = JsonObjectSerializer.Stringify(items);
 ```
 
-### Indented
+### Format Json (indented)
 
 ```cs
 var json = JsonObjectSerializer.Stringify(item, true);
