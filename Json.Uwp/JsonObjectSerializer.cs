@@ -11,61 +11,16 @@ namespace Json
     {
         public static bool IsBaseType(Type type)
         {
-            return IsString(type) || IsDateTime(type) || IsInt(type) || IsDouble(type) || IsBool(type) || IsEnum(type) || IsNullable(type);
+            return type == typeof(string) || type == typeof(DateTime) || type == typeof(int) || type == typeof(double) || type == typeof(bool) || IsEnum(type) || IsNullable(type);
         }
         public static bool IsEnumerable(Type type)
         {
             return typeof(IEnumerable).IsAssignableFrom(type);
         }
 
-        public static bool IsString(Type type)
-        {
-            return type == typeof(string);
-        }
-
-        public static bool IsNumber(Type type)
-        {
-            return type == typeof(int) || type == typeof(double);
-        }
-
-        public static bool IsInt(Type type)
-        {
-            return type == typeof(int);
-        }
-
-        public static bool IsDouble(Type type)
-        {
-            return type == typeof(double);
-        }
-
-        public static bool IsBool(Type type)
-        {
-            return type == typeof(bool);
-        }
-
-        public static bool IsDateTime(Type type)
-        {
-            return type == typeof(DateTime);
-        }
-
-        public static bool IsObject(Type type)
-        {
-            return typeof(object).IsAssignableFrom(type);
-        }
-
-        public static bool IsArray(Type type)
-        {
-            return type.IsArray;
-        }
-
         public static bool IsGenericType(Type type)
         {
             return type.GetTypeInfo().IsGenericType;
-        }
-
-        public static bool IsDictionary(Type type)
-        {
-            return type == typeof(Dictionary<string, object>);
         }
 
         public static bool IsEnum(Type type)
@@ -164,12 +119,12 @@ namespace Json
                     // json
                     var valueResult = ((JsonElementString)jsonElement).Value;
                     // object
-                    if (TypeHelper.IsString(singleItemType))
+                    if (singleItemType == typeof(string))
                     {
                         resultArray.SetValue(valueResult, index);
                         index++;
                     }
-                    else if (TypeHelper.IsDateTime(singleItemType))
+                    else if (singleItemType == typeof(DateTime))
                     {
                         resultArray.SetValue(DateTime.Parse(valueResult), index);
                         index++;
@@ -180,7 +135,7 @@ namespace Json
                     // json 
                     var valueResult = ((JsonElementNumber)jsonElement).Value;
                     // object
-                    if (TypeHelper.IsInt(singleItemType)) resultArray.SetValue((int)valueResult, index);
+                    if (singleItemType == typeof(int)) resultArray.SetValue((int)valueResult, index);
                     else resultArray.SetValue(valueResult, index);
                     index++;
                 }
@@ -214,7 +169,7 @@ namespace Json
                     // json 
                     var jsonArray = (JsonElementArray)jsonElement;
                     // object
-                    if (TypeHelper.IsArray(singleItemType))
+                    if (singleItemType.IsArray)
                     {
                         var innerSingleItemType = singleItemType.GetTypeInfo().GetElementType();
                         if (innerSingleItemType != null)
@@ -295,11 +250,11 @@ namespace Json
                     // json
                     var valueResult = ((JsonElementString)jsonElement).Value;
                     // object
-                    if (TypeHelper.IsString(singleItemType))
+                    if (singleItemType == typeof(string))
                     {
                         resultList.Add(valueResult);
                     }
-                    else if (TypeHelper.IsDateTime(singleItemType))
+                    else if (singleItemType == typeof(DateTime))
                     {
                         resultList.Add(DateTime.Parse(valueResult));
                     }
@@ -309,7 +264,7 @@ namespace Json
                     // json
                     var valueResult = ((JsonElementNumber)jsonElement).Value;
                     // object
-                    if (TypeHelper.IsInt(singleItemType)) resultList.Add((int)valueResult);
+                    if (singleItemType == typeof(int)) resultList.Add((int)valueResult);
                     else resultList.Add(valueResult);
                 }
                 else if (jsonElementType == JsonElementType.Boolean)
@@ -349,18 +304,18 @@ namespace Json
                         }
                         else
                         {
-                            if (TypeHelper.IsString(propertyType))
+                            if (propertyType == typeof(string))
                             {
                                 property.SetValue(resultObject, valueResult);
                             }
-                            else if (TypeHelper.IsDateTime(propertyType))
+                            else if (propertyType == typeof(DateTime))
                             {
                                 property.SetValue(resultObject, DateTime.Parse(valueResult));
                             }
                             else if (TypeHelper.IsNullable(propertyType))
                             {
                                 var innerPropertyType = Nullable.GetUnderlyingType(propertyType);
-                                if (TypeHelper.IsDateTime(innerPropertyType))
+                                if (innerPropertyType == typeof(DateTime))
                                 {
                                     property.SetValue(resultObject, DateTime.Parse(valueResult));
                                 }
@@ -372,22 +327,22 @@ namespace Json
                         // json
                         var valueResult = ((JsonElementNumber)sourceJsonObject[key]).Value;
                         // object 
-                        if (TypeHelper.IsInt(propertyType))
+                        if (propertyType == typeof(int))
                         {
                             property.SetValue(resultObject, (int)valueResult);
                         }
-                        else if (TypeHelper.IsDouble(propertyType))
+                        else if (propertyType == typeof(double))
                         {
                             property.SetValue(resultObject, valueResult);
                         }
                         else if (TypeHelper.IsNullable(propertyType))
                         {
                             var innerPropertyType = Nullable.GetUnderlyingType(propertyType);
-                            if (TypeHelper.IsInt(innerPropertyType))
+                            if (innerPropertyType == typeof(int))
                             {
                                 property.SetValue(resultObject, (int)valueResult);
                             }
-                            else if (TypeHelper.IsDouble(innerPropertyType))
+                            else if (innerPropertyType == typeof(double))
                             {
                                 property.SetValue(resultObject, valueResult);
                             }
@@ -406,7 +361,7 @@ namespace Json
                         var innerJsonArray = ((JsonElementArray)sourceJsonObject[key]);
                         // object property, get by name
                         // Array ? or generic list
-                        if (TypeHelper.IsArray(propertyType))
+                        if (propertyType.IsArray)
                         {
                             var singleItemType = propertyType.GetTypeInfo().GetElementType();
                             if (singleItemType != null)
@@ -435,14 +390,14 @@ namespace Json
                         var innerJsonObject = ((JsonElementObject)sourceJsonObject[key]);
 
                         // create anonymous dictionary string, object ?
-                        if (TypeHelper.IsDictionary(propertyType)) // dynamic
+                        if (propertyType == typeof(Dictionary<string, object>)) // dynamic
                         {
                             // source : jsonObject, target : dictionary<string,object>
                             var innerDictionary = new Dictionary<string, object>();
                             ParseJsonObjectToDictionary(innerJsonObject, innerDictionary);
                             property.SetValue(resultObject, innerDictionary);
                         }
-                        else if (TypeHelper.IsObject(propertyType))
+                        else
                         {
                             var innerObject = Activator.CreateInstance(propertyType);
                             if (innerObject != null)
@@ -505,7 +460,7 @@ namespace Json
             {
                 if (TypeHelper.IsBaseType(objType))
                 {
-                    if (TypeHelper.IsString(objType))
+                    if (objType == typeof(string))
                     {
                         return (T)(object)json;
                     }
@@ -513,20 +468,20 @@ namespace Json
                     {
                         return (T)(object)Enum.Parse(objType, json);
                     }
-                    if (TypeHelper.IsDateTime(objType))
+                    if (objType == typeof(DateTime))
                     {
                         return (T)(object)DateTime.Parse(json);
                     }
-                    else if (TypeHelper.IsInt(objType))
+                    else if (objType == typeof(int))
                     {
                         return (T)(object)int.Parse(json);
                     }
-                    else if (TypeHelper.IsDouble(objType))
+                    else if (objType == typeof(double))
                     {
                         var value = json.Replace('.', ',');
                         return (T)(object)double.Parse(value);
                     }
-                    else if (TypeHelper.IsBool(objType))
+                    else if (objType == typeof(bool))
                     {
                         return (T)(object)bool.Parse(json);
                     }
@@ -535,20 +490,20 @@ namespace Json
                         if (json == "null") return (T)(object)null;
 
                         var innerPropertyType = Nullable.GetUnderlyingType(objType);
-                        if (TypeHelper.IsDateTime(innerPropertyType))
+                        if (innerPropertyType == typeof(DateTime))
                         {
                             return (T)(object)DateTime.Parse(json);
                         }
-                        else if (TypeHelper.IsInt(innerPropertyType))
+                        else if (innerPropertyType == typeof(int))
                         {
                             return (T)(object)int.Parse(json);
                         }
-                        else if (TypeHelper.IsDouble(innerPropertyType))
+                        else if (innerPropertyType == typeof(double))
                         {
                             var value = json.Replace('.', ',');
                             return (T)(object)double.Parse(value);
                         }
-                        else if (TypeHelper.IsBool(innerPropertyType))
+                        else if (innerPropertyType == typeof(bool))
                         {
                             return (T)(object)bool.Parse(json);
                         }
@@ -559,7 +514,7 @@ namespace Json
                     JsonElementArray rootJsonArray = null;
                     if (JsonElementArray.TryParse(json, out rootJsonArray))
                     {
-                        if (TypeHelper.IsArray(objType))
+                        if (objType.IsArray)
                         {
                             var singleItemType = typeof(T).GetTypeInfo().GetElementType();
                             var resultArray = Array.CreateInstance(singleItemType, rootJsonArray.Count);
@@ -604,23 +559,23 @@ namespace Json
             foreach (var item in list)
             {
                 var itemType = item.GetType();
-                if (TypeHelper.IsString(itemType))
+                if (itemType == typeof(string))
                 {
                     resultJsonArray.Add(JsonElement.CreateString((string)item));
                 }
-                else if (TypeHelper.IsInt(itemType))
+                else if (itemType == typeof(int))
                 {
                     resultJsonArray.Add(JsonElement.CreateNumber((int)item));
                 }
-                else if (TypeHelper.IsDouble(itemType))
+                else if (itemType == typeof(double))
                 {
                     resultJsonArray.Add(JsonElement.CreateNumber((double)item));
                 }
-                else if (TypeHelper.IsBool(itemType))
+                else if (itemType == typeof(bool))
                 {
                     resultJsonArray.Add(JsonElement.CreateBoolean((bool)item));
                 }
-                else if (TypeHelper.IsDateTime(itemType))
+                else if (itemType == typeof(DateTime))
                 {
                     resultJsonArray.Add(JsonElement.CreateString(item.ToString()));
                 }
@@ -630,7 +585,7 @@ namespace Json
                     InspectList((IEnumerable)item, jsonArray);
                     resultJsonArray.Add(jsonArray);
                 }
-                else if (TypeHelper.IsObject(itemType))
+                else
                 {
                     JsonElementObject innerObject = new JsonElementObject();
                     InspectObject(item, innerObject);
@@ -651,42 +606,42 @@ namespace Json
                 var value = property.GetValue(obj);
                 if (value != null)
                 {
-                    if (TypeHelper.IsString(propertyType))
+                    if (propertyType == typeof(string))
                     {
                         resultJsonObject[key] = JsonElement.CreateString((string)value);
                     }
-                    else if (TypeHelper.IsInt(propertyType))
+                    else if (propertyType == typeof(int))
                     {
                         resultJsonObject[key] = JsonElement.CreateNumber((int)value);
                     }
-                    else if (TypeHelper.IsDouble(propertyType))
+                    else if (propertyType == typeof(double))
                     {
                         resultJsonObject[key] = JsonElement.CreateNumber((double)value);
                     }
-                    else if (TypeHelper.IsBool(propertyType))
+                    else if (propertyType == typeof(bool))
                     {
                         resultJsonObject[key] = JsonElement.CreateBoolean((bool)value);
                     }
-                    else if (TypeHelper.IsDateTime(propertyType) || TypeHelper.IsEnum(propertyType))
+                    else if (propertyType == typeof(DateTime) || TypeHelper.IsEnum(propertyType))
                     {
                         resultJsonObject[key] = JsonElement.CreateString(value.ToString());
                     }
                     else if (TypeHelper.IsNullable(propertyType))
                     {
                         var innerPropertyType = Nullable.GetUnderlyingType(propertyType);
-                        if (TypeHelper.IsInt(innerPropertyType))
+                        if (innerPropertyType == typeof(int))
                         {
                             resultJsonObject[key] = JsonElement.CreateNumber((int)value);
                         }
-                        else if (TypeHelper.IsDouble(innerPropertyType))
+                        else if (innerPropertyType == typeof(double))
                         {
                             resultJsonObject[key] = JsonElement.CreateNumber((double)value);
                         }
-                        else if (TypeHelper.IsBool(innerPropertyType))
+                        else if (innerPropertyType == typeof(bool))
                         {
                             resultJsonObject[key] = JsonElement.CreateBoolean((bool)value);
                         }
-                        else if (TypeHelper.IsDateTime(innerPropertyType) || TypeHelper.IsEnum(innerPropertyType))
+                        else if (innerPropertyType == typeof(DateTime) || TypeHelper.IsEnum(innerPropertyType))
                         {
                             resultJsonObject[key] = JsonElement.CreateString(value.ToString());
                         }
@@ -697,7 +652,7 @@ namespace Json
                         InspectList((IEnumerable)value, innerJsonArray);
                         resultJsonObject[key] = innerJsonArray;
                     }
-                    else if (TypeHelper.IsObject(propertyType))
+                    else
                     {
                         var innerJsonObject = new JsonElementObject();
                         InspectObject(value, innerJsonObject);
@@ -717,16 +672,16 @@ namespace Json
 
             if (TypeHelper.IsBaseType(objType))
             {
-                if (TypeHelper.IsString(objType) || TypeHelper.IsDateTime(objType) || TypeHelper.IsEnum(objType))
+                if (objType == typeof(string) || objType == typeof(DateTime) || TypeHelper.IsEnum(objType))
                 {
                     return obj.ToString();
                 }
-                else if (TypeHelper.IsInt(objType) || TypeHelper.IsDouble(objType))
+                else if (objType == typeof(int) || objType == typeof(double))
                 {
                     var result = obj.ToString().Replace(',', '.');
                     return result;
                 }
-                else if (TypeHelper.IsBool(objType))
+                else if (objType == typeof(bool))
                 {
                     return obj.ToString().ToLower();
                 }

@@ -7,67 +7,27 @@ namespace Json
 
     public class JsonParser : IJsonParser
     {
-        private const char ObjectOpenDelimiter = '{';
-        private const char ObjectCloseDelimiter = '}';
-        private const char ArrayOpenDelimiter = '[';
-        private const char ArrayCloseDelimiter = ']';
-        private const char StringDelimiter = '"';
-        private const char KeyValueDelimiter = ':';
-        private const char CommaDelimiter = ',';
-        private const char StringDelimiterCanceler = '\\';
-        private const string NumberPattern = "^([0-9]+(?:.[0-9]+)?)$";
-        private const string BoolPattern = "^(true|false)$"; // i
-
-        private bool IsObjectOpenDelimiter(char c)
-        {
-            return c == ObjectOpenDelimiter;
-        }
-        private bool IsObjectCloseDelimiter(char c)
-        {
-            return c == ObjectCloseDelimiter;
-        }
-        private bool IsArrayOpenDelimiter(char c)
-        {
-            return c == ArrayOpenDelimiter;
-        }
-        private bool IsArrayCloseDelimiter(char c)
-        {
-            return c == ArrayCloseDelimiter;
-        }
-        private bool IsStringDelimiter(char c)
-        {
-            return c == StringDelimiter;
-        }
-        private bool IsKeyValueDelimiter(char c)
-        {
-            return c == KeyValueDelimiter;
-        }
-        private bool IsCommaDelimiter(char c)
-        {
-            return c == CommaDelimiter;
-        }
-        private bool IsStringDelimiterCanceler(char c)
-        {
-            return c == StringDelimiterCanceler;
-        }
         private bool IsNumberValue(string value)
         {
-            return new Regex(NumberPattern).IsMatch(value);
+            var tested = value.Replace(".", ",");
+            double result;
+            return double.TryParse(tested, out result);
         }
         private bool IsBoolValue(string value)
         {
-            return new Regex(BoolPattern).IsMatch(value);
+            bool result;
+            return bool.TryParse(value, out result);
         }
 
         private JsonElement CreateElement(string value, bool isStringElement)
         {
             value = value.Trim();
-            if (IsNumberValue(value) && !isStringElement)
+            if (!isStringElement && IsNumberValue(value))
             {
                 value = value.Replace(".", ",");
                 return JsonElement.CreateNumber(Convert.ToDouble(value));
             }
-            else if (IsBoolValue(value) && !isStringElement)
+            else if (!isStringElement && IsBoolValue(value))
             {
                 return JsonElement.CreateBoolean(Convert.ToBoolean(value));
             }
@@ -90,7 +50,16 @@ namespace Json
             for (int i = index; i < json.Length; i++)
             {
                 var currentChar = json[i];
-                if (IsStringDelimiter(currentChar)) // "
+                if (currentChar == '\n' || currentChar == '\r' || currentChar == '\t')
+                { }
+                else if (currentChar == ' ')
+                {
+                    if (isStringOpen)
+                    {
+                        valueWriter.Append(currentChar);
+                    }
+                }
+                else if (currentChar == '"') // "
                 {
                     // "
                     // "key" or "value"
@@ -101,14 +70,14 @@ namespace Json
                     }
 
                 }
-                else if (IsCommaDelimiter(currentChar)) // ,
+                else if (currentChar == ',') // ,
                 {
                     if (!isStringOpen)
                     {
                         var value = valueWriter.ToString();
-                        if (!string.IsNullOrEmpty(value))
+                        if (!string.IsNullOrWhiteSpace(value))
                         {
-                            result.Add(CreateElement(value,isStringElement));
+                            result.Add(CreateElement(value, isStringElement));
                         }
                         valueWriter.Clear();
                         isStringElement = false;
@@ -118,7 +87,7 @@ namespace Json
                         valueWriter.Append(currentChar);
                     }
                 }
-                else if (IsObjectOpenDelimiter(currentChar)) // {
+                else if (currentChar == '{') // {
                 {
                     if (!isStringOpen)
                     {
@@ -136,7 +105,7 @@ namespace Json
                         valueWriter.Append(currentChar);
                     }
                 }
-                else if (IsArrayOpenDelimiter(currentChar)) // [
+                else if (currentChar == '[') // [
                 {
                     if (!isStringOpen)
                     {
@@ -155,15 +124,15 @@ namespace Json
                         valueWriter.Append(currentChar);
                     }
                 }
-                else if (IsArrayCloseDelimiter(currentChar)) // ]
+                else if (currentChar == ']') // ]
                 {
                     if (!isStringOpen)
                     {
                         // assign last value
                         var value = valueWriter.ToString();
-                        if (!string.IsNullOrEmpty(value))
+                        if (!string.IsNullOrWhiteSpace(value))
                         {
-                            result.Add(CreateElement(value,isStringElement));
+                            result.Add(CreateElement(value, isStringElement));
                             result.EndIndex = i;
                         }
 
@@ -188,6 +157,7 @@ namespace Json
             result.EndIndex = json.Length;
             return result;
         }
+
 
         //{
         //"id":10,
@@ -215,7 +185,16 @@ namespace Json
             for (int i = index; i < json.Length; i++)
             {
                 var currentChar = json[i];
-                if (IsStringDelimiter(currentChar)) // "
+                if (currentChar == '\n' || currentChar == '\r' || currentChar == '\t')
+                { }
+                else if (currentChar == ' ')
+                {
+                    if (isValue && isStringOpen)
+                    {
+                        valueWriter.Append(currentChar);
+                    }
+                }
+                else if (currentChar == '"') // "
                 {
                     // "
                     // "key":"
@@ -234,7 +213,7 @@ namespace Json
                         if (isStringElement) isValue = false;
                     }
                 }
-                else if (IsKeyValueDelimiter(currentChar)) // :
+                else if (currentChar == ':') // :
                 {
                     if (!isStringOpen)
                     {
@@ -246,7 +225,7 @@ namespace Json
                         valueWriter.Append(currentChar);
                     }
                 }
-                else if (IsArrayOpenDelimiter(currentChar)) // [
+                else if (currentChar == '[') // [
                 {
                     if (!isStringOpen)
                     {
@@ -268,7 +247,29 @@ namespace Json
                         valueWriter.Append(currentChar);
                     }
                 }
-                else if (IsObjectOpenDelimiter(currentChar)) // {
+                // delimiter of json elements if not in a string
+                else if (currentChar == ',') // ,
+                {
+                    if (!isStringOpen)
+                    {
+                        var key = keyWriter.ToString();
+                        var value = valueWriter.ToString();
+                        if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
+                        {
+                            result[key] = CreateElement(value, isStringElement);
+                        }
+
+                        keyWriter.Clear();
+                        valueWriter.Clear();
+                        isValue = false;
+                        isStringElement = false;
+                    }
+                    else
+                    {
+                        valueWriter.Append(currentChar);
+                    }
+                }
+                else if (currentChar == '{') // {
                 {
                     if (!isStringOpen)
                     {
@@ -291,29 +292,7 @@ namespace Json
                         valueWriter.Append(currentChar);
                     }
                 }
-                // delimiter of json elements if not in a string
-                else if (IsCommaDelimiter(currentChar)) // ,
-                {
-                    if (!isStringOpen)
-                    {
-                        var key = keyWriter.ToString();
-                        var value = valueWriter.ToString();
-                        if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
-                        {
-                            result[key] = CreateElement(value,isStringElement);
-                        }
-
-                        keyWriter.Clear();
-                        valueWriter.Clear();
-                        isValue = false;
-                        isStringElement = false;
-                    }
-                    else
-                    {
-                        valueWriter.Append(currentChar);
-                    }
-                }
-                else if (IsObjectCloseDelimiter(currentChar)) // }
+                else if (currentChar == '}') // }
                 {
                     if (!isStringOpen)
                     {
@@ -322,7 +301,7 @@ namespace Json
                         var value = valueWriter.ToString();
                         if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
                         {
-                            result[key] = CreateElement(value,isStringElement);
+                            result[key] = CreateElement(value, isStringElement);
                             result.EndIndex = i;
                         }
 
@@ -338,7 +317,7 @@ namespace Json
                         valueWriter.Append(currentChar);
                     }
                 }
-                else if (IsArrayCloseDelimiter(currentChar)) // ]
+                else if (currentChar == ']') // ]
                 {
                     if (!isStringOpen)
                     {
@@ -347,7 +326,7 @@ namespace Json
                         var value = valueWriter.ToString();
                         if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
                         {
-                            result[key] = CreateElement(value,isStringElement);
+                            result[key] = CreateElement(value, isStringElement);
                             result.EndIndex = i;
                         }
 
@@ -365,13 +344,10 @@ namespace Json
                 }
                 else
                 {
-                    if (isKey)
+                    if (currentChar != '\r' && currentChar != '\n' && currentChar != '\t')
                     {
-                        keyWriter.Append(currentChar);
-                    }
-                    else if (isValue)
-                    {
-                        valueWriter.Append(currentChar);
+                        if (isKey) keyWriter.Append(currentChar);
+                        else if (isValue) valueWriter.Append(currentChar);
                     }
                 }
             }

@@ -12,44 +12,6 @@ namespace JsonTests
     public class JsonObjectSerializerTests
     {
         [TestMethod]
-        public void Should_Parse()
-        {
-            var item = new SimpleItem
-            {
-                //MyInt = 10,
-                //MyDouble = 5.5,
-                //MyString = "my value string",
-                //MyBool = true,
-                MyStrings = new List<string> { "a", "b", "c" },
-                Sub = new SubItem
-                {
-                    SubItemInt = 50,
-                    SubItemString = "sub item value"
-                },
-                Others = new List<OtherItem>
-                {
-                    new OtherItem {OtherInt=100,OtherName="other 1" },
-                    new OtherItem {OtherInt=200,OtherName="other 2" }
-                }
-            };
-
-            var json = JsonObjectSerializer.Stringify(item);
-            var result = JsonObjectSerializer.Parse<SimpleItem>(json);
-            
-         }
-
-        public class SimpleItem
-        {
-            //public int MyInt { get; set; }
-            //public double MyDouble { get; set; }
-            //public string MyString { get; set; }
-            //public bool MyBool { get; set; }
-            public List<string> MyStrings { get; set; }
-            public List<OtherItem> Others { get; set; }
-            public SubItem Sub { get; set; }
-        }
-
-        [TestMethod]
         public void Should_Stringify_Simples_Types()
         {
             string myString = "my value";
