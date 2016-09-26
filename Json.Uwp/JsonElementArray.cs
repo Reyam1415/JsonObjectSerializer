@@ -8,7 +8,6 @@ namespace Json
     public class JsonElementArray : List<IJsonElement>, IJsonElement
     {
         public JsonElementType ElementType { get { return JsonElementType.Array; } }
-        internal int StartIndex;
         internal int EndIndex;
 
         public static IJsonParser JsonParser = new JsonParser();
@@ -29,7 +28,7 @@ namespace Json
                         {
                             writer.Write("\"" + ((JsonElementString)jsonElement).Value.ToString() + "\"");
                         }
-                        else if (jsonElement.ElementType == JsonElementType.Boolean)
+                        else if (jsonElement.ElementType == JsonElementType.Bool)
                         {
                             writer.Write(((JsonElementBool)jsonElement).Value.ToString().ToLower());
                         }
@@ -78,7 +77,7 @@ namespace Json
                 {
                     writer.Append("\"" + ((JsonElementString)jsonElement).Value.ToString() + "\"");
                 }
-                else if (jsonElement.ElementType == JsonElementType.Boolean)
+                else if (jsonElement.ElementType == JsonElementType.Bool)
                 {
                     writer.Append(((JsonElementBool)jsonElement).Value.ToString().ToLower());
                 }
@@ -112,12 +111,13 @@ namespace Json
                 rootJsonArray = (JsonElementArray)result;
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             { }
 
             rootJsonArray = null;
             return false;
         }
+
     }
 
 }

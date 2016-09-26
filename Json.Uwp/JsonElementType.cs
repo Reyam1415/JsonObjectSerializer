@@ -4,7 +4,7 @@
     {
         String,
         Number,
-        Boolean,
+        Bool,
         Object,
         Array
     }

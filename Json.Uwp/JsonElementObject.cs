@@ -9,7 +9,6 @@ namespace Json
     public class JsonElementObject : Dictionary<string, IJsonElement>, IJsonElement
     {
         public JsonElementType ElementType { get { return JsonElementType.Object; } }
-        internal int StartIndex;
         internal int EndIndex;
 
         public static IJsonParser JsonParser = new JsonParser();
@@ -30,7 +29,7 @@ namespace Json
                         {
                             writer.Write("\"" + jsonElement.Key + "\":\"" + ((JsonElementString)jsonElement.Value).Value + "\"");
                         }
-                        else if (jsonElement.Value.ElementType == JsonElementType.Boolean)
+                        else if (jsonElement.Value.ElementType == JsonElementType.Bool)
                         {
                             writer.Write("\"" + jsonElement.Key + "\":" + ((JsonElementBool)jsonElement.Value).Value.ToString().ToLower());
                         }
@@ -82,7 +81,7 @@ namespace Json
                 {
                     writer.Append("\"" + jsonElement.Key + "\": \"" + ((JsonElementString)jsonElement.Value).Value + "\"");
                 }
-                else if (jsonElement.Value.ElementType == JsonElementType.Boolean)
+                else if (jsonElement.Value.ElementType == JsonElementType.Bool)
                 {
                     writer.Append("\"" + jsonElement.Key + "\": " + ((JsonElementBool)jsonElement.Value).Value.ToString().ToLower());
                 }
@@ -120,13 +119,12 @@ namespace Json
                 rootJsonObject = (JsonElementObject)result;
                 return true;
             }
-            catch (Exception ex)
-            {
-                var x = 10;
-            }
+            catch (Exception)
+            { }
             rootJsonObject = null;
             return false;
         }
+
     }
 
 }

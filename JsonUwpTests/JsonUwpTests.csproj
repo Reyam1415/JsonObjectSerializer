@@ -90,6 +90,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!--A reference to the entire .Net Framework and Windows SDK are automatically included-->
+    <Content Include="breakpoints.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="project.json" />
     <SDKReference Include="MSTestFramework.Universal, Version=$(UnitTestPlatformVersion)" />
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />

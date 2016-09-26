@@ -3,12 +3,59 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System.Collections.Generic;
 using Json;
 using System.Linq;
+using System.Threading.Tasks;
+using System.IO;
+using Windows.Storage;
 
 namespace JsonUwpTests
 {
     [TestClass]
     public class JsonObjectSerializerUwpTests
     {
+        [TestMethod]
+        public void Should_Stringify_Simples_Types()
+        {
+            string myString = "my value";
+            bool myBool = true;
+            int myInt = 10;
+            double myDouble = 5.5;
+            DateTime myDate = new DateTime(2016, 09, 25, 12, 32, 12);
+            int? myNullable = null;
+            int? myNullableNotNull = 100;
+
+            var myStringJson = JsonObjectSerializer.Stringify(myString);
+            var myBoolJson = JsonObjectSerializer.Stringify(myBool);
+            var myIntJson = JsonObjectSerializer.Stringify(myInt);
+            var myDoubleJson = JsonObjectSerializer.Stringify(myDouble);
+            var myDateJson = JsonObjectSerializer.Stringify(myDate);
+            var myNullableJson = JsonObjectSerializer.Stringify(myNullable);
+            var myNullableNotNullJson = JsonObjectSerializer.Stringify(myNullableNotNull);
+
+            Assert.AreEqual(myStringJson, "my value");
+            Assert.AreEqual(myBoolJson, "true");
+            Assert.AreEqual(myIntJson, "10");
+            Assert.AreEqual(myDoubleJson, "5.5");
+            Assert.AreEqual(myDateJson, "25/09/2016 12:32:12");
+            Assert.AreEqual(myNullableJson, "null");
+            Assert.AreEqual(myNullableNotNullJson, "100");
+
+            var resultMyString = JsonObjectSerializer.Parse<string>(myStringJson);
+            var resultMyBool = JsonObjectSerializer.Parse<bool>(myBoolJson);
+            var resultMyInt = JsonObjectSerializer.Parse<int>(myIntJson);
+            var resultMyDouble = JsonObjectSerializer.Parse<double>(myDoubleJson);
+            var resultMyDate = JsonObjectSerializer.Parse<DateTime>(myDateJson);
+            var resultMyNullable = JsonObjectSerializer.Parse<int?>(myNullableJson);
+            var resultMyNullableNotNull = JsonObjectSerializer.Parse<int?>(myNullableNotNullJson);
+
+            Assert.AreEqual(resultMyString, "my value");
+            Assert.AreEqual(resultMyBool, true);
+            Assert.AreEqual(resultMyDouble, 5.5);
+            Assert.AreEqual(resultMyDate, myDate);
+            Assert.AreEqual(resultMyInt, 10);
+            Assert.AreEqual(resultMyNullable, null);
+            Assert.AreEqual(resultMyNullableNotNull, 100);
+        }
+
         [TestMethod]
         public void Should_Stringify_And_Parse_An_Array()
         {
@@ -121,6 +168,75 @@ namespace JsonUwpTests
             Assert.AreEqual(result.Others[1].OtherInt, 200);
             Assert.AreEqual(result.Others[1].OtherName, "other 2");
         }
+
+
+        [TestMethod]
+        public void Should_Stringify_Indented_Object()
+        {
+            var item = new Item
+            {
+                MyInt = 10,
+                MyDouble = 5.5,
+                MyString = "my value string",
+                MyBool = true,
+                Sub = new SubItem
+                {
+                    SubItemInt = 50,
+                    SubItemString = "sub item value"
+                },
+                MyStrings = new List<string> { "a", "b", "c" },
+                Others = new List<OtherItem>
+                {
+                    new OtherItem {OtherInt=100,OtherName="other 1" },
+                    new OtherItem {OtherInt=200,OtherName="other 2" }
+                }
+            };
+
+            var json = JsonObjectSerializer.Stringify(item, true);
+
+            var items = new List<Item>
+            {
+                new Item
+                {
+                    MyInt = 10,
+                    MyDouble = 5.5,
+                    MyString = "my value string",
+                    MyBool = true,
+                    Sub = new SubItem
+                    {
+                        SubItemInt = 50,
+                        SubItemString = "sub item value"
+                    },
+                    MyStrings = new List<string> { "a", "b", "c" },
+                    Others = new List<OtherItem>
+                    {
+                        new OtherItem {OtherInt=100,OtherName="other 1" },
+                        new OtherItem {OtherInt=200,OtherName="other 2" }
+                    }
+                },
+                  new Item
+                {
+                    MyInt = 20,
+                    MyDouble = 11.5,
+                    MyString = "my value string 2",
+                    MyBool = false,
+                    Sub = new SubItem
+                    {
+                        SubItemInt = 70,
+                        SubItemString = "sub item value 2"
+                    },
+                    MyStrings = new List<string> { "x", "y", "z" },
+                    Others = new List<OtherItem>
+                    {
+                        new OtherItem {OtherInt=100,OtherName="other a" },
+                        new OtherItem {OtherInt=200,OtherName="other b" }
+                    }
+                }
+            };
+
+            var json2 = JsonObjectSerializer.Stringify(items, true);
+        }
+
 
         [TestMethod]
         public void Showld_Serialize_Deserialize_Lists()
@@ -269,7 +385,6 @@ namespace JsonUwpTests
             public string k { get; set; }
         }
 
-
         [TestMethod]
         public void Showld_Serialize_Deserialize_Object_With_Enum()
         {
@@ -286,7 +401,7 @@ namespace JsonUwpTests
             Assert.AreEqual(result.MyString, "My string value");
             Assert.AreEqual(result.MyEnumValue, MyEnum.EnumValue2);
         }
-        
+
         public class ItemWithEnum
         {
             public string MyString { get; set; }
@@ -346,6 +461,92 @@ namespace JsonUwpTests
         }
 
         [TestMethod]
+        public void Should_Preserve_String_Whites_Spaces()
+        {
+            string emptyString = "    ";
+            var item = new ItemWithWhiteSpaces { MyString = "   " };
+            var strings = new List<string> { "  ", "       " };
+            var items = new List<ItemWithWhiteSpaces>
+            {
+                new ItemWithWhiteSpaces { MyString = "   " },
+                new ItemWithWhiteSpaces { MyString = "   " }
+            };
+            var preserved = new ItemWithWhiteSpaces { MyString = "  value  " };
+
+            var emptyJson = JsonObjectSerializer.Stringify(emptyString);
+            var itemJson = JsonObjectSerializer.Stringify(item);
+            var stringsJson = JsonObjectSerializer.Stringify(strings);
+            var itemsJson = JsonObjectSerializer.Stringify(items);
+            var preservedJson = JsonObjectSerializer.Stringify(preserved);
+
+            var emptyResult = JsonObjectSerializer.Parse<string>(emptyJson);
+            var itemResult = JsonObjectSerializer.Parse<ItemWithWhiteSpaces>(itemJson);
+            var stringsResult = JsonObjectSerializer.Parse<List<string>>(stringsJson);
+            var itemsResult = JsonObjectSerializer.Parse<List<ItemWithWhiteSpaces>>(itemsJson);
+            var preservedResult = JsonObjectSerializer.Parse<ItemWithWhiteSpaces>(preservedJson);
+
+
+            Assert.AreEqual(emptyResult, "    ");
+            Assert.AreEqual(stringsResult[0], "  ");
+            Assert.AreEqual(stringsResult[1], "       ");
+            Assert.AreEqual(itemsResult[0].MyString, "   ");
+            Assert.AreEqual(itemsResult[1].MyString, "   ");
+            Assert.AreEqual(itemResult.MyString, "   ");
+            Assert.AreEqual(preservedResult.MyString, "  value  ");
+        }
+
+        public class ItemWithWhiteSpaces
+        {
+            public string MyString { get; set; }
+        }
+
+        protected async Task<string> ReadFileFromApplicationAsync(string configFile)
+        {
+            var uri = new Uri(string.Format("ms-appx:///{0}", configFile));
+            try
+            {
+                var file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                var randomStream = await file.OpenReadAsync();
+
+                using (var reader = new StreamReader(randomStream.AsStreamForRead()))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                throw new ArgumentException($"Config file '{uri}' does not found");
+            }
+        }
+
+
+        [TestMethod]
+        public async Task Should_Parse_To_Dictionary()
+        {
+            var json = await ReadFileFromApplicationAsync("breakpoints.json");
+
+            var result = JsonObjectSerializer.Parse<BreakpointContainer>(json);
+
+            Assert.IsTrue(result.breakpoints.Count() > 0);
+            Assert.AreEqual(result.breakpoints[1].minwidth, 600);
+            Assert.AreEqual(result.breakpoints[1].properties["margin"], "80, 40");
+            Assert.AreEqual(result.breakpoints[1].properties["titleFontSize"], "24");
+            Assert.AreEqual(result.breakpoints[1].properties["titleForeground"], "darkorange");
+        }
+
+        public class BreakpointContainer
+        {
+            public Breakpoint[] breakpoints { get; set; }
+        }
+
+        public class Breakpoint
+        {
+            public int minwidth { get; set; }
+            public Dictionary<string, object> properties { get; set; }
+        }
+
+
+        [TestMethod]
         public void Should_Stringify_And_Parse_Doubles()
         {
             var items = new List<ItemWithDouble>();
@@ -365,39 +566,58 @@ namespace JsonUwpTests
             Assert.AreEqual(result[2].MyDouble, 9.42);
             Assert.AreEqual(result[3].MyDouble, 12.56);
         }
-        public class ItemWithDouble
-        {
-            public double MyDouble { get; set; }
-        }
 
         [TestMethod]
-        public void Should_Stringify_An_Object()
+        public void Should_Serialize_With_Nullables()
         {
-            var item = new Item
+            var item = new ItemWithNullables
             {
-                MyInt = 10,
-                MyDouble = 5.5,
-                MyString = "my value string",
-                MyBool = true,
-                Sub = new SubItem
-                {
-                    SubItemInt = 50,
-                    SubItemString = "sub item value"
-                },
-                MyStrings = new List<string> { "a", "b", "c" },
-                Others = new List<OtherItem>
-                {
-                    new OtherItem {OtherInt=100,OtherName="other 1" },
-                    new OtherItem {OtherInt=200,OtherName="other 2" }
-                }
-
+                MyInt = 10
+            };
+            var date = new DateTime(2016, 09, 25, 12, 32, 12);
+            var item2 = new ItemWithNullables
+            {
+                MyInt = 20,
+                MyIntNullable = 100,
+                MyBoolNullable = true,
+                MyDoubleNullable = 5.5,
+                MyDateNullable = date
             };
 
             var json = JsonObjectSerializer.Stringify(item);
-            var x = 10;
-        }
+            var result = JsonObjectSerializer.Parse<ItemWithNullables>(json);
+            Assert.AreEqual(json, "{\"MyInt\":10}");
+            Assert.AreEqual(result.MyInt, 10);
+            Assert.AreEqual(result.MyIntNullable, null);
+            Assert.AreEqual(result.MyDoubleNullable, null);
+            Assert.AreEqual(result.MyBoolNullable, null);
+            Assert.AreEqual(result.MyDateNullable, null);
 
+            var json2 = JsonObjectSerializer.Stringify(item2);
+            var result2 = JsonObjectSerializer.Parse<ItemWithNullables>(json2);
+            Assert.AreEqual(json2, "{\"MyInt\":20,\"MyIntNullable\":100,\"MyBoolNullable\":true,\"MyDoubleNullable\":5.5,\"MyDateNullable\":\"25/09/2016 12:32:12\"}");
+            Assert.AreEqual(result2.MyInt, 20);
+            Assert.AreEqual(result2.MyIntNullable, 100);
+            Assert.AreEqual(result2.MyDoubleNullable, 5.5);
+            Assert.AreEqual(result2.MyBoolNullable, true);
+            Assert.AreEqual(result2.MyDateNullable, date);
+        }
     }
+
+    public class ItemWithNullables
+    {
+        public int MyInt { get; set; }
+        public int? MyIntNullable { get; set; }
+        public bool? MyBoolNullable { get; set; }
+        public double? MyDoubleNullable { get; set; }
+        public DateTime? MyDateNullable { get; set; }
+    }
+
+    public class ItemWithDouble
+    {
+        public double MyDouble { get; set; }
+    }
+
 
     public class Item
     {
@@ -421,4 +641,5 @@ namespace JsonUwpTests
         public int SubItemInt { get; set; }
         public string SubItemString { get; set; }
     }
+
 }

@@ -191,7 +191,7 @@ namespace JsonTests
                 }
             };
 
-            var json = JsonObjectSerializer.Stringify(item,true);
+            var json = JsonObjectSerializer.Stringify(item, true);
 
             var items = new List<Item>
             {
@@ -233,7 +233,7 @@ namespace JsonTests
                 }
             };
 
-            var json2 = JsonObjectSerializer.Stringify(items,true);
+            var json2 = JsonObjectSerializer.Stringify(items, true);
         }
 
 
@@ -459,6 +459,45 @@ namespace JsonTests
             Assert.AreEqual(result2[1].Year, 2000);
         }
 
+        [TestMethod]
+        public void Should_Preserve_String_Whites_Spaces()
+        {
+            string emptyString = "    ";
+            var item = new ItemWithWhiteSpaces { MyString = "   " };
+            var strings = new List<string> { "  ", "       " };
+            var items = new List<ItemWithWhiteSpaces>
+            {
+                new ItemWithWhiteSpaces { MyString = "   " },
+                new ItemWithWhiteSpaces { MyString = "   " }
+            };
+            var preserved = new ItemWithWhiteSpaces { MyString = "  value  " };
+
+            var emptyJson = JsonObjectSerializer.Stringify(emptyString);
+            var itemJson = JsonObjectSerializer.Stringify(item);
+            var stringsJson = JsonObjectSerializer.Stringify(strings);
+            var itemsJson = JsonObjectSerializer.Stringify(items);
+            var preservedJson = JsonObjectSerializer.Stringify(preserved);
+
+            var emptyResult = JsonObjectSerializer.Parse<string>(emptyJson);
+            var itemResult = JsonObjectSerializer.Parse<ItemWithWhiteSpaces>(itemJson);
+            var stringsResult = JsonObjectSerializer.Parse<List<string>>(stringsJson);
+            var itemsResult = JsonObjectSerializer.Parse<List<ItemWithWhiteSpaces>>(itemsJson);
+            var preservedResult = JsonObjectSerializer.Parse<ItemWithWhiteSpaces>(preservedJson);
+
+
+            Assert.AreEqual(emptyResult, "    ");
+            Assert.AreEqual(stringsResult[0], "  ");
+            Assert.AreEqual(stringsResult[1], "       ");
+            Assert.AreEqual(itemsResult[0].MyString, "   ");
+            Assert.AreEqual(itemsResult[1].MyString, "   ");
+            Assert.AreEqual(itemResult.MyString, "   ");
+            Assert.AreEqual(preservedResult.MyString, "  value  ");
+        }
+
+        public class ItemWithWhiteSpaces
+        {
+            public string MyString { get; set; }
+        }
 
         protected async Task<string> ReadFileFromApplicationAsync(string configFile)
         {
@@ -475,12 +514,13 @@ namespace JsonTests
             }
         }
 
+
         [TestMethod]
         public async Task Should_Parse_To_Dictionary()
         {
             var json = await ReadFileFromApplicationAsync("breakpoints.json");
 
-            var result =   JsonObjectSerializer.Parse<BreakpointContainer>(json);
+            var result = JsonObjectSerializer.Parse<BreakpointContainer>(json);
 
             Assert.IsTrue(result.breakpoints.Count() > 0);
             Assert.AreEqual(result.breakpoints[1].minwidth, 600);

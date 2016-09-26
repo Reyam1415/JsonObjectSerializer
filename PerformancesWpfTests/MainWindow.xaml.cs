@@ -1,4 +1,5 @@
-﻿using Json;
+﻿using fastJSON;
+using Json;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -93,6 +94,31 @@ namespace PerformancesWpfTests
             else DataListView.ItemsSource = null;
         }
 
+        private void TestFastJsonParser()
+        {
+            var watcher = new Stopwatch();
+            var stringifyWatcher = new Stopwatch();
+            var parseWatcher = new Stopwatch();
+
+            var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
+
+            watcher.Start();
+
+            stringifyWatcher.Start();
+            var json = JSON.ToJSON(items);
+            stringifyWatcher.Stop();
+
+            parseWatcher.Start();
+            var result = JSON.ToObject<List<Item>>(json);
+            parseWatcher.Stop();
+
+            watcher.Stop();
+            ListView.Items.Add($"[FastJson] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
+            if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
+            else DataListView.ItemsSource = null;
+        }
+
+
         private void OnTestJsonObject(object sender, RoutedEventArgs e)
         {
             TestJsonObjectParser();
@@ -106,6 +132,11 @@ namespace PerformancesWpfTests
         private void OnTestJsonNet(object sender, RoutedEventArgs e)
         {
             TestJsonNetParser();
+        }
+
+        private void OnTestFastJson(object sender, RoutedEventArgs e)
+        {
+            TestFastJsonParser();
         }
     }
 

@@ -3,7 +3,6 @@ using System.Text;
 
 namespace Json
 {
-
     public class JsonParser : IJsonParser
     {
         private bool IsNumberValue(string value)
@@ -18,9 +17,8 @@ namespace Json
             return bool.TryParse(value, out result);
         }
 
-        private JsonElement CreateElement(string value, bool isStringElement)
+        private IJsonElement CreateElement(string value, bool isStringElement)
         {
-            value = value.Trim();
             if (!isStringElement && IsNumberValue(value))
             {
                 value = value.Replace(".", ",");
@@ -28,7 +26,7 @@ namespace Json
             }
             else if (!isStringElement && IsBoolValue(value))
             {
-                return JsonElement.CreateBoolean(Convert.ToBoolean(value));
+                return JsonElement.CreateBool(Convert.ToBoolean(value));
             }
             else
             {
@@ -40,7 +38,6 @@ namespace Json
         public IJsonElement ParseArray(string json, int arrayLevel = 0, int index = 1)
         {
             var result = new JsonElementArray();
-            result.StartIndex = index - 1;
             bool isStringElement = false;
 
             var valueWriter = new StringBuilder();
@@ -74,7 +71,7 @@ namespace Json
                     if (!isStringOpen)
                     {
                         var value = valueWriter.ToString();
-                        if (!string.IsNullOrWhiteSpace(value))
+                        if (!string.IsNullOrEmpty(value))
                         {
                             result.Add(CreateElement(value, isStringElement));
                         }
@@ -129,7 +126,7 @@ namespace Json
                     {
                         // assign last value
                         var value = valueWriter.ToString();
-                        if (!string.IsNullOrWhiteSpace(value))
+                        if (!string.IsNullOrEmpty(value))
                         {
                             result.Add(CreateElement(value, isStringElement));
                             result.EndIndex = i;
@@ -156,7 +153,6 @@ namespace Json
             return result;
         }
 
-
         //{
         //"id":10,
         //"my key":"my value",
@@ -170,7 +166,6 @@ namespace Json
         public IJsonElement ParseObject(string json, int objectLevel = 0, int index = 1)
         {
             var result = new JsonElementObject();
-            result.StartIndex = index - 1;
 
             bool isKey = false;
             bool isStringOpen = false;
@@ -252,7 +247,7 @@ namespace Json
                     {
                         var key = keyWriter.ToString();
                         var value = valueWriter.ToString();
-                        if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
+                        if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
                         {
                             result[key] = CreateElement(value, isStringElement);
                         }

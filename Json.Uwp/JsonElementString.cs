@@ -1,13 +1,18 @@
 ﻿namespace Json
 {
-    public class JsonElementString : JsonElement
+    public class JsonElementString : IJsonElement
     {
-        public string Value { get; private set; }
-
         public JsonElementString(string value)
         {
             Value = value;
-            this.ElementType = JsonElementType.String;
         }
+
+        public JsonElementType ElementType
+        {
+            get { return JsonElementType.String; }
+        }
+
+        public string Value { get; private set; }
+
     }
 }

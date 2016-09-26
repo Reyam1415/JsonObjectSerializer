@@ -1,14 +1,18 @@
 ﻿namespace Json
 {
-    public class JsonElementBool : JsonElement
+    public class JsonElementBool : IJsonElement
     {
-        public bool Value { get; private set; }
-
         public JsonElementBool(bool value)
         {
             Value = value;
-            this.ElementType = JsonElementType.Boolean;
         }
+
+        public JsonElementType ElementType
+        {
+            get { return JsonElementType.Bool; }
+        }
+
+        public bool Value { get; private set; }
+
     }
-  
 }
