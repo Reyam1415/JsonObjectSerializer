@@ -165,7 +165,6 @@ var json = jsonArray.Stringify(true); // json indented with true
 Get json array from json
 
 ```cs
-// get Json array from json
 JsonElementArray resultJsonArray = null;
 if (JsonElementArray.TryParse(json, out resultJsonArray))
 {
