@@ -11,7 +11,7 @@ Support :
     - Uwp
     - etc.
 
-Note : "Windows.Data.Json" (JsonObject,...) is only available for Windows applications, so i create my own library for Wpf.
+Note : "Windows.Data.Json" (JsonObject,...) is only available for Windows store applications, so i create my own library.
 
 ### Installation with NuGet
 
