@@ -150,6 +150,7 @@ jsonObject["myBool"] = JsonElement.CreateBool(true);
 
 jsonArray.Add(jsonObject);
 
+var json = jsonArray.Stringify(true); // json indented with true
 /*
              [
                "my value",
@@ -159,7 +160,6 @@ jsonArray.Add(jsonObject);
                }
             ]
 */
-var json = jsonArray.Stringify(true); // json indented with true
 ```
 
 Get json array from json
