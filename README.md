@@ -1,6 +1,6 @@
 # JsonObjectSerializer
-Json Serializer for .NET projects (DOTNET)
 
+Json Serializer for .NET projects (DOTNET)
 
 Support :
 - string, number, boolean, date, enum, nullables, object, array
@@ -11,6 +11,7 @@ Support :
     - Uwp
     - etc.
 
+Note : "Windows.Data.Json" (JsonObject,...) is only available for Windows applications, so i create my own library for Wpf.
 
 ### Installation with NuGet
 
@@ -111,5 +112,63 @@ JsonObjectSerializer.UseJsonMapAttributes = true;
 
 var json = JsonObjectSerializer.Stringify(item);
 ```
+## Create dynamically Json object / array
 
+### Json object
 
+Create json object and generate json
+
+```cs
+var jsonObject = new JsonElementObject();
+jsonObject["myString"] = JsonElement.CreateString("my value");
+jsonObject["myInt"] = JsonElement.CreateNumber(10);
+jsonObject["myBool"] = JsonElement.CreateBool(true);
+
+            
+var json = jsonObject.Stringify(); // {"myString":"my value","myInt":10,"myBool":true}
+```
+Get json object from json
+
+```cs
+JsonElementObject resultJsonObject = null;
+if (JsonElementObject.TryParse(json, out resultJsonObject))
+{
+
+}
+```
+
+### Json array
+Create json array and generate json
+
+```cs
+var jsonArray = new JsonElementArray();
+jsonArray.Add(JsonElement.CreateString("my value"));
+jsonArray.Add(JsonElement.CreateNumber(10));
+
+var jsonObject = new JsonElementObject();
+jsonObject["myBool"] = JsonElement.CreateBool(true);
+
+jsonArray.Add(jsonObject);
+
+/*
+             [
+               "my value",
+               10,
+               {
+                  "myBool": true
+               }
+            ]
+*/
+var json = jsonArray.Stringify(true); // json indented with true
+```
+
+Get json array from json
+
+```cs
+// get Json array from json
+JsonElementArray resultJsonArray = null;
+if (JsonElementArray.TryParse(json, out resultJsonArray))
+{
+
+}
+```
