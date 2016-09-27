@@ -152,13 +152,13 @@ jsonArray.Add(jsonObject);
 
 var json = jsonArray.Stringify(true); // json indented with true
 /*
-             [
-               "my value",
-               10,
-               {
-                  "myBool": true
-               }
-            ]
+[
+   "my value",
+   10,
+   {
+      "myBool": true
+   }
+]
 */
 ```
 
