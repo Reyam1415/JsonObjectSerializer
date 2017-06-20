@@ -16,26 +16,26 @@ Note : "Windows.Data.Json" (JsonObject,...) is only available for Windows store 
 PM> Install-Package JsonObjectSerializer
 ```
 
-* JsonObjectSerializer with Static methods
-    * Stringify: Object => Json
-    * StringifyAndBeautify: Stringify + Format Json
-    * Parse: Json => Object
-    * ActiveCache (active by default)
+* **JsonObjectSerializer** with **Static methods**
+    * **Stringify**: Object => Json
+    * **StringifyAndBeautify**: Stringify + Format Json
+    * **Parse**: Json => Object
+    * **ActiveCache** (active by default)
 
-Services:
-* JsonObjectSerializerService (IJsonObjectSerializerService)
-* Beautifier (IBeautifier): used to Format / Indent Json
-* AssemblyInfoService (IAssemblyInfoService): used to resolve Object values and properties
+**Services**:
+* **JsonObjectSerializerService** (IJsonObjectSerializerService)
+* **Beautifier** (IBeautifier): used to Format / Indent Json
+* **AssemblyInfoService** (IAssemblyInfoService): used to resolve Object values and properties
 
-Json Values (IJsonElementValue) (named JsonElement... to avoid conflicts with Windows.Data.Json):
-* String (JsonElementString) => Value string, used for Guid and DateTime
-* Number (JsonElementNumber) => Value Number (int, double, Int64, etc.) or for Enum
-* Bool (JsonElementBool) => Value true | false
-* Nullable (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
-* Object (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
-* Array (JsonElementArray) => Values: List of Json Values
+**Json Values** (IJsonElementValue) (named JsonElement... to avoid conflicts with Windows.Data.Json):
+* **String** (JsonElementString) => Value string, used for Guid and DateTime
+* **Number** (JsonElementNumber) => Value Number (int, double, Int64, etc.) or for Enum
+* **Bool** (JsonElementBool) => Value true | false
+* **Nullable** (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
+* **Object** (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
+* **Array** (JsonElementArray) => Values: List of Json Values
 
-* JsonElementValue is helper to allow to create easilly Json Values:
+* **JsonElementValue** is _helper_ to allow to create easilly Json Values:
     * CreateString
     * CreateNumber
     * CreateBool
@@ -43,7 +43,7 @@ Json Values (IJsonElementValue) (named JsonElement... to avoid conflicts with Wi
     * CreateObject
     * CreateArray
 
-Examples:
+_Examples:_
 
 ```cs
 var jsonValue = JsonElementValue.CreateString("my string value");
@@ -68,16 +68,16 @@ var jsonValue = JsonElementValue.CreateArray()
     .AddObject(JsonElementValue.CreateObject().AddString("UserName", "Pat"));
 ```
 
-Converters:
-Json => Object:
-* JsonToJsonValue: allow to convert Json string to Json Value
-* JsonValueToObject: allow to convert Json Value to Object (with Reflection)
-* JsonToObject (used by JsonObjectSerializer) : use JsonToJsonValue and JsonValueToObject to convert Json to Object
+**Converters**:
+_Json => Object_:
+* **JsonToJsonValue**: allow to convert Json string to Json Value
+* **JsonValueToObject**: allow to convert Json Value to Object (with Reflection)
+* **JsonToObject** (used by JsonObjectSerializer) : use JsonToJsonValue and JsonValueToObject to convert Json to Object
 
-Object => Json:
-* ObjectToJsonValue: allow to convert Object to Json Value
-* JsonValueToJson: : allow to convert Json Value to Json
-* ObjectToJson (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
+_Object => Json_:
+* ***ObjectToJsonValue**: allow to convert Object to Json Value
+* **JsonValueToJson**: : allow to convert Json Value to Json
+* **ObjectToJson** (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
 
 Example
 ```cs
@@ -124,10 +124,10 @@ var users = JsonObjectSerializer.Parse<User[]>(json);
 
 ## Mapping
 
-* LowerCase Strategy for a Type (User for example) or for all types 
+* **LowerCase Strategy** for a **Type** (User for example) or for **all types**
     * Object => Json : property names are converted to lower case in Json
     * Json => Object:  Check property names in lower case to resolve json names
-* Or Mapping for each property of a Type
+* Or **Mapping** for each property of a Type
 
 Set Lower Strategy for all Types
 
@@ -156,7 +156,7 @@ var json = JsonObjectSerializer.Stringify(user, Mapping.GetContainer());
 var user = JsonObjectSerializer.Parse<User>(json, Mapping.GetContainer());
 ```
 
-Or Create a container (contains mappings for all types)
+Or **Create** a **container** (contains mappings for all types)
 ```cs
 var mappings = new MappingContainer();
 
