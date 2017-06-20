@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8DF477F8-9636-4086-BACB-234C02C1B006}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JsonLib.Wpf</RootNamespace>
+    <AssemblyName>JsonLib.Wpf</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cache\IJsonCacheService.cs" />
+    <Compile Include="Cache\JsonCacheItem.cs" />
+    <Compile Include="Cache\JsonCacheService.cs" />
+    <Compile Include="interfaces\IAssemblyInfoService.cs" />
+    <Compile Include="interfaces\IBeautifier.cs" />
+    <Compile Include="interfaces\IJsonObjectSerializerService.cs" />
+    <Compile Include="interfaces\IJsonToJsonValue.cs" />
+    <Compile Include="interfaces\IJsonToObject.cs" />
+    <Compile Include="interfaces\IJsonValueToJson.cs" />
+    <Compile Include="interfaces\IJsonValueToJsonService.cs" />
+    <Compile Include="interfaces\IJsonValueToObject.cs" />
+    <Compile Include="interfaces\IObjectToJson.cs" />
+    <Compile Include="interfaces\IObjectToJsonValue.cs" />
+    <Compile Include="JsonLibException.cs" />
+    <Compile Include="JsonObjectSerializer.cs" />
+    <Compile Include="JsonObjectSerializerService.cs" />
+    <Compile Include="JsonValues\IJsonElementValue.cs" />
+    <Compile Include="JsonValues\JsonElementArray.cs" />
+    <Compile Include="JsonValues\JsonElementBool.cs" />
+    <Compile Include="JsonValues\JsonElementNullable.cs" />
+    <Compile Include="JsonValues\JsonElementNumber.cs" />
+    <Compile Include="JsonValues\JsonElementObject.cs" />
+    <Compile Include="JsonValues\JsonElementString.cs" />
+    <Compile Include="JsonValues\JsonElementValue.cs" />
+    <Compile Include="JsonValues\JsonElementValueType.cs" />
+    <Compile Include="Mappings\Mapping.cs" />
+    <Compile Include="Mappings\MappingContainer.cs" />
+    <Compile Include="Mappings\PropertyMapping.cs" />
+    <Compile Include="Mappings\TypeMapping.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AssemblyInfoService.cs" />
+    <Compile Include="Services\Beautifier.cs" />
+    <Compile Include="Services\JsonValueToJsonService.cs" />
+    <Compile Include="ToJson\JsonValueToJson.cs" />
+    <Compile Include="ToJson\ObjectToJson.cs" />
+    <Compile Include="ToJson\ObjectToJsonValue.cs" />
+    <Compile Include="ToObject\JsonToJsonValue.cs" />
+    <Compile Include="ToObject\JsonToObject.cs" />
+    <Compile Include="ToObject\JsonValueToObject.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

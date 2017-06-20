@@ -1,0 +1,104 @@
+﻿<Window x:Class="JsonLibPerfTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JsonLibPerfTest"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel HorizontalAlignment="Left">
+            <StackPanel Orientation="Horizontal"  >
+                <TextBlock Text="Test count:"   Margin="12,6"/>
+                <TextBox x:Name="TestCountTextBox" Text="100"  Margin="0,6"></TextBox>
+                <CheckBox x:Name="CheckBox" IsChecked="False" Margin="12,6">Show data?</CheckBox>
+            </StackPanel>
+            <Button Click="OnTestJsonObject">Test with JsonObjectSerializer</Button>
+            <Button Click="OnTestDataContractJsonSerializer">Test with DataContractJsonSerializer</Button>
+            <Button Click="OnTestJsonNet">Test with Json.Net</Button>
+            <Button Click="OnStringifyAndBeautify" Margin="0,6">Stringify and Beautify</Button>
+        </StackPanel>
+        <ListView x:Name="ListView" Grid.Row="1"></ListView>
+        <ListView x:Name="DataListView" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.Row="2">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Black" BorderThickness="5" CornerRadius="10" Margin="4">
+                        <StackPanel Margin="12,6">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="MyGuid:" />
+                                <TextBlock Text="{Binding MyGuid}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="MyInt:" />
+                                <TextBlock Text="{Binding MyInt}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="MyDouble:" />
+                                <TextBlock Text="{Binding MyDouble}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="MyBool:" />
+                                <TextBlock Text="{Binding MyBool}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="My Enum:" />
+                                <TextBlock Text="{Binding MyEnum}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Date:" />
+                                <TextBlock Text="{Binding Date}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="MyString:" />
+                                <TextBlock Text="{Binding MyString}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="MyNullable:" />
+                                <TextBlock Text="{Binding MyNullable}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Sub Sub:" />
+                                <TextBlock Text="{Binding Sub.SubSub}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="My Strings:" />
+                                <ListView ItemsSource="{Binding MyStrings}" BorderBrush="Transparent" BorderThickness="0">
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                </ListView>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Others items:" />
+                                <ListView ItemsSource="{Binding Others}" BorderBrush="Transparent" BorderThickness="0">
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                </ListView>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Sub:" />
+                                <TextBlock Text="{Binding Sub}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
+    </Grid>
+</Window>

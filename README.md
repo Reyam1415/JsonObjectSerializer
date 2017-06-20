@@ -1,11 +1,8 @@
 # JsonObjectSerializer
 
-Json Serializer for .NET projects (DOTNET)
+> Json Serializer for .NET projects
 
 Support :
-- string, number, boolean, date, enum, nullables, object, array
-- recursive
-- Available for :
     - Wpf
     - Windows forms
     - Uwp
@@ -19,155 +16,165 @@ Note : "Windows.Data.Json" (JsonObject,...) is only available for Windows store 
 PM> Install-Package JsonObjectSerializer
 ```
 
-## Serialization (from object(s) to Json)
+* JsonObjectSerializer with Static methods
+    * Stringify: Object => Json
+    * StringifyAndBeautify: Stringify + Format Json
+    * Parse: Json => Object
+    * ActiveCache (active by default)
+
+Services:
+* JsonObjectSerializerService (IJsonObjectSerializerService)
+* Beautifier (IBeautifier): used to Format / Indent Json
+* AssemblyInfoService (IAssemblyInfoService): used to resolve Object values and properties
+
+Json Values (IJsonElementValue) (named JsonElement... to avoid conflicts with Windows.Data.Json):
+* String (JsonElementString) => Value string, used for Guid and DateTime
+* Number (JsonElementNumber) => Value Number (int, double, Int64, etc.) or for Enum
+* Bool (JsonElementBool) => Value true | false
+* Nullable (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
+* Object (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
+* Array (JsonElementArray) => Values: List of Json Values
+
+* JsonElementValue is helper to allow to create easilly Json Values:
+    * CreateString
+    * CreateNumber
+    * CreateBool
+    * CreateNullable
+    * CreateObject
+    * CreateArray
+
+Examples:
+
+```cs
+var jsonValue = JsonElementValue.CreateString("my string value");
+```
+
+With Object
+```cs
+var jsonValue = JsonElementValue
+    .CreateObject()
+    .AddNumber("Id",1)
+    .AddString("UserName","Marie")
+    .AddNullable("Age", null)
+    .AddString("Email", null)
+    .AddObject("Role", JsonElementValue.CreateObject().AddNumber("RoleId",2).AddString("Name","Adamin"))
+    .AddArray("Hobbies", JsonElementValue.CreateArray().AddString("Shopping").AddString("Cooking"));
+```
+
+With Array of Objects
+```cs
+var jsonValue = JsonElementValue.CreateArray()
+    .AddObject(JsonElementValue.CreateObject().AddString("UserName", "Marie"))
+    .AddObject(JsonElementValue.CreateObject().AddString("UserName", "Pat"));
+```
+
+Converters:
+Json => Object:
+* JsonToJsonValue: allow to convert Json string to Json Value
+* JsonValueToObject: allow to convert Json Value to Object (with Reflection)
+* JsonToObject (used by JsonObjectSerializer) : use JsonToJsonValue and JsonValueToObject to convert Json to Object
+
+Object => Json:
+* ObjectToJsonValue: allow to convert Object to Json Value
+* JsonValueToJson: : allow to convert Json Value to Json
+* ObjectToJson (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
+
+Example
+```cs
+ var user = new User
+        {
+            Id = 10,
+            UserName = "Marie"
+        };
+
+var service = new ObjectToJsonValue();
+var jsonValue = service.ToJsonObject(user);
+```
+
+## Stringify Object => Json
 
 An object
 
 ```cs
-var json = JsonObjectSerializer.Stringify(item);
+var json = JsonObjectSerializer.Stringify(user);
 ```
 
 A list / array
 ```cs
-var json = JsonObjectSerializer.Stringify(items);
+var json = JsonObjectSerializer.Stringify(users);
 ```
 
-### Format Json (indented)
+## Parse Json => Object
 
-```cs
-var json = JsonObjectSerializer.Stringify(item, true);
-```
-
-
-## Deserialization (from json string to object(s))
 An object
 
 ```cs
-var result = JsonObjectSerializer.Parse<Item>(json);
+var user = JsonObjectSerializer.Parse<User>(json);
 ```
 
-A list / array
+A list 
 ```cs
-var result = JsonObjectSerializer.Parse<List<Item>>(json);
+var users = JsonObjectSerializer.Parse<List<User>>(json);
 ```
-Or
+
+Or Array
 ```cs
-var result = JsonObjectSerializer.Parse<Item[]>(json);
+var users = JsonObjectSerializer.Parse<User[]>(json);
 ```
 
 ## Mapping
 
+* LowerCase Strategy for a Type (User for example) or for all types 
+    * Object => Json : property names are converted to lower case in Json
+    * Json => Object:  Check property names in lower case to resolve json names
+* Or Mapping for each property of a Type
 
-### Manual
+Set Lower Strategy for all Types
+
 ```cs
-JsonMapping.Default
-        .Add(typeof(Item), "MyInt", "my_int")
-        .Add(typeof(Item), "MyDouble", "my_double")
-        .Add(typeof(Item), "MyBool", "my_bool")
-        .Add(typeof(Item), "MyStrings", "my_strings")
-        .Add(typeof(Item), "Sub", "the_sub")
-        .Add(typeof(SubItem), "SubItemInt","the_sub_int");
-                
-// then stringify
+Mapping.SetLowerStrategyForAllTypes();
+```
+
+Set Lower Case for a Type
+```cs
+ Mapping.SetType<User>().SetToLowerCaseStrategy();
+ ```
+
+ Set The Mapping for a Type
+ ```cs
+Mapping.SetType<User>()
+        .SetProperty("Id", "id")
+        .SetProperty("UserName", "username")
+        .SetProperty("Age", "age")
+        .SetProperty("Email", "email");
+```
+
+Use the mapping 
+```cs
+var json = JsonObjectSerializer.Stringify(user, Mapping.GetContainer());
+
+var user = JsonObjectSerializer.Parse<User>(json, Mapping.GetContainer());
+```
+
+Or Create a container (contains mappings for all types)
+```cs
+var mappings = new MappingContainer();
+
+// obj => to json ... lower strategy
+mappings.SetType<User>()
+        .SetProperty("Id", "user_id")
+        .SetProperty("UserName", "user_username")
+        .SetProperty("Age", "user_age")
+        .SetProperty("Email", "user_email");
+
+mappings.SetType<Role>().SetToLowerCaseStrategy();
+```
+
+And use the container
+```cs
+var json = JsonObjectSerializer.Stringify(user, mappings);
+
+var user = JsonObjectSerializer.Parse<User>(json, mappings);
 ```
 
 
-### By Attribute
-
-Define mapping on properties
-
-```cs
-public class Item
-{
-    [JsonMap(JsonElementKey = "my_int")]
-    public int MyInt { get; set; }
-
-    [JsonMap(JsonElementKey = "my_double")]
-    public double MyDouble { get; set; }
-
-    // not modified
-    public string MyString { get; set; }
-
-    // etc.
-
-    [JsonMap(JsonElementKey = "my_strings")]
-    public List<string> MyStrings { get; set; }
-
-    [JsonMap(JsonElementKey = "the_sub")]
-    public SubItem Sub { get; set; }
-}
-public class SubItem
-{
-    [JsonMap(JsonElementKey = "the_sub_int")]
-    public int SubItemInt { get; set; }
-
-    public string SubItemString { get; set; }
-}
-```
-
-Important : set "UseJsonMapAttributes" to "true". By default, it's not active for best performances.
-
-```cs
-JsonObjectSerializer.UseJsonMapAttributes = true;
-
-var json = JsonObjectSerializer.Stringify(item);
-```
-## Create dynamically Json object / array
-
-### Json object
-
-Create json object and generate json
-
-```cs
-var jsonObject = new JsonElementObject();
-jsonObject["myString"] = JsonElement.CreateString("my value");
-jsonObject["myInt"] = JsonElement.CreateNumber(10);
-jsonObject["myBool"] = JsonElement.CreateBool(true);
-
-            
-var json = jsonObject.Stringify(); // {"myString":"my value","myInt":10,"myBool":true}
-```
-Get json object from json
-
-```cs
-JsonElementObject resultJsonObject = null;
-if (JsonElementObject.TryParse(json, out resultJsonObject))
-{
-
-}
-```
-
-### Json array
-Create json array and generate json
-
-```cs
-var jsonArray = new JsonElementArray();
-jsonArray.Add(JsonElement.CreateString("my value"));
-jsonArray.Add(JsonElement.CreateNumber(10));
-
-var jsonObject = new JsonElementObject();
-jsonObject["myBool"] = JsonElement.CreateBool(true);
-
-jsonArray.Add(jsonObject);
-
-var json = jsonArray.Stringify(true); // json indented with true
-/*
-[
-   "my value",
-   10,
-   {
-      "myBool": true
-   }
-]
-*/
-```
-
-Get json array from json
-
-```cs
-JsonElementArray resultJsonArray = null;
-if (JsonElementArray.TryParse(json, out resultJsonArray))
-{
-
-}
-```
