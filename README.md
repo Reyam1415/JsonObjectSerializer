@@ -34,7 +34,7 @@ PM> Install-Package JsonObjectSerializer
    * **Nullable** (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
    * **Object** (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
    * **Array** (JsonElementArray) => Values: List of Json Values
-   * **JsonElementValue** is _helper_ to allow to create easilly Json Values:
+   * **JsonElementValue** is _helper_ .Allow to create easilly Json Values:
        * _CreateString_
        * _CreateNumber_
        * _CreateBool_
@@ -68,6 +68,7 @@ var jsonValue = JsonElementValue.CreateArray()
 ```
 
 * **Converters**:
+
    _Json => Object_:
    * **JsonToJsonValue**: allow to convert Json string to Json Value
    * **JsonValueToObject**: allow to convert Json Value to Object (with Reflection)
