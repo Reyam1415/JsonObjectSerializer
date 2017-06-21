@@ -22,26 +22,25 @@ PM> Install-Package JsonObjectSerializer
     * **Parse**: Json => Object
     * **ActiveCache** (active by default)
 
-**Services**:
-* **JsonObjectSerializerService** (IJsonObjectSerializerService)
-* **Beautifier** (IBeautifier): used to Format / Indent Json
-* **AssemblyInfoService** (IAssemblyInfoService): used to resolve Object values and properties
+* **Services**:
+   * **JsonObjectSerializerService** (IJsonObjectSerializerService)
+   * **Beautifier** (IBeautifier): used to Format / Indent Json
+   * **AssemblyInfoService** (IAssemblyInfoService): used to resolve Object values and properties
 
-**Json Values** (IJsonElementValue) (named JsonElement... to avoid conflicts with Windows.Data.Json):
-* **String** (JsonElementString) => Value string, used for Guid and DateTime
-* **Number** (JsonElementNumber) => Value Number (int, double, Int64, etc.) or for Enum
-* **Bool** (JsonElementBool) => Value true | false
-* **Nullable** (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
-* **Object** (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
-* **Array** (JsonElementArray) => Values: List of Json Values
-
-* **JsonElementValue** is _helper_ to allow to create easilly Json Values:
-    * _CreateString_
-    * _CreateNumber_
-    * _CreateBool_
-    * _CreateNullable_
-    * _CreateObject_
-    * _CreateArray_
+* **Json Values** (IJsonElementValue) (named JsonElement... to avoid conflicts with Windows.Data.Json):
+   * **String** (JsonElementString) => Value string, used for Guid and DateTime
+   * **Number** (JsonElementNumber) => Value Number (int, double, Int64, etc.) or for Enum
+   * **Bool** (JsonElementBool) => Value true | false
+   * **Nullable** (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
+   * **Object** (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
+   * **Array** (JsonElementArray) => Values: List of Json Values
+   * **JsonElementValue** is _helper_ to allow to create easilly Json Values:
+       * _CreateString_
+       * _CreateNumber_
+       * _CreateBool_
+       * _CreateNullable_
+       * _CreateObject_
+       * _CreateArray_
 
 _Examples:_
 
@@ -68,16 +67,16 @@ var jsonValue = JsonElementValue.CreateArray()
     .AddObject(JsonElementValue.CreateObject().AddString("UserName", "Pat"));
 ```
 
-**Converters**:
-_Json => Object_:
-* **JsonToJsonValue**: allow to convert Json string to Json Value
-* **JsonValueToObject**: allow to convert Json Value to Object (with Reflection)
-* **JsonToObject** (used by JsonObjectSerializer) : use JsonToJsonValue and JsonValueToObject to convert Json to Object
+* **Converters**:
+   _Json => Object_:
+   * **JsonToJsonValue**: allow to convert Json string to Json Value
+   * **JsonValueToObject**: allow to convert Json Value to Object (with Reflection)
+   * **JsonToObject** (used by JsonObjectSerializer) : use JsonToJsonValue and JsonValueToObject to convert Json to Object
 
-_Object => Json_:
-* ***ObjectToJsonValue**: allow to convert Object to Json Value
-* **JsonValueToJson**: : allow to convert Json Value to Json
-* **ObjectToJson** (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
+   _Object => Json_:
+   * ***ObjectToJsonValue**: allow to convert Object to Json Value
+   * **JsonValueToJson**: : allow to convert Json Value to Json
+   * **ObjectToJson** (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
 
 _Example_:
 
