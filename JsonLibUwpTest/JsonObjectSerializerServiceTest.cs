@@ -4,9 +4,6 @@ using JsonLibTest.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonLibTest
 {
@@ -1673,18 +1670,18 @@ namespace JsonLibTest
 
         // cache
 
-        [TestMethod]
-        public void TestAddToCache()
-        {
-            var service = this.GetService();
+        //[TestMethod]
+        //public void TestAddToCache()
+        //{
+        //    var service = this.GetService();
 
-            Assert.IsTrue(service.CacheIsActive);
+        //    Assert.IsTrue(service.CacheIsActive);
 
-            string json = "\"my value\"";
+        //    string json = "\"my value\"";
 
-            service.Parse<string>(json);
+        //    service.Parse<string>(json);
 
-            Assert.IsTrue(service.CacheHas<string>(json));
-        }
+        //    Assert.IsTrue(service.CacheHas<string>(json));
+        //}
     }
 }

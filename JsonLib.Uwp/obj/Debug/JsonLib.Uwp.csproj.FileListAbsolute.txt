@@ -1,7 +1,6 @@
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\bin\Debug\JsonLib.Uwp.dll
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\bin\Debug\JsonLib.Uwp.pdb
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\bin\Debug\JsonLib.Uwp.pri
-c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\JsonLib.Uwp.csprojResolveAssemblyReference.cache
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\JsonLib.Uwp.dll
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\JsonLib.Uwp.pdb
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\priconfig.xml

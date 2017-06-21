@@ -18,6 +18,7 @@ namespace JsonLibTest
             return new JsonObjectSerializerService();
         }
 
+
         // stringify
 
         [TestMethod]
@@ -1673,18 +1674,18 @@ namespace JsonLibTest
 
         // cache
 
-        [TestMethod]
-        public void TestAddToCache()
-        {
-            var service = this.GetService();
+        //[TestMethod]
+        //public void TestAddToCache()
+        //{
+        //    var service = this.GetService();
 
-            Assert.IsTrue(service.CacheIsActive);
+        //    Assert.IsTrue(service.CacheIsActive);
 
-            string json = "\"my value\"";
+        //    string json = "\"my value\"";
 
-            service.Parse<string>(json);
+        //    service.Parse<string>(json);
 
-            Assert.IsTrue(service.CacheHas<string>(json));
-        }
+        //    Assert.IsTrue(service.CacheHas<string>(json));
+        //}
     }
 }

@@ -36,11 +36,6 @@ namespace JsonLib
             }
         }
 
-        public bool CacheHas<T>(string json)
-        {
-           return this.jsonCacheService.Has<T>(json);
-        }
-
         public string Stringify<T>(T value,MappingContainer mappings = null)
         {
             return this.objectToJson.ToJson<T>(value, mappings);

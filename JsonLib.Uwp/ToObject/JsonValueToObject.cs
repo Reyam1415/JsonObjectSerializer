@@ -174,7 +174,7 @@ namespace JsonLib
             throw new JsonLibException("Cannot resolve Value");
         }
 
-        public object ToObject(Type objType, JsonElementObject jsonObjectValue, MappingContainer mappings = null)
+        public object ToObject(Type objType, JsonElementObject jsonObject, MappingContainer mappings = null)
         {
             var instance = this.assemblyInfoService.CreateInstance(objType);
             var properties = this.assemblyInfoService.GetProperties(instance);
@@ -189,7 +189,7 @@ namespace JsonLib
                 mapping = mappings.Get(objType);
             }
 
-            foreach (var jsonValue in jsonObjectValue.Values)
+            foreach (var jsonValue in jsonObject.Values)
             {
                 var property = hasMappings ? this.FindProperty(properties, jsonValue.Key, allLower, mapping) 
                     : this.FindProperty(properties, jsonValue.Key);
@@ -203,13 +203,13 @@ namespace JsonLib
             return instance;
         }
 
-        public object ToList(Type type, JsonElementArray jsonArrayValue, MappingContainer mappings = null)
+        public object ToList(Type type, JsonElementArray jsonArray, MappingContainer mappings = null)
         {
             var singleItemType = type.GetGenericArguments()[0];
             var listType = typeof(List<>).MakeGenericType(singleItemType);
             var result = this.assemblyInfoService.CreateInstance(listType) as IList;
 
-            foreach (var jsonValue in jsonArrayValue.Values)
+            foreach (var jsonValue in jsonArray.Values)
             {
                 var value = this.ResolveValue(singleItemType, jsonValue, mappings);
                 result.Add(value);
@@ -217,13 +217,13 @@ namespace JsonLib
             return result;
         }
 
-        public object ToArray(Type type, JsonElementArray jsonArrayValue, MappingContainer mappings = null)
+        public object ToArray(Type type, JsonElementArray jsonArray, MappingContainer mappings = null)
         {
             var singleItemType = type.GetTypeInfo().GetElementType();
-            var result = Array.CreateInstance(singleItemType, jsonArrayValue.Values.Count);
+            var result = Array.CreateInstance(singleItemType, jsonArray.Values.Count);
             int index = 0;
 
-            foreach (var jsonValue in jsonArrayValue.Values)
+            foreach (var jsonValue in jsonArray.Values)
             {
                 var value = this.ResolveValue(singleItemType, jsonValue, mappings);
                 result.SetValue(value, index);
@@ -232,15 +232,15 @@ namespace JsonLib
             return result;
         }
 
-        public object ToEnumerable(Type type, JsonElementArray jsonArrayValue, MappingContainer mappings = null)
+        public object ToEnumerable(Type type, JsonElementArray jsonArray, MappingContainer mappings = null)
         {
             if (this.IsArray(type))
             {
-                return this.ToArray(type, jsonArrayValue, mappings);
+                return this.ToArray(type, jsonArray, mappings);
             }
             else if (this.IsGenericType(type))
             {
-               return this.ToList(type, jsonArrayValue, mappings);
+               return this.ToList(type, jsonArray, mappings);
             }
 
             return null;

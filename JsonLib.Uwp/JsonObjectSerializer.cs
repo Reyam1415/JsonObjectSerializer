@@ -18,11 +18,6 @@ namespace JsonLib
             serializationService.ActiveCache(value);
         }
 
-        public static bool CacheHas<T>(string json)
-        {
-           return serializationService.CacheHas<T>(json);
-        }
-
         public static string Stringify(object value, MappingContainer mappings = null)
         {
             return serializationService.Stringify(value, mappings);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
 
 namespace JsonLib
 {
@@ -10,14 +11,65 @@ namespace JsonLib
             return "\"" + key + "\"";
         }
 
+        public string FormatString(string value)
+        {
+            var result = new StringBuilder();
+
+            result.Append("\"");
+
+            char[] chars = value.ToCharArray();
+            for (int i = 0; i < chars.Length; i++)
+            {
+                char c = chars[i];
+                if (c == '"')
+                {
+                    result.Append("\\\"");
+                }
+                else if (c == '\\')
+                {
+                    result.Append("\\\\");
+                }
+                else if (c == '\b')
+                {
+                    result.Append("\\b");
+                }
+                else if (c == '\f')
+                {
+                    result.Append("\\f");
+                }
+                else if (c == '\n')
+                {
+                    result.Append("\\n");
+                }
+                else if (c == '\r')
+                {
+                    result.Append("\\r");
+                }
+                else if (c == '\t')
+                {
+                    result.Append("\\t");
+                }
+                else
+                {
+                    int codepoint = Convert.ToInt32(c);
+                    if ((codepoint >= 32) && (codepoint <= 126))
+                    {
+                        result.Append(c);
+                    }
+                    else
+                    {
+                        result.Append("\\u" + Convert.ToString(codepoint, 16).PadLeft(4, '0'));
+                    }
+                }
+            }
+
+            result.Append("\"");
+            return result.ToString();
+        }
+
         public string GetString(string value)
         {
-            // escape inner string
-            if (!string.IsNullOrEmpty(value))
-            {
-                value = value.Replace("\"", "\\\"");
-            }
-            return value == null ? "null" : "\"" + value + "\"";
+            return value == null ? "null" : this.FormatString(value);
         }
 
         public string GetString(string name, string value)
@@ -27,7 +79,7 @@ namespace JsonLib
 
         public string GetNumber(object value)
         {
-            return value.ToString().Replace(',', '.');
+            return Convert.ToString(value, CultureInfo.InvariantCulture); 
         }
 
         public string GetNumber(string name, object value)
