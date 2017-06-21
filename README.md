@@ -162,7 +162,6 @@ Or **Create** a **container** (contains mappings for all types)
 ```cs
 var mappings = new MappingContainer();
 
-// obj => to json ... lower strategy
 mappings.SetType<User>()
         .SetProperty("Id", "user_id")
         .SetProperty("UserName", "user_username")
