@@ -138,7 +138,7 @@ namespace JsonLibPerfTest
         {
 
             var result = new List<Item>();
-            for (int i = 1; i < count; i++)
+            for (int i = 1; i < count + 1; i++)
             {
                 var item = new Item
                 {
@@ -182,7 +182,7 @@ namespace JsonLibPerfTest
         //    var t = new Task<List<Item>>(() =>
         //    {
         //        var result = new List<Item>();
-        //        for (int i = 1; i < count; i++)
+        //        for (int i = 1; i < count + 1; i++)
         //        {
         //            var item = new Item
         //            {
