@@ -34,7 +34,7 @@ PM> Install-Package JsonObjectSerializer
    * **Nullable** (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
    * **Object** (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
    * **Array** (JsonElementArray) => Values: List of Json Values
-   * **JsonElementValue** is a _helper_ .Allow to create easilly Json Values:
+   * **JsonElementValue** is a _helper_ .Allow to create easily Json Values:
        * _CreateString_
        * _CreateNumber_
        * _CreateBool_
@@ -179,3 +179,15 @@ var user = JsonObjectSerializer.Parse<User>(json, mappings);
 ```
 
 
+# Pro / Cons
+
+Pro:
+* Not Have to define Known Types (DataContractJsonSerializer)
+* Easy to set Mapping
+* Easy To Use
+* Converters, services
+* Testable
+* Available for Uwp, Wpf, Windows Forms, Asp.Net, ...
+
+Cons:
+* Not the fastest
