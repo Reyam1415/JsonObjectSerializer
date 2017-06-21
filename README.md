@@ -150,7 +150,7 @@ Mapping.SetType<User>()
         .SetProperty("Email", "email");
 ```
 
-**Use** the **mapping** 
+**Use** the **Mapping** 
 
 ```cs
 var json = JsonObjectSerializer.Stringify(user, Mapping.GetContainer());
