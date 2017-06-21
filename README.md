@@ -56,7 +56,7 @@ var jsonValue = JsonElementValue
     .AddString("UserName","Marie")
     .AddNullable("Age", null)
     .AddString("Email", null)
-    .AddObject("Role", JsonElementValue.CreateObject().AddNumber("RoleId",2).AddString("Name","Adamin"))
+    .AddObject("Role", JsonElementValue.CreateObject().AddNumber("RoleId",2).AddString("Name","Admin"))
     .AddArray("Hobbies", JsonElementValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 ```
 
