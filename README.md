@@ -185,7 +185,7 @@ Pro:
 * _Not Have to define Known Types_ (_DataContractJsonSerializer_)
 * Easy To set **Mapping**
 * **Easy** To **Use** (_Parse_, _Stringify_)
-* Converters, services
+* **Converters**, **Services**
 * **Testable**
 * _Available for Uwp, Wpf, Windows Forms, Asp.Net, ..._
 
