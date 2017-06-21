@@ -36,12 +36,12 @@ PM> Install-Package JsonObjectSerializer
 * **Array** (JsonElementArray) => Values: List of Json Values
 
 * **JsonElementValue** is _helper_ to allow to create easilly Json Values:
-    * CreateString
-    * CreateNumber
-    * CreateBool
-    * CreateNullable
-    * CreateObject
-    * CreateArray
+    * _CreateString_
+    * _CreateNumber_
+    * _CreateBool_
+    * _CreateNullable_
+    * _CreateObject_
+    * _CreateArray_
 
 _Examples:_
 
@@ -79,7 +79,8 @@ _Object => Json_:
 * **JsonValueToJson**: : allow to convert Json Value to Json
 * **ObjectToJson** (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
 
-Example
+_Example_:
+
 ```cs
  var user = new User
         {
@@ -149,7 +150,8 @@ Mapping.SetType<User>()
         .SetProperty("Email", "email");
 ```
 
-Use the mapping 
+**Use** the **mapping** 
+
 ```cs
 var json = JsonObjectSerializer.Stringify(user, Mapping.GetContainer());
 
