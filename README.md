@@ -3,12 +3,12 @@
 > Json Serializer for .NET projects
 
 Support :
-* Wpf
-* Windows forms
-* Uwp
+* _Uwp_
+* _Wpf_
+* _Windows Forms_
 * etc.
 
-Note : "Windows.Data.Json" (JsonObject,...) is only available for Windows store applications, so i create my own library.
+_Note : "Windows.Data.Json" (JsonObject,...) is only available for Windows store applications, so i create my own library._
 
 ### Installation with NuGet
 
