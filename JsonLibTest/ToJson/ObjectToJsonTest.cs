@@ -1,5 +1,6 @@
 ﻿using JsonLib;
 using JsonLib.Mappings;
+using JsonLibTest.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -14,28 +15,116 @@ namespace JsonLibTest
             return new ObjectToJson();
         }
 
+        // string
+
         [TestMethod]
-        public void TestGetString()
+        public void TestString()
         {
             var service = this.GetService();
 
-            var result = service.ToJson("my value");
+            var result = service.ToJson("my string");
 
-            Assert.AreEqual("\"my value\"", result);
+            Assert.AreEqual("\"my string\"", result);
         }
 
         [TestMethod]
-        public void TestGetNumber()
+        public void TestString_EascapeInnerString()
         {
             var service = this.GetService();
 
-            var result = service.ToJson(10);
+            var result = service.ToJson("my \"escape\" string");
+
+            Assert.AreEqual("\"my \\\"escape\\\" string\"", result);
+        }
+
+        [TestMethod]
+        public void TestString_WithNull()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJson<string>(null);
+
+            Assert.AreEqual("null", result);
+        }
+
+        [TestMethod]
+        public void TestGuid()
+        {
+            var service = this.GetService();
+            var value = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("\"344ac1a2-9613-44d7-b64c-8d45b4585176\"", result);
+        }
+
+        [TestMethod]
+        public void TestDateTime()
+        {
+            var service = this.GetService();
+            var value = new DateTime(1990, 12, 12);
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("\"12/12/1990 00:00:00\"", result);
+        }
+
+        // number
+
+        [TestMethod]
+        public void TestNumber_WithInt()
+        {
+            // number int | double | enum value 
+            var service = this.GetService();
+
+            int value = 10;
+
+            var result = service.ToJson(value);
 
             Assert.AreEqual("10", result);
         }
 
         [TestMethod]
-        public void TestGetBool()
+        public void TestNumber_WithInt64()
+        {
+            // number int | double | enum value 
+            var service = this.GetService();
+
+            Int64 value = 10;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("10", result);
+        }
+
+        [TestMethod]
+        public void TestNumber_WithDouble()
+        {
+            // number int | double | enum value 
+            var service = this.GetService();
+
+            double value = 10.5;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("10.5", result);
+        }
+
+        [TestMethod]
+        public void TestNumber_WithEnum()
+        {
+            // number int | double | enum value 
+            var service = this.GetService();
+
+            AssemblyEnum value = AssemblyEnum.Other;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("1", result);
+        }
+
+        // bool
+
+        [TestMethod]
+        public void TestBool()
         {
             var service = this.GetService();
 
@@ -45,60 +134,204 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestGetNull()
+        public void TestBoolFalse()
         {
             var service = this.GetService();
 
-            var result = service.ToJson(null);
+            var result = service.ToJson(false);
+
+            Assert.AreEqual("false", result);
+        }
+
+        // nullable
+
+        [TestMethod]
+        public void TestNullable_WithInt()
+        {
+            var service = this.GetService();
+
+            int? value = 10;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("10", result);
+        }
+
+        [TestMethod]
+        public void TestNullable_WithIntNull()
+        {
+            var service = this.GetService();
+
+            int? value = null;
+
+            var result = service.ToJson(value);
 
             Assert.AreEqual("null", result);
         }
 
         [TestMethod]
-        public void TestGetObject()
+        public void TestNullable_WithGuid()
         {
             var service = this.GetService();
 
-            var user = new User
-            {
-                Id = 1,
-                UserName = "Marie",
-                Age = 20,
-                Email = "marie@domain.com"
-            };
+            Guid? value = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var result = service.ToJson(value);
 
-            var result = service.ToJson(user);
-
-            Assert.AreEqual("{\"Id\":1,\"UserName\":\"Marie\",\"Age\":20,\"Email\":\"marie@domain.com\"}", result);
+            Assert.AreEqual("\"344ac1a2-9613-44d7-b64c-8d45b4585176\"", result);
         }
 
         [TestMethod]
-        public void TestGetObject_WithNulls()
+        public void TestNullable_WithGuidNull()
+        {
+            var service = this.GetService();
+
+            Guid? value = null;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("null", result);
+        }
+
+        [TestMethod]
+        public void TestNullable_WithBool()
+        {
+            var service = this.GetService();
+
+            bool? value = true;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("true", result);
+        }
+
+        [TestMethod]
+        public void TestNullable_WithBoolNull()
+        {
+            var service = this.GetService();
+
+            bool? value = null;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("null", result);
+        }
+
+        [TestMethod]
+        public void TestNullable_WithDateTime()
+        {
+            var service = this.GetService();
+
+            DateTime? value = new DateTime(1990, 12, 12);
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("\"12/12/1990 00:00:00\"", result);
+        }
+
+        [TestMethod]
+        public void TestNullable_WithDateTimeNull()
+        {
+            var service = this.GetService();
+
+            DateTime? value = null;
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("null", result);
+        }
+
+
+
+        // to json object
+
+        [TestMethod]
+        public void TestObjectComplete()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+
+            var model = new AssemblyItem
+            {
+                MyGuid = g,
+                MyInt = 1,
+                MyDouble = 1.5,
+                MyString = "my value",
+                MyBool = true,
+                MyEnum = AssemblyEnum.Other,
+                MyDate = new DateTime(1990, 12, 12),
+                MyObj = new AssemblyInner { MyInnerString = "my \"inner\" value" },
+                MyList = new List<string> { "a", "b" },
+                MyArray = new string[] { "y", "z" }
+            };
+
+            var result = service.ToJson(model);
+
+            Assert.AreEqual("{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"MyInt\":1,\"MyDouble\":1.5,\"MyString\":\"my value\",\"MyBool\":true,\"MyNullable\":null,\"MyEnum\":1,\"MyDate\":\"12/12/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value\"},\"MyList\":[\"a\",\"b\"],\"MyArray\":[\"y\",\"z\"]}", result);
+        }
+
+        [TestMethod]
+        public void TestObject_WithNullablesNotNull()
+        {
+            // Json nullable => value object
+
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+
+            var model = new ItemNullable
+            {
+                MyGuid = g,
+                MyInt = 1,
+                MyDouble = 1.5,
+                MyBool = true,
+                MyEnum = AssemblyEnum.Other,
+                MyDate = new DateTime(1990, 12, 12)
+            };
+
+            var result = service.ToJson(model);
+
+            Assert.AreEqual("{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"MyInt\":1,\"MyDouble\":1.5,\"MyBool\":true,\"MyEnum\":1,\"MyDate\":\"12/12/1990 00:00:00\"}", result);
+
+        }
+
+        [TestMethod]
+        public void TestObject_WithNullablesNull()
+        {
+            var service = this.GetService();
+
+            var model = new ItemNullable();
+
+            var result = service.ToJson(model);
+
+            Assert.AreEqual("{\"MyGuid\":null,\"MyInt\":null,\"MyDouble\":null,\"MyBool\":null,\"MyEnum\":null,\"MyDate\":null}", result);
+        }
+
+        [TestMethod]
+        public void TestObject()
         {
             var service = this.GetService();
 
             var user = new User
             {
-                Id = 1,
+                Id = 10,
                 UserName = "Marie"
             };
 
             var result = service.ToJson(user);
 
-            Assert.AreEqual("{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null}", result);
+            Assert.AreEqual("{\"Id\":10,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null}", result);
         }
 
         [TestMethod]
-        public void TestGetObject_WithMappings()
+        public void TestObject_WithMapping()
         {
             var service = this.GetService();
 
             var user = new User
             {
-                Id = 1,
-                UserName = "Marie",
-                Age = 20,
-                Email = "marie@domain.com"
+                Id = 10,
+                UserName = "Marie"
             };
 
             var mappings = new MappingContainer();
@@ -109,21 +342,18 @@ namespace JsonLibTest
 
             var result = service.ToJson(user, mappings);
 
-            Assert.AreEqual("{\"map_id\":1,\"map_username\":\"Marie\",\"Age\":20,\"map_email\":\"marie@domain.com\"}", result);
+            Assert.AreEqual("{\"map_id\":10,\"map_username\":\"Marie\",\"Age\":null,\"map_email\":null}", result);
         }
 
-
         [TestMethod]
-        public void TestGetObject_WithLowerStrategy()
+        public void TestObject_WithLowerStrategy()
         {
             var service = this.GetService();
 
             var user = new User
             {
-                Id = 1,
-                UserName = "Marie",
-                Age = 20,
-                Email = "marie@domain.com"
+                Id = 10,
+                UserName = "Marie"
             };
 
             var mappings = new MappingContainer();
@@ -131,123 +361,13 @@ namespace JsonLibTest
 
             var result = service.ToJson(user, mappings);
 
-            Assert.AreEqual("{\"id\":1,\"username\":\"Marie\",\"age\":20,\"email\":\"marie@domain.com\"}", result);
+            Assert.AreEqual("{\"id\":10,\"username\":\"Marie\",\"age\":null,\"email\":null}", result);
         }
 
+        // array
 
         [TestMethod]
-        public void TestGetObject_WithInnerObject()
-        {
-            var service = this.GetService();
-
-            var user = new UserWithInner
-            {
-                Id = 1,
-                UserName = "Marie"
-            };
-            user.Role.RoleId = 10;
-            user.Role.Name = "Admin";
-            user.Role.Status = 100;
-
-            var result = service.ToJson(user);
-
-            Assert.AreEqual("{\"Id\":1,\"UserName\":\"Marie\",\"Role\":{\"RoleId\":10,\"Name\":\"Admin\",\"Status\":100}}", result);
-        }
-
-        [TestMethod]
-        public void TestGetObject_WithInnerObjectAndNull()
-        {
-            var service = this.GetService();
-
-            var user = new UserWithInner
-            {
-                Id = 1,
-                UserName = "Marie"
-            };
-            user.Role.RoleId = 10;
-
-            var result = service.ToJson(user);
-
-            Assert.AreEqual("{\"Id\":1,\"UserName\":\"Marie\",\"Role\":{\"RoleId\":10,\"Name\":null,\"Status\":null}}", result);
-        }
-
-        [TestMethod]
-        public void TestGetObject_WithInnerObjectAndList()
-        {
-            var service = this.GetService();
-
-            var user = new UserWithInnerAndList
-            {
-                Id = 1,
-                UserName = "Marie"
-            };
-            user.Role.RoleId = 10;
-            user.Role.Name = "Admin";
-            user.Role.Status = 100;
-            user.Strings = new List<string> { "a", "b" };
-
-            var result = service.ToJson(user);
-
-            Assert.AreEqual("{\"Id\":1,\"UserName\":\"Marie\",\"Role\":{\"RoleId\":10,\"Name\":\"Admin\",\"Status\":100},\"Strings\":[\"a\",\"b\"]}", result);
-        }
-
-        [TestMethod]
-        public void TestGetObject_WithInnerAndMappings()
-        {
-            var service = this.GetService();
-
-            var user = new UserWithInnerAndList
-            {
-                Id = 1,
-                UserName = "Marie"
-            };
-            user.Role.RoleId = 10;
-            user.Role.Name = "Admin";
-            user.Role.Status = 100;
-
-            user.Strings = new List<string> { "a", "b" };
-
-            var mappings = new MappingContainer();
-
-            mappings.SetType<UserWithInnerAndList>()
-                .SetProperty("Id", "map_id")
-                .SetProperty("UserName", "map_username")
-                .SetProperty("Role","map__role")
-                .SetProperty("Strings", "map__strings");
-
-            mappings.SetType<Role>()
-              .SetProperty("RoleId", "map__roleid");
-
-            var result = service.ToJson(user, mappings);
-
-            Assert.AreEqual("{\"map_id\":1,\"map_username\":\"Marie\",\"map__role\":{\"map__roleid\":10,\"Name\":\"Admin\",\"Status\":100},\"map__strings\":[\"a\",\"b\"]}", result);
-        }
-
-        [TestMethod]
-        public void TestGetObject_WithInnerAndLowerStrategy()
-        {
-            var service = this.GetService();
-
-            var user = new UserWithInnerAndList
-            {
-                Id = 1,
-                UserName = "Marie"
-            };
-            user.Role.RoleId = 10;
-            user.Role.Name = "Admin";
-            user.Role.Status = 100;
-            user.Strings = new List<string> { "a", "b" };
-
-            var mappings = new MappingContainer();
-            mappings.SetLowerStrategyForAllTypes();
-
-            var result = service.ToJson(user, mappings);
-
-            Assert.AreEqual("{\"id\":1,\"username\":\"Marie\",\"role\":{\"roleid\":10,\"name\":\"Admin\",\"status\":100},\"strings\":[\"a\",\"b\"]}", result);
-        }
-
-        [TestMethod]
-        public void TestGetArray()
+        public void TestArray()
         {
             var service = this.GetService();
 
@@ -259,7 +379,34 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestGetList()
+        public void TestArray_WithNumbers()
+        {
+            var service = this.GetService();
+
+            var array = new int[] { 1, 2 };
+
+
+            var result = service.ToJson(array);
+
+            Assert.AreEqual("[1,2]", result);
+        }
+
+        [TestMethod]
+        public void TestArray_WithDoubles()
+        {
+            var service = this.GetService();
+
+            var array = new double[] { 1.5, 2.5 };
+
+
+            var result = service.ToJson(array);
+
+            Assert.AreEqual("[1.5,2.5]", result);
+        }
+
+
+        [TestMethod]
+        public void TestList()
         {
             var service = this.GetService();
 
@@ -271,7 +418,7 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestGetListOfObjects()
+        public void TestListOfObjects()
         {
             var service = this.GetService();
 
@@ -287,7 +434,153 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestGetListOfObjects_WithMappings()
+        public void TestGetArray_OfObjects()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var g2 = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178");
+            var t = new DateTime(1990, 12, 12);
+            var t2 = new DateTime(1990, 10, 12);
+
+            var list = new List<AssemblyItem> {
+                new AssemblyItem
+                {
+                    MyGuid = g,
+                    MyInt = 1,
+                    MyDouble = 1.5,
+                    MyString = "my \"escape\" value",
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Other,
+                    MyDate = new DateTime(1990, 12, 12),
+                    MyObj = new AssemblyInner { MyInnerString = "my \"inner\" value 1" },
+                    MyList = new List<string> { "a1", "b1" },
+                    MyArray = new string[] { "y1", "z1" }
+                },
+                new AssemblyItem
+                {
+                    MyGuid = g2,
+                    MyInt = 2,
+                    MyDouble = 2.5,
+                    MyString = "my \"escape\"value 2",
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Default,
+                    MyDate = new DateTime(1990, 10, 12),
+                    MyObj = new AssemblyInner { MyInnerString = "my \"inner\" value 2" },
+                    MyList = new List<string> { "a2", "b2" },
+                    MyArray = new string[] { "y2", "z2" }
+                },
+            };
+
+
+            var result = service.ToJson(list);
+
+            Assert.AreEqual("[{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"MyInt\":1,\"MyDouble\":1.5,\"MyString\":\"my \\\"escape\\\" value\",\"MyBool\":true,\"MyNullable\":null,\"MyEnum\":1,\"MyDate\":\"12/12/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 1\"},\"MyList\":[\"a1\",\"b1\"],\"MyArray\":[\"y1\",\"z1\"]},{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"MyInt\":2,\"MyDouble\":2.5,\"MyString\":\"my \\\"escape\\\"value 2\",\"MyBool\":true,\"MyNullable\":null,\"MyEnum\":0,\"MyDate\":\"12/10/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 2\"},\"MyList\":[\"a2\",\"b2\"],\"MyArray\":[\"y2\",\"z2\"]}]", result);
+        }
+
+
+        [TestMethod]
+        public void TestGetArray_WithArray()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var g2 = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178");
+            var t = new DateTime(1990, 12, 12);
+            var t2 = new DateTime(1990, 10, 12);
+
+            var list = new AssemblyItem[] {
+                new AssemblyItem
+                {
+                    MyGuid = g,
+                    MyInt = 1,
+                    MyDouble = 1.5,
+                    MyString = "my \"escape\" value",
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Other,
+                    MyDate = new DateTime(1990, 12, 12),
+                    MyObj = new AssemblyInner { MyInnerString = "my \"inner\" value 1" },
+                    MyList = new List<string> { "a1", "b1" },
+                    MyArray = new string[] { "y1", "z1" }
+                },
+                new AssemblyItem
+                {
+                    MyGuid = g2,
+                    MyInt = 2,
+                    MyDouble = 2.5,
+                    MyString = "my \"escape\"value 2",
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Default,
+                    MyDate = new DateTime(1990, 10, 12),
+                    MyObj = new AssemblyInner { MyInnerString = "my \"inner\" value 2" },
+                    MyList = new List<string> { "a2", "b2" },
+                    MyArray = new string[] { "y2", "z2" }
+                },
+            };
+
+
+            var result = service.ToJson(list);
+
+            Assert.AreEqual("[{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"MyInt\":1,\"MyDouble\":1.5,\"MyString\":\"my \\\"escape\\\" value\",\"MyBool\":true,\"MyNullable\":null,\"MyEnum\":1,\"MyDate\":\"12/12/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 1\"},\"MyList\":[\"a1\",\"b1\"],\"MyArray\":[\"y1\",\"z1\"]},{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"MyInt\":2,\"MyDouble\":2.5,\"MyString\":\"my \\\"escape\\\"value 2\",\"MyBool\":true,\"MyNullable\":null,\"MyEnum\":0,\"MyDate\":\"12/10/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 2\"},\"MyList\":[\"a2\",\"b2\"],\"MyArray\":[\"y2\",\"z2\"]}]", result);
+        }
+
+        [TestMethod]
+        public void TestGetArray_OfObjectNullables()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var g2 = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178");
+            var t = new DateTime(1990, 12, 12);
+            var t2 = new DateTime(1990, 10, 12);
+
+            var list = new List<ItemNullable> {
+                new ItemNullable
+                {
+                    MyGuid = g,
+                    MyInt = 1,
+                    MyDouble = 1.5,
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Other,
+                    MyDate = new DateTime(1990, 12, 12)
+                },
+                new ItemNullable
+                {
+                    MyGuid = g2,
+                    MyInt = 2,
+                    MyDouble = 2.5,
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Default,
+                    MyDate = new DateTime(1990, 10, 12)
+                },
+            };
+
+
+            var result = service.ToJson(list);
+
+            Assert.AreEqual("[{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"MyInt\":1,\"MyDouble\":1.5,\"MyBool\":true,\"MyEnum\":1,\"MyDate\":\"12/12/1990 00:00:00\"},{\"MyGuid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"MyInt\":2,\"MyDouble\":2.5,\"MyBool\":true,\"MyEnum\":0,\"MyDate\":\"12/10/1990 00:00:00\"}]", result);
+        }
+
+        [TestMethod]
+        public void TestGetArray_OfObjectNullablesNull()
+        {
+            var service = this.GetService();
+
+
+            var list = new List<ItemNullable> {
+                new ItemNullable
+                {},
+                new ItemNullable
+                {},
+            };
+
+            var result = service.ToJson(list);
+
+            Assert.AreEqual("[{\"MyGuid\":null,\"MyInt\":null,\"MyDouble\":null,\"MyBool\":null,\"MyEnum\":null,\"MyDate\":null},{\"MyGuid\":null,\"MyInt\":null,\"MyDouble\":null,\"MyBool\":null,\"MyEnum\":null,\"MyDate\":null}]", result);
+        }
+
+        [TestMethod]
+        public void TestListOfObjects_WithMappings()
         {
             var service = this.GetService();
 
@@ -309,7 +602,7 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestGetListOfObjects_WithLowerStrategy()
+        public void TestListOfObjects_WithLowerStrategy()
         {
             var service = this.GetService();
 
@@ -327,50 +620,8 @@ namespace JsonLibTest
             Assert.AreEqual("[{\"id\":1,\"username\":\"Marie\",\"age\":null,\"email\":null},{\"id\":2,\"username\":\"Pat\",\"age\":20,\"email\":\"pat@domain.com\"}]", result);
         }
 
-        [TestMethod]
-        public void TestObject_WithDateTime()
-        {
-            var service = this.GetService();
-
-            var user = new UserWithDate
-            {
-                UserName = "Marie",
-                Birth = new DateTime(1990, 12, 12)
-            };
-
-            var result = service.ToJson(user);
-
-            Assert.AreEqual("{\"UserName\":\"Marie\",\"Birth\":\"12/12/1990 00:00:00\"}", result);
-        }
-
-        [TestMethod]
-        public void TestObject_WithGuid()
-        {
-            var service = this.GetService();
-
-            var user = new UserWithGuid
-            {
-                Id= Guid.NewGuid(),
-                UserName = "Marie"
-            };
-
-            var result = service.ToJson(user);
-
-            Assert.AreEqual("{\"Id\":\"" + user.Id.ToString() + "\",\"UserName\":\"Marie\"}", result);
-        }
-    }
 
 
-    public class UserWithDate
-    {
-        public string UserName { get; set; }
-        public DateTime Birth { get; set; }
-    }
-
-    public class UserWithGuid
-    {
-        public Guid Id { get; set; }
-        public string UserName { get; set; }
     }
 
 }

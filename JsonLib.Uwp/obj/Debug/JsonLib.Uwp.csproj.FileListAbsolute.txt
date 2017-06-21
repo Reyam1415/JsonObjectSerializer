@@ -1,0 +1,17 @@
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\bin\Debug\JsonLib.Uwp.dll
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\bin\Debug\JsonLib.Uwp.pdb
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\bin\Debug\JsonLib.Uwp.pri
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\JsonLib.Uwp.csprojResolveAssemblyReference.cache
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\JsonLib.Uwp.dll
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\JsonLib.Uwp.pdb
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\priconfig.xml
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\priconfig.xml.intermediate
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\layout.resfiles
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\layout.resfiles.intermediate
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\resources.resfiles
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\resources.resfiles.intermediate
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\pri.resfiles
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\pri.resfiles.intermediate
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\qualifiers.txt
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\qualifiers.txt.intermediate
+c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\MultipleQualifiersPerDimensionFound.txt

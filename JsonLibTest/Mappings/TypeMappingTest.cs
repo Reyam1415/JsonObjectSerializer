@@ -1,46 +1,35 @@
-﻿using JsonLib;
-using JsonLib.Mappings;
+﻿using JsonLib.Mappings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonLibTest
 {
 
-    /*
-        obj => json string
-        obj => serialization + mapping (type/property names)
-        => objective get json type name/ json property name (for object) + property value à convert to json property value
-
-        Object
-        obj type, objet name
-        properties: 
-        - property name, property type, propery value
-        - MyInt 10, MyString "a", MyBool true, MyNullable null
-        - MyObjProperty
-        - MyEnumerableProperty => json array
-
-        property type conversion =>
-
-        Json
-        {"MyInt":10,"MyString:"a","MyBool":true,"MyNullable":null,"MyObjProperty":{...},"MyEnumerableProperty":[...]}
-
-
-        Enumerable
-        string[] {"a","b"} or list<string>{"a","b"} .. or list int, list bool, list whith nullable
-        List<User>{ new User{ Id=1,UserName="a"}}
-
-        Json
-        ["a","b"]
-        [{ "Id":1,"UserName":"a"},...]
-
-    */
     [TestClass]
     public class TypeMappingTest
     {
+        // lower all
+        [TestMethod]
+        public void TestAllithLower()
+        {
+            var mapping = new MappingContainer();
+
+            mapping.SetLowerStrategyForAllTypes();
+
+            Assert.IsTrue(mapping.LowerStrategyForAllTypes);
+        }
+
+        [TestMethod]
+        public void TestAllithLower_ToFalse()
+        {
+            var mapping = new MappingContainer();
+
+            mapping.SetLowerStrategyForAllTypes(false);
+
+            Assert.IsFalse(mapping.LowerStrategyForAllTypes);
+        }
+
+        // mapping
+
         [TestMethod]
         public void TestMapping()
         {
@@ -89,6 +78,40 @@ namespace JsonLibTest
         }
 
         [TestMethod]
+        public void TestMapping_WithLowerToFalse()
+        {
+            var mapping = new MappingContainer();
+
+            mapping.SetType<User>().SetToLowerCaseStrategy(false);
+
+            Assert.IsFalse(mapping.Get<User>().LowerCaseStrategy);
+        }
+
+        [TestMethod]
+        public void TestMapping_WithLowerMultipleRegistrations()
+        {
+            var mapping = new MappingContainer();
+
+            mapping.SetType<User>().SetToLowerCaseStrategy();
+            mapping.SetType<Product>().SetToLowerCaseStrategy();
+
+            Assert.IsTrue(mapping.Get<User>().LowerCaseStrategy);
+            Assert.IsTrue(mapping.Get<Product>().LowerCaseStrategy);
+        }
+
+        [TestMethod]
+        public void TestMapping_WithMultipleAndLowerDontInterfer()
+        {
+            var mapping = new MappingContainer();
+
+            mapping.SetType<User>().SetToLowerCaseStrategy(false);
+            mapping.SetType<Product>().SetToLowerCaseStrategy();
+
+            Assert.IsFalse(mapping.Get<User>().LowerCaseStrategy);
+            Assert.IsTrue(mapping.Get<Product>().LowerCaseStrategy);
+        }
+
+        [TestMethod]
         public void TestMappings()
         {
 
@@ -103,14 +126,6 @@ namespace JsonLibTest
             Assert.IsTrue(mapping.Has<Product>());
         }
 
-    }
-
-    public class User
-    {
-        public int Id { get; set; }
-        public string UserName { get; set; }
-        public int? Age { get; set; }
-        public string Email { get; set; }
     }
 
     public class Product

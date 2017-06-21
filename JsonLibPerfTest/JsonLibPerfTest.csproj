@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{632055BD-2F9C-4D09-BC43-345C591FF9C4}</ProjectGuid>
+    <ProjectGuid>{B96BD9E0-C88F-4316-AB0E-173013D70137}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>JsonLibPerfTest</RootNamespace>
     <AssemblyName>JsonLibPerfTest</AssemblyName>
@@ -59,8 +59,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="BeautifierWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -108,9 +108,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JsonLib.Wpf\JsonLib.Wpf.csproj">
-      <Project>{8df477f8-9636-4086-bacb-234c02c1b006}</Project>
-      <Name>JsonLib.Wpf</Name>
+    <ProjectReference Include="..\JsonLib\JsonLib.csproj">
+      <Project>{6def9d3d-03b3-486b-8ab5-f8db8d7dbf13}</Project>
+      <Name>JsonLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

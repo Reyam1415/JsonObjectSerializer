@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 
 namespace JsonLib
 {
@@ -46,7 +47,31 @@ namespace JsonLib
 
         public string GetNullable(object value)
         {
-            return value == null ? "null" : value.ToString().ToLower();
+            if (value == null)
+            {
+                return "null";
+            }
+            else
+            {
+                var type = value.GetType();
+                if (type == typeof(DateTime) || type == typeof(Guid))
+                {
+                    return "\"" + value.ToString() + "\"";
+                }
+                else if(type == typeof(bool))
+                {
+                    return (bool)value == true ? "true" : "false";
+                }
+                else if (type.IsEnum)
+                {
+                    var intValue = Convert.ToInt32(value);
+                    return intValue.ToString();
+                }
+                else
+                {
+                    return this.GetNumber(value);
+                }
+            }
         }
 
         public string GetNullable(string name, object value)

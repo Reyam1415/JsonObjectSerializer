@@ -1,10 +1,5 @@
 ﻿using JsonLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonLibTest
 {
@@ -17,6 +12,8 @@ namespace JsonLibTest
             return new JsonValueToJsonService();
         }
 
+        // get key
+
         [TestMethod]
         public void TestGetKey()
         {
@@ -26,6 +23,8 @@ namespace JsonLibTest
 
             Assert.AreEqual("\"mykey\"", result);
         }
+
+        // string
 
         [TestMethod]
         public void TestGetString()
@@ -38,6 +37,16 @@ namespace JsonLibTest
         }
 
         [TestMethod]
+        public void TestGetString_EscapeString()
+        {
+            var service = this.GetService();
+
+            var result = service.GetString("my \"escape\" value");
+
+            Assert.AreEqual("\"my \\\"escape\\\" value\"", result);
+        }
+
+        [TestMethod]
         public void TestGetStringObject()
         {
             var service = this.GetService();
@@ -46,6 +55,8 @@ namespace JsonLibTest
 
             Assert.AreEqual("\"mykey\":\"my value\"", result);
         }
+
+        // number
 
         [TestMethod]
         public void TestGetNumber()
@@ -67,6 +78,9 @@ namespace JsonLibTest
             Assert.AreEqual("\"mykey\":10", result);
         }
 
+
+        // bool
+
         [TestMethod]
         public void TestGetBool()
         {
@@ -87,6 +101,7 @@ namespace JsonLibTest
             Assert.AreEqual("\"mykey\":true", result);
         }
 
+        // nullable
 
         [TestMethod]
         public void TestGetNullable()
@@ -99,16 +114,6 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestGetNullable_WithBool()
-        {
-            var service = this.GetService();
-
-            var result = service.GetNullable(true);
-
-            Assert.AreEqual("true", result);
-        }
-
-        [TestMethod]
         public void TestGetNullable_WithNull()
         {
             var service = this.GetService();
@@ -116,6 +121,16 @@ namespace JsonLibTest
             var result = service.GetNullable(null);
 
             Assert.AreEqual("null", result);
+        }
+
+        [TestMethod]
+        public void TestGetNullable_WithBool()
+        {
+            var service = this.GetService();
+
+            var result = service.GetNullable(true);
+
+            Assert.AreEqual("true", result);
         }
 
         [TestMethod]

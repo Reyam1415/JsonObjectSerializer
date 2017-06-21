@@ -1,10 +1,6 @@
 ﻿using JsonLib;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JsonLibTest
 {
@@ -15,6 +11,8 @@ namespace JsonLibTest
         {
             return new JsonToJsonValue();
         }
+
+        // check
 
         [TestMethod]
         public void TestFailWithDoubleString()
@@ -76,9 +74,14 @@ namespace JsonLibTest
             Assert.IsTrue(failed);
         }
 
+        // string
+
         [TestMethod]
         public void TestString()
         {
+            // Json: string, Guid, DateTime => Json Value String + value string
+            // (null)
+
             var service = this.GetService();
 
             var json = "\"my value\"";
@@ -104,9 +107,13 @@ namespace JsonLibTest
             Assert.AreEqual("10", ((JsonElementString)result).Value);
         }
 
+        // number
+
         [TestMethod]
         public void TestNumber()
         {
+            // int or double ...
+
             var service = this.GetService();
 
             var json = "10";
@@ -131,6 +138,8 @@ namespace JsonLibTest
             Assert.AreEqual(JsonElementValueType.Number, result.ValueType);
             Assert.AreEqual((double)10.99, ((JsonElementNumber)result).Value);
         }
+
+        // bool
 
         [TestMethod]
         public void TestBool()
@@ -160,9 +169,12 @@ namespace JsonLibTest
             Assert.AreEqual(false, ((JsonElementBool)result).Value);
         }
 
+        // null
+
         [TestMethod]
         public void TestNull()
         {
+            // null => Guess Json Value Nullable bu check conversion to object
             var service = this.GetService();
 
             var json = "null";
@@ -174,6 +186,7 @@ namespace JsonLibTest
             Assert.AreEqual(null, ((JsonElementNullable)result).Value);
         }
 
+        // object
 
         [TestMethod]
         public void TestObject()
@@ -286,6 +299,8 @@ namespace JsonLibTest
             Assert.AreEqual(JsonElementValueType.Null, role.Values["Status"].ValueType);
             Assert.AreEqual(null, ((JsonElementNullable)role.Values["Status"]).Value);
         }
+
+        // array
 
         [TestMethod]
         public void TestArray()

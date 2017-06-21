@@ -136,6 +136,7 @@ namespace JsonLibPerfTest
     {
         public static List<Item> GetItems(int count = 100)
         {
+
             var result = new List<Item>();
             for (int i = 1; i < count; i++)
             {
@@ -167,7 +168,7 @@ namespace JsonLibPerfTest
                         new OtherItem {OtherInt=2000 + i,OtherName="other 2" + i }
                     }
                 };
-                if(i % 2 == 0)
+                if (i % 2 == 0)
                 {
                     item.MyNullable = i * 10;
                 }
