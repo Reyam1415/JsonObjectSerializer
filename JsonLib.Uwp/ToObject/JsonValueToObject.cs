@@ -213,37 +213,6 @@ namespace JsonLib
             {
                 var value = this.ResolveValue(singleItemType, jsonValue, mappings);
                 result.Add(value);
-
-                //if (jsonValue.ValueType == JsonElementValueType.String)
-                //{
-                //    var value = this.ToValue(singleItemType, (JsonElementString)jsonValue);
-                //    result.Add(value);
-                //}
-                //else if (jsonValue.ValueType == JsonElementValueType.Number)
-                //{
-                //    var value = this.ToValue(singleItemType, (JsonElementNumber)jsonValue);
-                //    result.Add(value);
-                //}
-                //else if (jsonValue.ValueType == JsonElementValueType.Bool)
-                //{
-                //    var value = this.ToValue(singleItemType, (JsonElementBool)jsonValue);
-                //    result.Add(value);
-                //}
-                //else if (jsonValue.ValueType == JsonElementValueType.Null)
-                //{
-                //    var value = this.ToValue(singleItemType, (JsonElementNullable)jsonValue);
-                //    result.Add(value);
-                //}
-                //else if (jsonValue.ValueType == JsonElementValueType.Object)
-                //{
-                //    var value = this.ToObject(singleItemType, (JsonElementObject)jsonValue, mappings);
-                //    result.Add(value);
-                //}
-                //else if (jsonValue.ValueType == JsonElementValueType.Array)
-                //{
-                //    var value = this.ToEnumerable(singleItemType, (JsonElementArray)jsonValue, mappings);
-                //    result.Add(value);
-                //}
             }
             return result;
         }
@@ -256,42 +225,9 @@ namespace JsonLib
 
             foreach (var jsonValue in jsonArrayValue.Values)
             {
-                if (jsonValue.ValueType == JsonElementValueType.String)
-                {
-                    var value = this.ToValue(singleItemType, (JsonElementString)jsonValue);
-                    result.SetValue(value, index);
-                    index++;
-                }
-                else if (jsonValue.ValueType == JsonElementValueType.Number)
-                {
-                    var value = this.ToValue(singleItemType, (JsonElementNumber)jsonValue);
-                    result.SetValue(value, index);
-                    index++;
-                }
-                else if (jsonValue.ValueType == JsonElementValueType.Bool)
-                {
-                    var value = this.ToValue(singleItemType, (JsonElementBool)jsonValue);
-                    result.SetValue(value, index);
-                    index++;
-                }
-                else if (jsonValue.ValueType == JsonElementValueType.Null)
-                {
-                    var value = this.ToValue(singleItemType, (JsonElementNullable)jsonValue);
-                    result.SetValue(value, index);
-                    index++;
-                }
-                else if (jsonValue.ValueType == JsonElementValueType.Object)
-                {
-                    var value = this.ToObject(singleItemType, (JsonElementObject)jsonValue, mappings);
-                    result.SetValue(value, index);
-                    index++;
-                }
-                else if (jsonValue.ValueType == JsonElementValueType.Array)
-                {
-                    var value = this.ToEnumerable(singleItemType, (JsonElementArray)jsonValue, mappings);
-                    result.SetValue(value, index);
-                    index++;
-                }
+                var value = this.ResolveValue(singleItemType, jsonValue, mappings);
+                result.SetValue(value, index);
+                index++;
             }
             return result;
         }
