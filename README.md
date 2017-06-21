@@ -182,12 +182,12 @@ var user = JsonObjectSerializer.Parse<User>(json, mappings);
 ## Pro / Cons
 
 Pro:
-* Not Have to define Known Types (DataContractJsonSerializer)
-* Easy to set Mapping
-* Easy To Use
+* _Not Have to define Known Types_ (_DataContractJsonSerializer_)
+* Easy To set **Mapping**
+* **Easy** To **Use** (_Parse_, _Stringify_)
 * Converters, services
-* Testable
-* Available for Uwp, Wpf, Windows Forms, Asp.Net, ...
+* **Testable**
+* _Available for Uwp, Wpf, Windows Forms, Asp.Net, ..._
 
 Cons:
-* Not the fastest
+* _Not the fastest_
