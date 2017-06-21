@@ -179,7 +179,7 @@ var user = JsonObjectSerializer.Parse<User>(json, mappings);
 ```
 
 
-# Pro / Cons
+## Pro / Cons
 
 Pro:
 * Not Have to define Known Types (DataContractJsonSerializer)
