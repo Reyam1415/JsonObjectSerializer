@@ -192,7 +192,7 @@ namespace JsonLib
             foreach (var jsonValue in jsonObject.Values)
             {
                 var property = hasMappings ? this.FindProperty(properties, jsonValue.Key, allLower, mapping) 
-                    : this.FindProperty(properties, jsonValue.Key);
+                     : this.FindProperty(properties, jsonValue.Key);
                 if (property != null)
                 {
                     var value = this.ResolveValue(property.PropertyType, jsonValue.Value, mappings);

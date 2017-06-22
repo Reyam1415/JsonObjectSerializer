@@ -23,173 +23,154 @@ namespace JsonLib
 
     public class JsonToJsonValue : IJsonToJsonValue
     {
-        public IJsonElementValue ToJsonValue(string json)
+        public void SkipWhitespaces(char[] jsonChars, ref int index)
         {
-            char[] jsonChars = json.ToCharArray();
-            int index = 0;
-            var result = this.ToJsonValue(jsonChars, ref index);
-            if (index + 1 < json.Length)
-            {
-                this.HandleException(index);
-            }
-            return result;
-        }
-
-        public void HandleException(int index, string message = null)
-        {
-            var exceptionMessage = message != null ? "Invalid Json at position " + index + "." + message : "Invalid Json at position " + index;
-            throw new JsonLibException(exceptionMessage);
-        }
-
-        protected JsonElementObject ToJsonObject(char[] json, ref int index)
-        {
-            // {"key":VALUE,...}
-            // separator , or }
-            // : => key value separator
-            // return result }
-
-            var result = new JsonElementObject();
-
-            // {
-            this.NextToken(json, ref index);
-
+            char c;
             while (true)
             {
-                var token = this.LookAhead(json, index);
-                if (token == JsonToken.None)
+                if (index == jsonChars.Length)
                 {
-                    this.HandleException(index);
-                }
-                else if (token == JsonToken.Comma)
-                {
-                    this.NextToken(json, ref index);
-                }
-                else if (token == JsonToken.CurlyClose)
-                {
-                    this.NextToken(json, ref index);
                     break;
                 }
-                else
+
+                c = jsonChars[index];
+
+                if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
                 {
-                    // key
-                    string key = this.ParseString(json, ref index);
-                    if (string.IsNullOrWhiteSpace(key))
-                    {
-                        this.HandleException(index, "No object key provided");
-                    }
-
-                    // :
-                    token = this.NextToken(json, ref index);
-                    if (token != JsonToken.Colon)
-                    {
-                        this.HandleException(index, "No colon (key value separator) found for " + key);
-                    }
-
-                    // value
-                    var value = this.ToJsonValue(json, ref index);
-                    if (value == null)
-                    {
-                        this.HandleException(index, "No value for " + key);
-                    }
-
-                    result.Add(key, value);
+                    break;
                 }
-            }
 
-            return result;
+                index ++;
+            }
         }
 
-        protected JsonElementArray ToJsonArray(char[] json, ref int index)
+        public JsonToken GetNextToken(char[] jsonChars, int index)
         {
-            // [...]
-            // separator , or ]
-            // return result ]
+            char c = jsonChars[index];
 
-            var result = new JsonElementArray();
-
-            // [
-            NextToken(json, ref index);
-
-            while (true)
+            switch (c)
             {
-                var token = this.LookAhead(json, index);
-                if (token == JsonToken.None)
-                {
-                    this.HandleException(index);
-                }
-                else if (token == JsonToken.Comma)
-                {
-                    this.NextToken(json, ref index);
-                }
-                else if (token == JsonToken.SquaredClose)
-                {
-                    this.NextToken(json, ref index);
-                    break;
-                }
-                else
-                {
-                    var value = this.ToJsonValue(json, ref index);
-                    if (value == null)
+                case ',':
+                    return JsonToken.Comma;
+                case ':':
+                    return JsonToken.Colon;
+                case '{':
+                    return JsonToken.CurlyOpen;
+                case '[':
+                    return JsonToken.SquaredOpen;
+                case '}':
+                    return JsonToken.CurlyClose;
+                case ']':
+                    return JsonToken.SquaredClose;
+                case '"':
+                    return JsonToken.String;
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '-':
+                case '+':
+                case '.':
+                    return JsonToken.Number;
+                case 'f':
+                    if (jsonChars.Length > index + 4 &&
+                        jsonChars[index + 1] == 'a' &&
+                        jsonChars[index + 2] == 'l' &&
+                        jsonChars[index + 3] == 's' &&
+                        jsonChars[index + 4] == 'e')
                     {
-                        this.HandleException(index);
+                        return JsonToken.False;
                     }
+                    break;
 
-                    result.Add(value);
-                }
-            }
+                case 't':
+                    if (jsonChars.Length > index + 3 &&
+                        jsonChars[index + 1] == 'r' &&
+                        jsonChars[index + 2] == 'u' &&
+                        jsonChars[index + 3] == 'e')
+                    {
+                        return JsonToken.True;
+                    }
+                    break;
 
-            return result;
-        }
-
-        protected IJsonElementValue ToJsonValue(char[] json, ref int index)
-        {
-            switch (this.LookAhead(json, index))
-            {
-                case JsonToken.String:
-                    return new JsonElementString(this.ParseString(json, ref index));
-                case JsonToken.Number:
-                    return new JsonElementNumber(this.ParseNumber(json, ref index));
-                case JsonToken.CurlyOpen:
-                    return this.ToJsonObject(json, ref index);
-                case JsonToken.SquaredOpen:
-                    return this.ToJsonArray(json, ref index);
-                case JsonToken.True:
-                    this.NextToken(json, ref index);
-                    return new JsonElementBool(true);
-                case JsonToken.False:
-                    this.NextToken(json, ref index);
-                    return new JsonElementBool(false);
-                case JsonToken.Null:
-                    this.NextToken(json, ref index);
-                    return new JsonElementNullable(null);
-                case JsonToken.None:
+                case 'n':
+                    if (jsonChars.Length > index + 3 &&
+                        jsonChars[index + 1] == 'u' &&
+                        jsonChars[index + 2] == 'l' &&
+                        jsonChars[index + 3] == 'l')
+                    {
+                        return JsonToken.Null;
+                    }
                     break;
             }
 
-            return null;
+            return JsonToken.None;
         }
 
-        protected string ParseString(char[] json, ref int index)
+        public void MoveIndex(JsonToken token, ref int index)
         {
-            // " => "
-            // escape \\\"
-            var s = new StringBuilder();
+            if (token == JsonToken.True || token == JsonToken.Null)
+            {
+                index += 4;
+            }
+            else if (token == JsonToken.False)
+            {
+                index += 5;
+            }
+            else if (token == JsonToken.None) { }
+            else
+            {
+                index += 1;
+            }
+        }
 
-            this.IgnoreWhitespaces(json, ref index);
+        public JsonToken MoveAndGetNextToken(char[] jsonChars, ref int index)
+        {
+            this.SkipWhitespaces(jsonChars, ref index);
+            var token = this.GetNextToken(jsonChars, index);
+            this.MoveIndex(token, ref index);
+            return token;
+        }
 
-            // "
-            var c = json[index++];
+        public JsonToken LookAheadNextToken(char[] jsonChars, int index)
+        {
+            int fakeIndex = index;
+            this.SkipWhitespaces(jsonChars, ref fakeIndex);
+            return this.GetNextToken(jsonChars, fakeIndex);
+        }
+
+        public string ParseString(char[] jsonChars, ref int index)
+        {
+            //  "   find end  " ... add chars to string builder ... escape \", \t, \n , etc. => \\\", \\\t, \\\n
+            // return string formatted
+            var result = new StringBuilder();
+            char c;
+
+            // move to first "
+            var stringToken = this.MoveAndGetNextToken(jsonChars, ref index);
+            if (stringToken != JsonToken.String)
+            {
+                throw new Exception("Invalid Json. Expected double quotes");
+            }
 
             bool stringClosed = false;
             while (!stringClosed)
             {
-
-                if (index == json.Length)
+                if (index == jsonChars.Length)
                 {
                     break;
                 }
 
-                c = json[index++];
+                c = jsonChars[index];
+
+                index++;
+
                 if (c == '"')
                 {
                     stringClosed = true;
@@ -197,54 +178,55 @@ namespace JsonLib
                 }
                 else if (c == '\\')
                 {
-                    if (index == json.Length)
+                    if (index == jsonChars.Length)
                     {
                         break;
                     }
                     // next char \\\ => "
-                    c = json[index++];
+                    c = jsonChars[index++];
                     if (c == '"')
                     {
-                        s.Append('"');
+                        result.Append('"');
                     }
                     else if (c == '\\')
                     {
-                        s.Append('\\');
+                        result.Append('\\');
                     }
                     else if (c == '/')
                     {
-                        s.Append('/');
+                        result.Append('/');
                     }
                     else if (c == 'b')
                     {
-                        s.Append('\b');
+                        result.Append('\b');
                     }
                     else if (c == 'f')
                     {
-                        s.Append('\f');
+                        result.Append('\f');
                     }
                     else if (c == 'n')
                     {
-                        s.Append('\n');
+                        result.Append('\n');
                     }
                     else if (c == 'r')
                     {
-                        s.Append('\r');
+                        result.Append('\r');
                     }
                     else if (c == 't')
                     {
-                        s.Append('\t');
+                        result.Append('\t');
                     }
                     else if (c == 'u')
                     {
-                        int remainingLength = json.Length - index;
+                        int remainingLength = jsonChars.Length - index;
                         if (remainingLength >= 4)
                         {
-                            if (!UInt32.TryParse(new string(json, index, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint codePoint))
+                            if (!UInt32.TryParse(new string(jsonChars, index, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint codePoint))
                             {
+                                // exception ?
                                 return "";
                             }
-                            s.Append(Char.ConvertFromUtf32((int)codePoint));
+                            result.Append(Char.ConvertFromUtf32((int)codePoint));
                             index += 4;
                         }
                         else
@@ -255,26 +237,39 @@ namespace JsonLib
                 }
                 else
                 {
-                    s.Append(c);
+                    result.Append(c);
                 }
             }
 
             if (!stringClosed)
             {
-                this.HandleException(index);
+                throw new Exception("Invalid Json.String not closed");
             }
 
-            return s.ToString();
+            return result.ToString();
         }
 
-        protected object ParseNumber(char[] json, ref int index)
+        public int GetLastCharIndexOfNumber(char[] jsonChars, int index)
         {
-            this.IgnoreWhitespaces(json, ref index);
+            int lastIndex;
+            for (lastIndex = index; lastIndex < jsonChars.Length; lastIndex++)
+            {
+                if ("0123456789+-.eE".IndexOf(jsonChars[lastIndex]) == -1)
+                {
+                    break;
+                }
+            }
+            return lastIndex - 1;
+        }
 
-            int lastIndex = this.GetLastCharIndexOfNumber(json, index);
+        public object ParseNumber(char[] jsonChars, ref int index)
+        {
+            this.SkipWhitespaces(jsonChars, ref index);
+
+            int lastIndex = this.GetLastCharIndexOfNumber(jsonChars, index);
             int charLength = (lastIndex - index) + 1;
 
-            var valueString = new string(json, index, charLength);
+            var valueString = new string(jsonChars, index, charLength);
 
             if (int.TryParse(valueString, out int intResult))
             {
@@ -290,124 +285,151 @@ namespace JsonLib
             throw new JsonLibException("Cannot resolve number");
         }
 
-        protected int GetLastCharIndexOfNumber(char[] json, int index)
+        public IJsonElementValue ToJsonValue(char[] jsonChars, ref int index)
         {
-            int lastIndex;
-
-            for (lastIndex = index; lastIndex < json.Length; lastIndex++)
+            var token = this.LookAheadNextToken(jsonChars, index);
+            switch (token)
             {
-                if ("0123456789+-.eE".IndexOf(json[lastIndex]) == -1)
-                {
-                    break;
-                }
-            }
-            return lastIndex - 1;
-        }
-
-        protected void IgnoreWhitespaces(char[] json, ref int index)
-        {
-            for (; index < json.Length; index++)
-            {
-                if (" \t\n\r".IndexOf(json[index]) == -1)
-                {
-                    break;
-                }
-            }
-        }
-
-        protected JsonToken LookAhead(char[] json, int index)
-        {
-            int saveIndex = index;
-            return NextToken(json, ref saveIndex);
-        }
-
-        protected JsonToken NextToken(char[] json, ref int index)
-        {
-            this.IgnoreWhitespaces(json, ref index);
-
-            if (index == json.Length)
-            {
-                return JsonToken.None;
-            }
-
-            char c = json[index];
-            index++;
-            switch (c)
-            {
-                case '{':
-                    return JsonToken.CurlyOpen;
-                case '}':
-                    return JsonToken.CurlyClose;
-                case '[':
-                    return JsonToken.SquaredOpen;
-                case ']':
-                    return JsonToken.SquaredClose;
-                case ',':
-                    return JsonToken.Comma;
-                case '"':
-                    return JsonToken.String;
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                case '-':
-                    return JsonToken.Number;
-                case ':':
-                    return JsonToken.Colon;
-            }
-            index--;
-
-            int remainingLength = json.Length - index;
-
-            // false
-            if (remainingLength >= 5)
-            {
-                if (json[index] == 'f' &&
-                    json[index + 1] == 'a' &&
-                    json[index + 2] == 'l' &&
-                    json[index + 3] == 's' &&
-                    json[index + 4] == 'e')
-                {
+                case JsonToken.String:
+                    return new JsonElementString(this.ParseString(jsonChars, ref index));
+                case JsonToken.Number:
+                    return new JsonElementNumber(this.ParseNumber(jsonChars, ref index));
+                case JsonToken.CurlyOpen:
+                    return this.ToJsonObject(jsonChars, ref index);
+                case JsonToken.SquaredOpen:
+                    return this.ToJsonArray(jsonChars, ref index);
+                case JsonToken.True:
+                    index += 4;
+                    return new JsonElementBool(true);
+                case JsonToken.False:
                     index += 5;
-                    return JsonToken.False;
-                }
-            }
-
-            // true
-            if (remainingLength >= 4)
-            {
-                if (json[index] == 't' &&
-                    json[index + 1] == 'r' &&
-                    json[index + 2] == 'u' &&
-                    json[index + 3] == 'e')
-                {
+                    return new JsonElementBool(false);
+                case JsonToken.Null:
                     index += 4;
-                    return JsonToken.True;
-                }
+                    return new JsonElementNullable(null);
+                case JsonToken.None:
+                    break;
             }
 
-            // null
-            if (remainingLength >= 4)
-            {
-                if (json[index] == 'n' &&
-                    json[index + 1] == 'u' &&
-                    json[index + 2] == 'l' &&
-                    json[index + 3] == 'l')
-                {
-                    index += 4;
-                    return JsonToken.Null;
-                }
-            }
-
-            return JsonToken.None;
+            return null;
         }
 
-    }
+        public JsonElementObject ToJsonObject(char[] jsonChars, ref int index)
+        {
+            var result = new JsonElementObject();
 
+            var curlyOpenToken = this.MoveAndGetNextToken(jsonChars, ref index);
+            if (curlyOpenToken != JsonToken.CurlyOpen)
+            {
+                throw new Exception("Invalid Json. Curly open expected at index " + index);
+            }
+
+            bool curlyClosed = false;
+            while (!curlyClosed)
+            {
+                var token = this.LookAheadNextToken(jsonChars, index);
+                if (token == JsonToken.None)
+                {
+                    throw new JsonLibException("Invalid Json");
+                }
+                else if (token == JsonToken.Comma)
+                {
+                    // move index to ,
+                    this.MoveAndGetNextToken(jsonChars, ref index);
+                }
+                else if (token == JsonToken.CurlyClose)
+                {
+                    // move index to }
+                    this.MoveAndGetNextToken(jsonChars, ref index);
+
+                    // } return result
+                    curlyClosed = true;
+                }
+                else
+                {
+                    // key
+                    string key = this.ParseString(jsonChars, ref index);
+                    if (string.IsNullOrWhiteSpace(key))
+                    {
+                        throw new JsonLibException("Invalid Json. Expected a key at index " + index);
+                    }
+
+                    // :
+                    token = this.MoveAndGetNextToken(jsonChars, ref index);
+                    if (token != JsonToken.Colon)
+                    {
+                        throw new JsonLibException("Invalid Json. Colon expected at  index " + index);
+                    }
+
+                    // value
+                    var value = this.ToJsonValue(jsonChars, ref index);
+                    if (value == null)
+                    {
+                        throw new JsonLibException("Invalid Json. No value for key " + key);
+                    }
+
+                    result.Add(key, value);
+                }
+            }
+
+            return result;
+        }
+
+        public JsonElementArray ToJsonArray(char[] jsonChars, ref int index)
+        {
+            var result = new JsonElementArray();
+
+            var squareOpenToken = this.MoveAndGetNextToken(jsonChars, ref index);
+            if (squareOpenToken != JsonToken.SquaredOpen)
+            {
+                throw new Exception("Invalid Json. Squared open expected at index " + index);
+            }
+
+            bool squareClosed = false;
+            while (!squareClosed)
+            {
+                var token = this.LookAheadNextToken(jsonChars, index);
+                if (token == JsonToken.None)
+                {
+                    throw new JsonLibException("Invalid Json");
+                }
+                else if (token == JsonToken.Comma)
+                {
+                    // move index to ,
+                    this.MoveAndGetNextToken(jsonChars, ref index);
+                }
+                else if (token == JsonToken.SquaredClose)
+                {
+                    // move index to ] 
+                    this.MoveAndGetNextToken(jsonChars, ref index);
+
+                    // ] return result
+                    squareClosed = true;
+                }
+                else
+                {
+                    var jsonValue = this.ToJsonValue(jsonChars, ref index);
+                    if (jsonValue == null)
+                    {
+                        throw new JsonLibException("Invalid Json");
+                    }
+                    result.Add(jsonValue);
+                }
+            }
+            return result;
+        }
+
+        public IJsonElementValue ToJsonValue(string json)
+        {
+            char[] jsonChars = json.ToCharArray();
+            int index = 0;
+            var result = this.ToJsonValue(jsonChars, ref index);
+            if (index + 1 < json.Length)
+            {
+                throw new JsonLibException("Invalid Json");
+            }
+            return result;
+        }
+    }
+   
 }

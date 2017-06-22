@@ -14,3 +14,4 @@ c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Deb
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\qualifiers.txt
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\qualifiers.txt.intermediate
 c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\MultipleQualifiersPerDimensionFound.txt
+C:\Users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib.Uwp\obj\Debug\JsonLib.Uwp.csprojResolveAssemblyReference.cache

@@ -6,7 +6,6 @@ using System.Reflection;
 
 namespace JsonLib
 {
-
     public class ObjectToJsonValue : IObjectToJsonValue
     {
         protected IAssemblyInfoService assemblyInfoService;
@@ -130,7 +129,7 @@ namespace JsonLib
 
             foreach (var property in properties)
             {
-                var jsonPropertyName = hasMappings ? this.GetJsonPropertyName(property.Name, allLower, mapping): property.Name;
+                var jsonPropertyName = hasMappings ? this.GetJsonPropertyName(property.Name, allLower, mapping) : property.Name;
                 var propertyValue = property.GetValue(obj);
                 var propertyType = property.PropertyType;
 

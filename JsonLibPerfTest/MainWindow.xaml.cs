@@ -21,7 +21,7 @@ namespace JsonLibPerfTest
         }
         //int testCount = 400;
 
-        private void TestJsonObjectParser()
+        private async void TestJsonObjectParser()
         {
             var watcher = new Stopwatch();
             var stringifyWatcher = new Stopwatch();
@@ -31,47 +31,89 @@ namespace JsonLibPerfTest
 
             watcher.Start();
 
-            stringifyWatcher.Start();
-           // var json = JsonConvert.SerializeObject(items);
-            var json = JsonObjectSerializer.Stringify(items);
-            stringifyWatcher.Stop();
+            await Task.Run(() =>
+            {
+                stringifyWatcher.Start();
+                // var json = JsonConvert.SerializeObject(items);
+                var json = JsonObjectSerializer.Stringify(items);
+                stringifyWatcher.Stop();
 
-            parseWatcher.Start();
-            var result = JsonObjectSerializer.Parse<List<Item>>(json);
-            parseWatcher.Stop();
+                parseWatcher.Start();
+                var result = JsonObjectSerializer.Parse<List<Item>>(json);
+                parseWatcher.Stop();
 
-            watcher.Stop();
-            ListView.Items.Add($"[JsonObject] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
-            if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
-            else DataListView.ItemsSource = null;
+                watcher.Stop();
+
+                return result;
+
+            }).ContinueWith((r) =>
+            {
+                ListView.Items.Add($"[JsonObject] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
+                if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = r.Result;
+                else DataListView.ItemsSource = null;
+            }, TaskScheduler.FromCurrentSynchronizationContext()) ;
+
         }
 
-        private void TestDataContractJsonSerializerParser()
+        //private void TestJsonObjectParser()
+        //{ 
+        //    var watcher = new Stopwatch();
+        //    var stringifyWatcher = new Stopwatch();
+        //    var parseWatcher = new Stopwatch();
+
+        //    var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
+
+        //    watcher.Start();
+
+        //    stringifyWatcher.Start();
+        //   // var json = JsonConvert.SerializeObject(items);
+        //    var json = JsonObjectSerializer.Stringify(items);
+        //    stringifyWatcher.Stop();
+
+        //    parseWatcher.Start();
+        //    var result = JsonObjectSerializer.Parse<List<Item>>(json);
+        //    parseWatcher.Stop();
+
+        //    watcher.Stop();
+        //    ListView.Items.Add($"[JsonObject] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
+        //    if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
+        //    else DataListView.ItemsSource = null;
+        //}
+
+        private async void TestDataContractJsonSerializerParser()
         {
             var watcher = new Stopwatch();
             var stringifyWatcher = new Stopwatch();
             var parseWatcher = new Stopwatch();
-
-            var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
             var knownTypes = new List<Type> { typeof(Item), typeof(OtherItem), typeof(SubItem), typeof(SubSubItem), typeof(List<Item>), typeof(List<OtherItem>) };
 
+            var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
+
             watcher.Start();
 
-            stringifyWatcher.Start();
-            var json = DataJsonSerializer.Stringify(items, knownTypes);
-            stringifyWatcher.Stop();
+            await Task.Run(() =>
+            {
+                stringifyWatcher.Start();
+                var json = DataJsonSerializer.Stringify(items, knownTypes);
+                stringifyWatcher.Stop();
 
-            parseWatcher.Start();
-            var result = DataJsonSerializer.Parse<List<Item>>(json, knownTypes);
-            parseWatcher.Stop();
+                parseWatcher.Start();
+                var result = DataJsonSerializer.Parse<List<Item>>(json, knownTypes);
+                parseWatcher.Stop();
 
-            watcher.Stop();
-            ListView.Items.Add($"[DataContract] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
-            if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
-            else DataListView.ItemsSource = null;
+                watcher.Stop();
+
+                return result;
+
+            }).ContinueWith((r) =>
+            {
+                ListView.Items.Add($"[DataContract] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
+                if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = r.Result;
+                else DataListView.ItemsSource = null;
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
-        private void TestJsonNetParser()
+        private async void TestJsonNetParser()
         {
             var watcher = new Stopwatch();
             var stringifyWatcher = new Stopwatch();
@@ -81,18 +123,26 @@ namespace JsonLibPerfTest
 
             watcher.Start();
 
-            stringifyWatcher.Start();
-            var json = JsonConvert.SerializeObject(items);
-            stringifyWatcher.Stop();
+            await Task.Run(() =>
+            {
+                stringifyWatcher.Start();
+                var json = JsonConvert.SerializeObject(items);
+                stringifyWatcher.Stop();
 
-            parseWatcher.Start();
-            var result = JsonConvert.DeserializeObject<List<Item>>(json);
-            parseWatcher.Stop();
+                parseWatcher.Start();
+                var result = JsonConvert.DeserializeObject<List<Item>>(json);
+                parseWatcher.Stop();
 
-            watcher.Stop();
-            ListView.Items.Add($"[Json.Net] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
-            if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = result;
-            else DataListView.ItemsSource = null;
+                watcher.Stop();
+
+                return result;
+
+            }).ContinueWith((r) =>
+            {
+                ListView.Items.Add($"[Json.Net] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
+                if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = r.Result;
+                else DataListView.ItemsSource = null;
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void OnTestJsonObject(object sender, RoutedEventArgs e)
