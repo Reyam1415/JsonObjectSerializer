@@ -75,8 +75,6 @@ namespace JsonLib
                 case '8':
                 case '9':
                 case '-':
-                case '+':
-                case '.':
                     return JsonToken.Number;
                 case 'f':
                     if (jsonChars.Length > index + 4 &&
