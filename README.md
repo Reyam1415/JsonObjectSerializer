@@ -79,7 +79,9 @@ var jsonValue = JsonElementValue.CreateArray()
    * **JsonValueToJson**: : allow to convert Json Value to Json
    * **ObjectToJson** (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
 
-_Example_:
+_Examples_:
+
+Object to Json
 
 ```cs
  var user = new User
@@ -91,6 +93,32 @@ _Example_:
 var service = new ObjectToJsonValue();
 var jsonValue = service.ToJsonObject(user);
 ```
+
+JsonValue to Json
+
+```cs
+var service = new JsonValueToJson();
+
+var jsonValue = JsonElementValue
+        .CreateObject()
+        .AddNumber("Id", 1)
+        .AddString("UserName", "Marie")
+        .AddNullable("Age", null)
+        .AddString("Email", null)
+        .AddObject("Role", JsonElementValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
+        .AddArray("Hobbies", JsonElementValue.CreateArray().AddString("Shopping").AddString("Cooking"));
+
+var result = service.ToObject(jsonValue);
+
+// => {"Id":1,"UserName":"Marie","Age":null,"Email":null,"Role":{"RoleId":2,"Name":"Admin"},"Hobbies":["Shopping","Cooking"]}
+```
+Other Methods:
+* _ToArray : (from JsonElementArray)_
+* _ToNumber: (from JsonElementNumber)_
+* ToString : (from JsonElementString)_
+* _ToBool : (from JsonElementBool)_
+* _ToNullable: (from JsonElementNullable)_
+
 
 ## Stringify Object => Json
 
