@@ -94,33 +94,79 @@ var jsonValue = service.ToJsonObject(user);
 
 ## Stringify Object => Json
 
-An object
+An **object**
 
 ```cs
 var json = JsonObjectSerializer.Stringify(user);
 ```
 
-A list / array
+A **list**/ **array**
 ```cs
 var json = JsonObjectSerializer.Stringify(users);
 ```
 
+**Values** (number, string, bool, nullable)
+
+Example with a Guid
+
+```cs
+var json = JsonObjectSerializer.Stringify(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")); // \"344ac1a2-9613-44d7-b64c-8d45b4585176\"
+```
+
+With a Nullable
+
+```cs
+var json = JsonObjectSerializer.Stringify<DateTime?>(new DateTime(1990,12,12));  // \"12/12/1990 00:00:00\"
+```
+
+Null
+
+```cs
+var json = JsonObjectSerializer.Stringify<DateTime?>(null);  // null
+```
+
+Enum Nullable
+```cs
+var json = JsonObjectSerializer.Stringify<MyEnum?>(MyEnum.Default); // 0
+```
+
 ## Parse Json => Object
 
-An object
+**Object**
 
 ```cs
 var user = JsonObjectSerializer.Parse<User>(json);
 ```
 
-A list 
+**List**
+
 ```cs
 var users = JsonObjectSerializer.Parse<List<User>>(json);
 ```
+**Array**
 
-Or Array
 ```cs
 var users = JsonObjectSerializer.Parse<User[]>(json);
+```
+
+**Values**
+
+Example Enum
+
+```cs
+var myEnum = JsonObjectSerializer.Parse<MyEnum>("1"); // => MyEnum.Other
+```
+
+Guid Nullable
+
+```cs
+var myGuid = JsonObjectSerializer.Parse<Guid?>("\"344ac1a2-9613-44d7-b64c-8d45b4585176\"")); // => new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")
+```
+
+Null
+
+```cs
+var myGuid = JsonObjectSerializer.Parse<int?>("null")); // => null
 ```
 
 ## Mapping
