@@ -161,13 +161,13 @@ var myEnum = JsonObjectSerializer.Parse<MyEnum>("1"); // => MyEnum.Other
 _Guid Nullable_
 
 ```cs
-var myGuid = JsonObjectSerializer.Parse<Guid?>("\"344ac1a2-9613-44d7-b64c-8d45b4585176\"")); // => new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")
+var myGuid = JsonObjectSerializer.Parse<Guid?>("\"344ac1a2-9613-44d7-b64c-8d45b4585176\""); // => new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")
 ```
 
 _Null_
 
 ```cs
-var myGuid = JsonObjectSerializer.Parse<int?>("null")); // => null
+var myGuid = JsonObjectSerializer.Parse<int?>("null"); // => null
 ```
 
 ## Mapping
