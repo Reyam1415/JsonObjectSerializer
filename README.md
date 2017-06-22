@@ -154,9 +154,7 @@ with **Nullables**
 
 ```cs
 var myNumbers = JsonObjectSerializer.Parse<int?[]>(json);
-```
-
-```cs
+// or
 var myNumbers = JsonObjectSerializer.Parse<List<int?>>(json);
 ```
 
