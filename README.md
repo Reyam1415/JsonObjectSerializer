@@ -150,6 +150,12 @@ var users = JsonObjectSerializer.Parse<List<User>>(json);
 var users = JsonObjectSerializer.Parse<User[]>(json);
 ```
 
+Array of Nullables
+
+```cs
+var myNumbers = JsonObjectSerializer.Parse<int?[]>(json);
+```
+
 **Values**
 
 Example _Enum_
