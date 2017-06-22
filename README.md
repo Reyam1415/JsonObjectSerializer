@@ -108,7 +108,7 @@ var jsonValue = JsonElementValue
         .AddObject("Role", JsonElementValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
         .AddArray("Hobbies", JsonElementValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 
-var result = service.ToObject(jsonValue);
+var json = service.ToObject(jsonValue);
 
 // => {"Id":1,"UserName":"Marie","Age":null,"Email":null,"Role":{"RoleId":2,"Name":"Admin"},"Hobbies":["Shopping","Cooking"]}
 ```
