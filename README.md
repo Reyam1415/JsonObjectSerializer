@@ -110,25 +110,25 @@ var json = JsonObjectSerializer.Stringify(users);
 Example with a _Guid_
 
 ```cs
-var json = JsonObjectSerializer.Stringify(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")); // \"344ac1a2-9613-44d7-b64c-8d45b4585176\"
+var json = JsonObjectSerializer.Stringify(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")); // json => "\"344ac1a2-9613-44d7-b64c-8d45b4585176\""
 ```
 
 With a _Nullable_
 
 ```cs
-var json = JsonObjectSerializer.Stringify<DateTime?>(new DateTime(1990,12,12));  // \"12/12/1990 00:00:00\"
+var json = JsonObjectSerializer.Stringify<DateTime?>(new DateTime(1990,12,12));  // json => "\"12/12/1990 00:00:00\""
 ```
 
 _Null_
 
 ```cs
-var json = JsonObjectSerializer.Stringify<DateTime?>(null);  // null
+var json = JsonObjectSerializer.Stringify<DateTime?>(null);  // json => "null"
 ```
 
 _Enum Nullable_
 
 ```cs
-var json = JsonObjectSerializer.Stringify<MyEnum?>(MyEnum.Default); // 0
+var json = JsonObjectSerializer.Stringify<MyEnum?>(MyEnum.Default); // json => "0"
 ```
 
 ## Parse Json => Object
@@ -136,12 +136,15 @@ var json = JsonObjectSerializer.Stringify<MyEnum?>(MyEnum.Default); // 0
 **Object**
 
 ```cs
+// Age is a nullable ( int? )
+var json = "{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null}";
 var user = JsonObjectSerializer.Parse<User>(json);
 ```
 
 **List**
 
 ```cs
+var json ="[{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null},{\"Id\":2,\"UserName\":\"Pat\",\"Age\":20,\"Email\":\"pat@domain.com\"}]";
 var users = JsonObjectSerializer.Parse<List<User>>(json);
 ```
 **Array**
@@ -153,9 +156,11 @@ var users = JsonObjectSerializer.Parse<User[]>(json);
 with **Nullables**
 
 ```cs
-var myNumbers = JsonObjectSerializer.Parse<int?[]>(json);
+var json = "[1.5,2.5]";
+var myNumbers = JsonObjectSerializer.Parse<double?[]>(json);
+
 // or
-var myNumbers = JsonObjectSerializer.Parse<List<int?>>(json);
+var myNumbers = JsonObjectSerializer.Parse<List<double?>>(json);
 ```
 
 **Values**
@@ -163,19 +168,22 @@ var myNumbers = JsonObjectSerializer.Parse<List<int?>>(json);
 Example _Enum_
 
 ```cs
-var myEnum = JsonObjectSerializer.Parse<MyEnum>("1"); // => MyEnum.Other
+var json = "1";
+var myEnum = JsonObjectSerializer.Parse<MyEnum>(json); // => MyEnum.Other
 ```
 
 _Guid Nullable_
 
 ```cs
-var myGuid = JsonObjectSerializer.Parse<Guid?>("\"344ac1a2-9613-44d7-b64c-8d45b4585176\""); // => new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")
+var json = "\"344ac1a2-9613-44d7-b64c-8d45b4585176\"";
+var myGuid = JsonObjectSerializer.Parse<Guid?>(json); // => new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")
 ```
 
 _Null_
 
 ```cs
-var myGuid = JsonObjectSerializer.Parse<int?>("null"); // => null
+var json = "null";
+var myGuid = JsonObjectSerializer.Parse<int?>(json); // => null
 ```
 
 ## Mapping
