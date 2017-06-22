@@ -150,13 +150,11 @@ var users = JsonObjectSerializer.Parse<List<User>>(json);
 var users = JsonObjectSerializer.Parse<User[]>(json);
 ```
 
-with Nullables
+with **Nullables**
 
 ```cs
 var myNumbers = JsonObjectSerializer.Parse<int?[]>(json);
 ```
-
-Or
 
 ```cs
 var myNumbers = JsonObjectSerializer.Parse<List<int?>>(json);
