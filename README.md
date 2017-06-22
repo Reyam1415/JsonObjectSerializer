@@ -115,7 +115,7 @@ var json = service.ToObject(jsonValue);
 Other Methods:
 * _ToArray : (from JsonElementArray)_
 * _ToNumber: (from JsonElementNumber)_
-* ToString : (from JsonElementString)_
+* _ToString : (from JsonElementString)_
 * _ToBool : (from JsonElementBool)_
 * _ToNullable: (from JsonElementNullable)_
 
