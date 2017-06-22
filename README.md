@@ -183,7 +183,7 @@ _Null_
 
 ```cs
 var json = "null";
-var myGuid = JsonObjectSerializer.Parse<int?>(json); // => null
+var myInt = JsonObjectSerializer.Parse<int?>(json); // => null
 ```
 
 ## Mapping
