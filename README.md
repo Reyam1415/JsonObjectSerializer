@@ -105,27 +105,28 @@ A **list**/ **array**
 var json = JsonObjectSerializer.Stringify(users);
 ```
 
-**Values** (number, string, bool, nullable)
+**Values** (_number_, _string_, _bool_, _nullable_)
 
-Example with a Guid
+Example with a _Guid_
 
 ```cs
 var json = JsonObjectSerializer.Stringify(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")); // \"344ac1a2-9613-44d7-b64c-8d45b4585176\"
 ```
 
-With a Nullable
+With a _Nullable_
 
 ```cs
 var json = JsonObjectSerializer.Stringify<DateTime?>(new DateTime(1990,12,12));  // \"12/12/1990 00:00:00\"
 ```
 
-Null
+_Null_
 
 ```cs
 var json = JsonObjectSerializer.Stringify<DateTime?>(null);  // null
 ```
 
-Enum Nullable
+_Enum Nullable_
+
 ```cs
 var json = JsonObjectSerializer.Stringify<MyEnum?>(MyEnum.Default); // 0
 ```
@@ -151,19 +152,19 @@ var users = JsonObjectSerializer.Parse<User[]>(json);
 
 **Values**
 
-Example Enum
+Example _Enum_
 
 ```cs
 var myEnum = JsonObjectSerializer.Parse<MyEnum>("1"); // => MyEnum.Other
 ```
 
-Guid Nullable
+_Guid Nullable_
 
 ```cs
 var myGuid = JsonObjectSerializer.Parse<Guid?>("\"344ac1a2-9613-44d7-b64c-8d45b4585176\"")); // => new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176")
 ```
 
-Null
+_Null_
 
 ```cs
 var myGuid = JsonObjectSerializer.Parse<int?>("null")); // => null
