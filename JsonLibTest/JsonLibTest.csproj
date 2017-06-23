@@ -51,6 +51,7 @@
     <Compile Include="Cache\CacheTest.cs" />
     <Compile Include="Common\Models.cs" />
     <Compile Include="JsonObjectSerializerServiceTest.cs" />
+    <Compile Include="ToObject\JsonToJsonValueTest.cs" />
     <Compile Include="ToObject\JsonToObjectTest.cs" />
     <Compile Include="JsonValues\JsonElementTest.cs" />
     <Compile Include="Mappings\TypeMappingTest.cs" />
@@ -60,10 +61,15 @@
     <Compile Include="ToJson\JsonValueToJsonTest.cs" />
     <Compile Include="ToJson\ObjectToJsonTest.cs" />
     <Compile Include="ToJson\ObjectToJsonValueTest.cs" />
-    <Compile Include="ToObject\JsonToJsonValueTest.cs" />
     <Compile Include="ToObject\JsonValueToObjectTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="obj.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

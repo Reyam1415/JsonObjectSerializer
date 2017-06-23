@@ -4,6 +4,7 @@ using JsonLibTest.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -1661,6 +1662,436 @@ namespace JsonLibTest
             Assert.AreEqual(2, result2.MyInt);
             Assert.AreEqual(2.5, result2.MyDouble);
             Assert.AreEqual(false, result2.MyBool);
+            Assert.AreEqual(AssemblyEnum.Default, result2.MyEnum);
+            Assert.AreEqual(t2, result2.MyDate);
+            Assert.AreEqual("my \"inner\" value 2", result2.MyObj.MyInnerString);
+            Assert.AreEqual(2, result2.MyList.Count);
+            Assert.AreEqual("a2", result2.MyList[0]);
+            Assert.AreEqual("b2", result2.MyList[1]);
+            Assert.AreEqual(2, result2.MyArray.Length);
+            Assert.AreEqual("y2", result2.MyArray[0]);
+            Assert.AreEqual("z2", result2.MyArray[1]);
+        }
+
+        // indented
+
+
+        [TestMethod]
+        public void TestSkipWhithspacesString()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t\"my value\"\r\r\n\t";
+
+            var result = service.Parse<string>(json);
+
+            Assert.AreEqual("my value", result);
+        }
+
+        [TestMethod]
+        public void TestDontRemoveSpacesInString()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t\"my value\\r\\r\\n\\t\"";
+
+            var result = service.Parse<string>(json);
+
+            Assert.AreEqual("my value\r\r\n\t", result);
+        }
+
+        [TestMethod]
+        public void TestSkipWhithspacesAtStartInt()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   10";
+
+            var result = service.Parse<int>(json);
+
+            Assert.AreEqual(10, result);
+        }
+
+        [TestMethod]
+        public void TestSkipWhithspacesAtEndInt()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   10  \r\r\n\t   ";
+
+            var result = service.Parse<int>(json);
+
+            Assert.AreEqual(10, result);
+        }
+
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithDouble()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   10.5  \r\r\n\t   ";
+
+            var result = service.Parse<double>(json);
+
+            Assert.AreEqual(10.5, result);
+        }
+
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithBool()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   true  \r\r\n\t   ";
+
+            var result = service.Parse<bool>(json);
+
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithNull()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   null  \r\r\n\t   ";
+
+            var result = service.Parse<bool?>(json);
+
+            Assert.AreEqual(null, result);
+        }
+
+        // object
+
+        [TestMethod]
+        public void TestLoadBeautifiedJson()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var t = new DateTime(1990, 12, 12);
+
+            var item = new AssemblyItem
+            {
+                MyGuid = g,
+                MyInt = 1,
+                MyDouble = 1.5,
+                MyString = "my value",
+                MyBool = true,
+                MyEnum = AssemblyEnum.Other,
+                MyDate = t,
+                MyObj = new AssemblyInner { MyInnerString = "my inner value" },
+                MyList = new List<string> { "a", "b" },
+                MyArray = new string[] { "y", "z" }
+            };
+
+            var json = service.StringifyAndBeautify(item);
+
+            var result = service.Parse<AssemblyItem>(json);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(g, result.MyGuid);
+            Assert.AreEqual(1, result.MyInt);
+            Assert.AreEqual(1.5, result.MyDouble);
+            Assert.AreEqual(true, result.MyBool);
+            Assert.AreEqual(AssemblyEnum.Other, result.MyEnum);
+            Assert.AreEqual(t, result.MyDate);
+            Assert.AreEqual("my inner value", result.MyObj.MyInnerString);
+            Assert.AreEqual(2, result.MyList.Count);
+            Assert.AreEqual("a", result.MyList[0]);
+            Assert.AreEqual("b", result.MyList[1]);
+            Assert.AreEqual(2, result.MyArray.Length);
+            Assert.AreEqual("y", result.MyArray[0]);
+            Assert.AreEqual("z", result.MyArray[1]);
+        }
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithObject()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var t = new DateTime(1990, 12, 12);
+
+            var json = "\r\r\n\t   {\r\n   \"MyGuid\" : \"344ac1a2-9613-44d7-b64c-8d45b4585176\",\r\n   \"MyInt\" : 1,\r\n   \"MyDouble\" : 1.5,\r\n   \"MyString\" : \"my value\",\r\n   \"MyBool\" : true,\r\n   \"MyNullable\" : null,\r\n   \"MyEnum\" : 1,\r\n   \"MyDate\" : \"12/12/1990 00:00:00\",\r\n   \"MyObj\" : {\r\n      \"MyInnerString\" : \"my inner value\"\r\n   },\r\n   \"MyList\" : [\r\n      \"a\",\r\n      \"b\"\r\n   ],\r\n   \"MyArray\" : [\r\n      \"y\",\r\n      \"z\"\r\n   ]\r\n}  \r\r\n\t   ";
+
+            var result = service.Parse<AssemblyItem>(json);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(g, result.MyGuid);
+            Assert.AreEqual(1, result.MyInt);
+            Assert.AreEqual(1.5, result.MyDouble);
+            Assert.AreEqual(true, result.MyBool);
+            Assert.AreEqual(AssemblyEnum.Other, result.MyEnum);
+            Assert.AreEqual(t, result.MyDate);
+            Assert.AreEqual("my inner value", result.MyObj.MyInnerString);
+            Assert.AreEqual(2, result.MyList.Count);
+            Assert.AreEqual("a", result.MyList[0]);
+            Assert.AreEqual("b", result.MyList[1]);
+            Assert.AreEqual(2, result.MyArray.Length);
+            Assert.AreEqual("y", result.MyArray[0]);
+            Assert.AreEqual("z", result.MyArray[1]);
+        }
+
+        [TestMethod]
+        public void TestLoadIndentedPlusWithSpacesJsonFile()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var t = new DateTime(1990, 12, 12);
+
+            var json = File.ReadAllText("obj.json");
+
+            var result = service.Parse<AssemblyItem>(json);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(g, result.MyGuid);
+            Assert.AreEqual(1, result.MyInt);
+            Assert.AreEqual(1.5, result.MyDouble);
+            Assert.AreEqual(true, result.MyBool);
+            Assert.AreEqual(AssemblyEnum.Other, result.MyEnum);
+            Assert.AreEqual(t, result.MyDate);
+            Assert.AreEqual("my inner value", result.MyObj.MyInnerString);
+            Assert.AreEqual(2, result.MyList.Count);
+            Assert.AreEqual("a", result.MyList[0]);
+            Assert.AreEqual("b", result.MyList[1]);
+            Assert.AreEqual(2, result.MyArray.Length);
+            Assert.AreEqual("y", result.MyArray[0]);
+            Assert.AreEqual("z", result.MyArray[1]);
+        }
+
+
+        // array
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithArrayOfString()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [\"a\",\"b\"]  \r\r\n\t   ";
+
+            var result = service.Parse<string[]>(json);
+
+            Assert.AreEqual("a", result[0]);
+            Assert.AreEqual("b", result[1]);
+        }
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithArrayOfInt()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [1,2]  \r\r\n\t   ";
+
+            var result = service.Parse<int[]>(json);
+
+            Assert.AreEqual(1, result[0]);
+            Assert.AreEqual(2, result[1]);
+        }
+
+        [TestMethod]
+        public void TestSkipWhithspacesIntInnnerArrayItems()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [  \t\r1    \r\n,   \r 2\t\r\n        ]  \r\r\n\t   ";
+
+            var result = service.Parse<int[]>(json);
+
+            Assert.AreEqual(1, result[0]);
+            Assert.AreEqual(2, result[1]);
+        }
+
+        [TestMethod]
+        public void TestSkipWhithspacesInnnerStringArrayItems()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [  \t\r  \"a\"    \r\n,   \r \"b\"\t\r\n        ]  \r\r\n\t   ";
+
+            var result = service.Parse<string[]>(json);
+
+            Assert.AreEqual("a", result[0]);
+            Assert.AreEqual("b", result[1]);
+        }
+
+
+        [TestMethod]
+        public void TestSkipWhithspacesInnnerBoolArrayItems()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [  \t\r  true    \r\n,   \r false\t\r\n        ]  \r\r\n\t   ";
+
+            var result = service.Parse<bool[]>(json);
+
+            Assert.AreEqual(true, result[0]);
+            Assert.AreEqual(false, result[1]);
+        }
+
+
+        [TestMethod]
+        public void TestSkipWhithspacesInnnerNullArrayItems()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [  \t\r  null    \r\n,   \r null\t\r\n        ]  \r\r\n\t   ";
+
+            var result = service.Parse<bool?[]>(json);
+
+            Assert.AreEqual(null, result[0]);
+            Assert.AreEqual(null, result[1]);
+        }
+
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithArrayOfBool()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [true,false]  \r\r\n\t   ";
+
+            var result = service.Parse<bool[]>(json);
+
+            Assert.AreEqual(true, result[0]);
+            Assert.AreEqual(false, result[1]);
+        }
+
+
+        [TestMethod]
+        public void TestSkipWhithspacesWithArrayOfNull()
+        {
+            var service = this.GetService();
+
+            var json = "\r\r\n\t   [null,null]  \r\r\n\t   ";
+
+            var result = service.Parse<bool?[]>(json);
+
+            Assert.AreEqual(null, result[0]);
+            Assert.AreEqual(null, result[1]);
+        }
+
+        [TestMethod]
+        public void TestParseArrayBeautified()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var g2 = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178");
+            var t = new DateTime(1990, 12, 12);
+            var t2 = new DateTime(1990, 10, 12);
+
+            var list = new List<AssemblyItem> {
+                new AssemblyItem
+                {
+                    MyGuid = g,
+                    MyInt = 1,
+                    MyDouble = 1.5,
+                    MyString = "my \"escape\" value",
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Other,
+                    MyDate = new DateTime(1990, 12, 12),
+                    MyObj = new AssemblyInner { MyInnerString = "my \"inner\" value 1" },
+                    MyList = new List<string> { "a1", "b1" },
+                    MyArray = new string[] { "y1", "z1" }
+                },
+                new AssemblyItem
+                {
+                    MyGuid = g2,
+                    MyInt = 2,
+                    MyDouble = 2.5,
+                    MyString = "my \"escape\" value 2",
+                    MyBool = true,
+                    MyEnum = AssemblyEnum.Default,
+                    MyDate = new DateTime(1990, 10, 12),
+                    MyObj = new AssemblyInner { MyInnerString = "my \"inner\" value 2" },
+                    MyList = new List<string> { "a2", "b2" },
+                    MyArray = new string[] { "y2", "z2" }
+                },
+            };
+
+
+            var json = service.StringifyAndBeautify(list);
+
+            var results = service.Parse<List<AssemblyItem>>(json);
+
+            var result = results[0];
+
+            Assert.AreEqual(g, result.MyGuid);
+            Assert.AreEqual(1, result.MyInt);
+            Assert.AreEqual(1.5, result.MyDouble);
+            Assert.AreEqual("my \"escape\" value", result.MyString);
+            Assert.AreEqual(true, result.MyBool);
+            Assert.AreEqual(AssemblyEnum.Other, result.MyEnum);
+            Assert.AreEqual(t, result.MyDate);
+            Assert.AreEqual("my \"inner\" value 1", result.MyObj.MyInnerString);
+            Assert.AreEqual(2, result.MyList.Count);
+            Assert.AreEqual("a1", result.MyList[0]);
+            Assert.AreEqual("b1", result.MyList[1]);
+            Assert.AreEqual(2, result.MyArray.Length);
+            Assert.AreEqual("y1", result.MyArray[0]);
+            Assert.AreEqual("z1", result.MyArray[1]);
+
+            var result2 = results[1];
+
+            Assert.AreEqual(g2, result2.MyGuid);
+            Assert.AreEqual(2, result2.MyInt);
+            Assert.AreEqual(2.5, result2.MyDouble);
+            Assert.AreEqual("my \"escape\" value 2", result2.MyString);
+            Assert.AreEqual(true, result2.MyBool);
+            Assert.AreEqual(AssemblyEnum.Default, result2.MyEnum);
+            Assert.AreEqual(t2, result2.MyDate);
+            Assert.AreEqual("my \"inner\" value 2", result2.MyObj.MyInnerString);
+            Assert.AreEqual(2, result2.MyList.Count);
+            Assert.AreEqual("a2", result2.MyList[0]);
+            Assert.AreEqual("b2", result2.MyList[1]);
+            Assert.AreEqual(2, result2.MyArray.Length);
+            Assert.AreEqual("y2", result2.MyArray[0]);
+            Assert.AreEqual("z2", result2.MyArray[1]);
+        }
+
+
+        [TestMethod]
+        public void TestArrayLoadIndentedPlusWithSpacesJsonFile()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+            var g2 = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178");
+            var t = new DateTime(1990, 12, 12);
+            var t2 = new DateTime(1990, 10, 12);
+
+            var json = File.ReadAllText("data.json");
+
+
+            var results = service.Parse<List<AssemblyItem>>(json);
+
+            var result = results[0];
+
+            Assert.AreEqual(g, result.MyGuid);
+            Assert.AreEqual(1, result.MyInt);
+            Assert.AreEqual(1.5, result.MyDouble);
+            Assert.AreEqual("my \"escape\" value", result.MyString);
+            Assert.AreEqual(true, result.MyBool);
+            Assert.AreEqual(AssemblyEnum.Other, result.MyEnum);
+            Assert.AreEqual(t, result.MyDate);
+            Assert.AreEqual("my \"inner\" value 1", result.MyObj.MyInnerString);
+            Assert.AreEqual(2, result.MyList.Count);
+            Assert.AreEqual("a1", result.MyList[0]);
+            Assert.AreEqual("b1", result.MyList[1]);
+            Assert.AreEqual(2, result.MyArray.Length);
+            Assert.AreEqual("y1", result.MyArray[0]);
+            Assert.AreEqual("z1", result.MyArray[1]);
+
+            var result2 = results[1];
+
+            Assert.AreEqual(g2, result2.MyGuid);
+            Assert.AreEqual(2, result2.MyInt);
+            Assert.AreEqual(2.5, result2.MyDouble);
+            Assert.AreEqual("my \"escape\" value 2", result2.MyString);
+            Assert.AreEqual(true, result2.MyBool);
             Assert.AreEqual(AssemblyEnum.Default, result2.MyEnum);
             Assert.AreEqual(t2, result2.MyDate);
             Assert.AreEqual("my \"inner\" value 2", result2.MyObj.MyInnerString);

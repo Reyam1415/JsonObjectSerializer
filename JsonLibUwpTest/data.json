@@ -1,0 +1,256 @@
+﻿
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                      [
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   {
+      "MyGuid" :                              
+      
+      
+      "344ac1a2-9613-44d7-b64c-8d45b4585176",
+      
+      
+      "MyInt" 
+      
+      
+      
+      
+      : 
+      
+      1,
+      "MyDouble" 
+      
+      :
+      
+      1.5,
+      "MyString" 
+      
+      : 
+      
+      
+      "my \"escape\" value",
+     
+     
+      "MyBool" 
+      
+      :
+      
+      true,
+      "MyNullable"
+      
+      :
+      
+      
+      
+      
+      
+      
+      
+      
+      null,
+      "MyEnum" : 
+      
+      
+      1
+      
+            ,
+      "MyDate" : 
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      "12/12/1990 00:00:00"
+      
+      
+      ,
+      "MyObj"       : 
+      
+          {
+        
+         "MyInnerString"                 :         "my \"inner\" value 1"
+          
+            
+            
+          },
+      
+      
+      
+      "MyList"
+      
+      
+      :
+      
+      
+      [
+        
+                       "a1"         , 
+         
+         
+         "b1"
+      
+      
+      
+      ]
+      
+      
+      ,
+      
+      
+      "MyArray" : 
+      
+      [
+         "y1",
+         "z1"
+      ]
+   }
+   
+   ,
+   
+   
+   {
+      "MyGuid" 
+      
+      :
+      
+      
+      "344ac1a2-9613-44d7-b64c-8d45b4585178",
+      "MyInt" : 
+      
+      2
+      
+      ,
+      "MyDouble" : 
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      2.5,
+      
+      
+      "MyString" 
+      
+      :
+        
+      "my \"escape\" value 2"
+      
+      ,
+      
+      
+      "MyBool" 
+      
+      :
+      
+      
+      true,
+      "MyNullable"
+      
+      : 
+      
+      null,
+      "MyEnum" : 
+      
+      0,
+      "MyDate" : 
+      
+      "12/10/1990 00:00:00",
+      "MyObj" 
+      
+      : 
+      
+      {
+         
+         
+         "MyInnerString" : 
+         
+         "my \"inner\" value 2"
+      
+        
+        
+      }
+      
+      ,
+      "MyList" :
+      
+      [
+        
+        
+         "a2"
+         ,
+         
+         
+         "b2"
+                                                         ]  
+                                                         ,
+      "MyArray" :
+      
+      [
+         "y2",
+         
+         
+         "z2"
+         
+         
+      ]
+   
+     
+     
+   }  
+                  ]
+                  
+                  
+                  
+                  
+                  
+                    

@@ -145,7 +145,7 @@ namespace JsonLib
 
         public string ParseString(char[] jsonChars, ref int index)
         {
-            //  "   find end  " ... add chars to string builder ... escape \", \t, \n , etc. => \\\", \\\t, \\\n
+            //  "   find end  " ... add chars to string builder ... escape \", \t, \n , etc. => \\", \\t, \\n
             // return string formatted
             var result = new StringBuilder();
             char c;
@@ -154,7 +154,7 @@ namespace JsonLib
             var stringToken = this.MoveAndGetNextToken(jsonChars, ref index);
             if (stringToken != JsonToken.String)
             {
-                throw new Exception("Invalid Json. Expected double quotes");
+                throw new JsonLibException("Invalid Json. Expected double quotes");
             }
 
             bool stringClosed = false;
@@ -180,8 +180,11 @@ namespace JsonLib
                     {
                         break;
                     }
-                    // next char \\\ => "
-                    c = jsonChars[index++];
+
+                    c = jsonChars[index];
+
+                    index++;
+
                     if (c == '"')
                     {
                         result.Append('"');
@@ -221,8 +224,7 @@ namespace JsonLib
                         {
                             if (!UInt32.TryParse(new string(jsonChars, index, 4), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint codePoint))
                             {
-                                // exception ?
-                                return "";
+                                throw new JsonLibException("Invalid Json at index " + index);
                             }
                             result.Append(Char.ConvertFromUtf32((int)codePoint));
                             index += 4;
@@ -241,7 +243,7 @@ namespace JsonLib
 
             if (!stringClosed)
             {
-                throw new Exception("Invalid Json.String not closed");
+                throw new JsonLibException("Invalid Json.String not closed at index " + index);
             }
 
             return result.ToString();
@@ -297,13 +299,13 @@ namespace JsonLib
                 case JsonToken.SquaredOpen:
                     return this.ToJsonArray(jsonChars, ref index);
                 case JsonToken.True:
-                    index += 4;
+                    this.MoveAndGetNextToken(jsonChars, ref index);
                     return new JsonElementBool(true);
                 case JsonToken.False:
-                    index += 5;
+                    this.MoveAndGetNextToken(jsonChars, ref index);
                     return new JsonElementBool(false);
                 case JsonToken.Null:
-                    index += 4;
+                    this.MoveAndGetNextToken(jsonChars, ref index);
                     return new JsonElementNullable(null);
                 case JsonToken.None:
                     break;
@@ -319,7 +321,7 @@ namespace JsonLib
             var curlyOpenToken = this.MoveAndGetNextToken(jsonChars, ref index);
             if (curlyOpenToken != JsonToken.CurlyOpen)
             {
-                throw new Exception("Invalid Json. Curly open expected at index " + index);
+                throw new JsonLibException("Invalid Json. Curly open expected at index " + index);
             }
 
             bool curlyClosed = false;
@@ -380,7 +382,7 @@ namespace JsonLib
             var squareOpenToken = this.MoveAndGetNextToken(jsonChars, ref index);
             if (squareOpenToken != JsonToken.SquaredOpen)
             {
-                throw new Exception("Invalid Json. Squared open expected at index " + index);
+                throw new JsonLibException("Invalid Json. Squared open expected at index " + index);
             }
 
             bool squareClosed = false;
@@ -422,6 +424,7 @@ namespace JsonLib
             char[] jsonChars = json.ToCharArray();
             int index = 0;
             var result = this.ToJsonValue(jsonChars, ref index);
+            this.SkipWhitespaces(jsonChars, ref index);
             if (index + 1 < json.Length)
             {
                 throw new JsonLibException("Invalid Json");

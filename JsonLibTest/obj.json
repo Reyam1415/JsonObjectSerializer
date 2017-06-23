@@ -1,0 +1,98 @@
+﻿
+
+                                                              
+
+          
+
+
+                                                              
+
+
+
+
+
+
+
+
+{
+  "MyGuid": 
+  
+        "344ac1a2-9613-44d7-b64c-8d45b4585176",
+  "MyInt": 
+  
+      1
+            ,
+  "MyDouble":
+  
+      1.5
+              
+              ,
+  "MyString":   
+  
+      "my value"
+  
+  ,
+  "MyBool":       
+        true
+        
+        ,
+        
+        
+  "MyNullable": 
+  
+        null
+        
+          ,
+  "MyEnum": 
+  
+    1   
+    
+       ,
+  "MyDate": 
+  
+      "12/12/1990 00:00:00"
+      
+      
+       ,
+  "MyObj": 
+  
+  
+              {
+    
+    
+    "MyInnerString":
+    
+     "my inner value"
+     
+     
+     
+  }   
+  
+  ,
+  
+        
+  "MyList": 
+  
+      [
+            "a"   
+            
+            ,
+                            
+                            "b"
+                            
+  ]   
+  
+   ,
+   
+  "MyArray"           :
+  [
+   
+    "y"
+    
+    ,
+    "z"
+    
+    
+    
+      ]
+              }
