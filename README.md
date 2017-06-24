@@ -20,6 +20,9 @@ PM> Install-Package JsonObjectSerializer
     * **Stringify**: Object => Json
     * **StringifyAndBeautify**: Stringify + Format Json
     * **Parse**: Json => Object
+    * **ToXml**: Object => Xml
+    * **ToXmlAndBeautify**
+    * **FromXml**: Xml => Object
     * **ActiveCache** (active by default)
 
 * **Services**:
@@ -78,6 +81,10 @@ var jsonValue = JsonElementValue.CreateArray()
    * ***ObjectToJsonValue**: allow to convert Object to Json Value
    * **JsonValueToJson**: : allow to convert Json Value to Json
    * **ObjectToJson** (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
+
+Converters Xml: 
+* _XmlToObject, XmlToXmlValue, XmlValueToObject_
+* _ObjectToXml, ObjectToXmlValue, XmlValueToXml_
 
 _Examples_:
 
@@ -269,6 +276,89 @@ var json = JsonObjectSerializer.Stringify(user, mappings);
 var user = JsonObjectSerializer.Parse<User>(json, mappings);
 ```
 
+## Xml
+
+Object => Xml
+
+Support values (String, Number, Bool, Nullable), Object, Array. If a value is null, the attribute _xsi:nil="true"_ is added on element and the namespace _xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"_ on root element.
+
+Example with a list
+
+```cs
+var users = new List<User>
+            {
+                new User{ Id = 1, UserName = "Marie"},
+                new User{ Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com"}
+            };
+
+var xml = JsonObjectSerializer.ToXml(users);
+```
+
+output:
+```xml
+<?xml version="1.0"?>
+<ArrayOfUser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<User>
+		<Id>1</Id>
+		<UserName>Marie</UserName>
+		<Age xsi:nil="true" />
+		<Email xsi:nil="true" />
+	</User>
+	<User>
+		<Id>2</Id>
+		<UserName>Pat</UserName>
+		<Age>20</Age>
+		<Email>pat@domain.com</Email>
+	</User>
+</ArrayOfUser>
+```
+
+With Xml Mapping. Allow to rename nodes a array node.
+Example:
+
+```cs
+var users = new List<User>
+            {
+                new User{ Id = 1, UserName = "Marie"},
+                new User{ Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com"}
+            };
+
+var mappings = new XmlMappingContainer();
+mappings.SetType<User>("MapUser")
+                .SetArrayName("MapMyUsers")
+                .SetProperty("Id", "MapId")
+                .SetProperty("UserName", "MapUserName")
+                .SetProperty("Email", "MapEmail");
+
+var xml = service.ToXml(users, mappings);
+```
+
+output:
+```xml
+<?xml version="1.0"?>
+<MyUsers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<MyUser>
+		<MyId>1</MyId>
+		<MyUserName>Marie</MyUserName>
+		<MyAge xsi:nil="true" />
+		<MyEmail xsi:nil="true" />
+	</MyUser>
+	<MyUser>
+		<MyId>2</MyId>
+		<MyUserName>Pat</MyUserName>
+		<MyAge>20</MyAge>
+		<MyEmail>pat@domain.com</MyEmail>
+	</MyUser>
+</MyUsers>
+```
+
+Xml => Object
+
+Example :
+
+```cs
+var users = JsonObjectSerializer.FromXml<List<User>(xml);
+```
 
 ## Pro / Cons
 
