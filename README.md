@@ -30,13 +30,13 @@ PM> Install-Package JsonObjectSerializer
    * **JsonBeautifier** and **XmlBeautifier** (IBeautifier): used to Format / Indent Json and Xml
    * **AssemblyInfoService** (IAssemblyInfoService): used to resolve Object values and properties
 
-* **Json Values** (IJsonElementValue) (named JsonElement... to avoid conflicts with Windows.Data.Json):
-   * **String** (JsonElementString) => Value string, used for Guid and DateTime
-   * **Number** (JsonElementNumber) => Value Number (int, double, Int64, etc.) or for Enum
-   * **Bool** (JsonElementBool) => Value true | false
-   * **Nullable** (JsonElementNullable) => value null or value (10 for example for a nullable "int?")
-   * **Object** (JsonElementObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
-   * **Array** (JsonElementArray) => Values: List of Json Values
+* **Json Values** (IJsonValue):
+   * **String** (JsonString) => Value string, used for Guid and DateTime
+   * **Number** (JsonNumber) => Value Number (int, double, Int64, etc.) or for Enum
+   * **Bool** (JsonBool) => Value true | false
+   * **Nullable** (JsonNullable) => value null or value (10 for example for a nullable "int?")
+   * **Object** (JsonObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
+   * **Array** (JsonArray) => Values: List of Json Values
    * **JsonElementValue** is a _helper_ .Allow to create easily Json Values:
        * _CreateString_
        * _CreateNumber_
