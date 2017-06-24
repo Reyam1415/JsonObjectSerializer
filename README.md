@@ -294,7 +294,7 @@ var users = new List<User>
 var xml = JsonObjectSerializer.ToXml(users);
 ```
 
-output:
+_output:_
 ```xml
 <?xml version="1.0"?>
 <ArrayOfUser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -333,7 +333,7 @@ mappings.SetType<User>("MyUser")
 var xml = service.ToXml(users, mappings);
 ```
 
-output:
+_output:_
 ```xml
 <?xml version="1.0"?>
 <MyUsers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
