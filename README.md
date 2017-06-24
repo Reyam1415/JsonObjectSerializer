@@ -313,7 +313,7 @@ output:
 </ArrayOfUser>
 ```
 
-With **Xml Mapping**. Allow to rename nodes a array node. Example:
+With **Xml Mapping**. Allow to rename nodes. Example:
 
 ```cs
 var users = new List<User>
