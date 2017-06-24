@@ -323,11 +323,12 @@ var users = new List<User>
             };
 
 var mappings = new XmlMappingContainer();
-mappings.SetType<User>("MapUser")
-                .SetArrayName("MapMyUsers")
-                .SetProperty("Id", "MapId")
-                .SetProperty("UserName", "MapUserName")
-                .SetProperty("Email", "MapEmail");
+mappings.SetType<User>("MyUser")
+                .SetArrayName("MyUsers")
+                .SetProperty("Id", "MyId")
+                .SetProperty("UserName", "MyUserName")
+                .SetProperty("Age", "MyAge")
+                .SetProperty("Email", "MyEmail");
 
 var xml = service.ToXml(users, mappings);
 ```
