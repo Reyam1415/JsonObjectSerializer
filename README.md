@@ -78,7 +78,7 @@ var jsonValue = JsonElementValue.CreateArray()
    * **JsonToObject** (used by JsonObjectSerializer) : use JsonToJsonValue and JsonValueToObject to convert Json to Object
 
    _Object => Json_:
-   * ***ObjectToJsonValue**: allow to convert Object to Json Value
+   * **ObjectToJsonValue**: allow to convert Object to Json Value
    * **JsonValueToJson**: : allow to convert Json Value to Json
    * **ObjectToJson** (used by JsonObjectSerializer) : use ObjectToJsonValue and JsonValueToJson to convert Object to Json
 
