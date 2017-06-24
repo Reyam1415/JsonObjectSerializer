@@ -278,7 +278,7 @@ var user = JsonObjectSerializer.Parse<User>(json, mappings);
 
 ## Xml
 
-Object => Xml
+### Object => Xml
 
 Support values: _String_, _Number_ ( Int32, Int64, Uint32, Double, Single, etc. ), _Bool_, _Nullable_ ( example int? or DateTime? ), _Object_, _Array_. 
 
@@ -354,7 +354,7 @@ _output:_
 </MyUsers>
 ```
 
-Xml => Object
+### Xml => Object
 
 Example :
 
