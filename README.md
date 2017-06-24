@@ -282,7 +282,7 @@ var user = JsonObjectSerializer.Parse<User>(json, mappings);
 
 Support values: _String_, _Number_ ( Int32, Int64, Uint32, Double, Single, etc. ), _Bool_, _Nullable_ ( example int? or DateTime? ), _Object_, _Array_. 
 
-If a value is _null_ (string nullable or object, array), the attribute _xsi:nil="true"_ is added on the element and the namespace _xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"_ on the root element.
+If a value is _null_ (string, nullable, object, array), the attribute _xsi:nil="true"_ is added on the element and the namespace _xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"_ on the root element.
 
 Example with a list
 
