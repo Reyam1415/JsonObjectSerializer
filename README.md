@@ -27,7 +27,7 @@ PM> Install-Package JsonObjectSerializer
 
 * **Services**:
    * **JsonObjectSerializerService** (IJsonObjectSerializerService)
-   * **Beautifier** (IBeautifier): used to Format / Indent Json
+   * **JsonBeautifier** and **XmlBeautifier** (IBeautifier): used to Format / Indent Json and Xml
    * **AssemblyInfoService** (IAssemblyInfoService): used to resolve Object values and properties
 
 * **Json Values** (IJsonElementValue) (named JsonElement... to avoid conflicts with Windows.Data.Json):
@@ -313,8 +313,7 @@ output:
 </ArrayOfUser>
 ```
 
-With Xml Mapping. Allow to rename nodes a array node.
-Example:
+With **Xml Mapping**. Allow to rename nodes a array node. Example:
 
 ```cs
 var users = new List<User>
