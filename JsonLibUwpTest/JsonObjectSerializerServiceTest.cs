@@ -1,20 +1,27 @@
 ﻿using JsonLib;
+using JsonLib.Json.Mappings;
 using JsonLib.Mappings;
+using JsonLib.Mappings.Xml;
+using JsonLib.Xml;
 using JsonLibTest.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JsonLibTest
 {
     [TestClass]
-    public class JsonObjectSerializerServiceUwpTest
+    public class JsonObjectSerializerServiceTest
     {
         public JsonObjectSerializerService GetService()
         {
             return new JsonObjectSerializerService();
         }
+
 
         // stringify
 
@@ -244,7 +251,7 @@ namespace JsonLibTest
 
             var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetLowerStrategyForAllTypes();
 
             var item = new AssemblyItem
@@ -273,7 +280,7 @@ namespace JsonLibTest
 
             var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>().SetToLowerCaseStrategy();
 
             // InnerItem no mapping
@@ -304,7 +311,7 @@ namespace JsonLibTest
 
             var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>()
                 .SetProperty("MyGuid", "map_myguid")
                 .SetProperty("MyInt", "map_myint")
@@ -392,7 +399,7 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetLowerStrategyForAllTypes();
 
             var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
@@ -445,7 +452,7 @@ namespace JsonLibTest
             var t = new DateTime(1990, 12, 12);
             var t2 = new DateTime(1990, 10, 12);
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>().SetToLowerCaseStrategy();
             mappings.SetType<AssemblyInner>().SetToLowerCaseStrategy();
 
@@ -494,7 +501,7 @@ namespace JsonLibTest
             var t = new DateTime(1990, 12, 12);
             var t2 = new DateTime(1990, 10, 12);
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>()
                 .SetProperty("MyGuid", "map_myguid")
                 .SetProperty("MyInt", "map_myint")
@@ -596,7 +603,7 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetLowerStrategyForAllTypes();
 
             var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
@@ -649,7 +656,7 @@ namespace JsonLibTest
             var t = new DateTime(1990, 12, 12);
             var t2 = new DateTime(1990, 10, 12);
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>().SetToLowerCaseStrategy();
             mappings.SetType<AssemblyInner>().SetToLowerCaseStrategy();
 
@@ -698,7 +705,7 @@ namespace JsonLibTest
             var t = new DateTime(1990, 12, 12);
             var t2 = new DateTime(1990, 10, 12);
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>()
                 .SetProperty("MyGuid", "map_myguid")
                 .SetProperty("MyInt", "map_myint")
@@ -1024,7 +1031,7 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            var mappings = new MappingContainer().SetLowerStrategyForAllTypes();
+            var mappings = new JsonMappingContainer().SetLowerStrategyForAllTypes();
 
             var result = service.Parse<AssemblyItem>("{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"myint\":1,\"mydouble\":1.5,\"mystring\":\"my \\\"escape\\\" value\",\"mybool\":true,\"mynullable\":null,\"myenum\":1,\"mydate\":\"12/12/1990 00:00:00\",\"myobj\":{\"myinnerstring\":\"my \\\"inner\\\" value\"},\"mylist\":[\"a\",\"b\"],\"myarray\":[\"y\",\"z\"]}", mappings);
 
@@ -1052,7 +1059,7 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>().SetToLowerCaseStrategy();
             mappings.SetType<AssemblyInner>().SetToLowerCaseStrategy();
 
@@ -1083,7 +1090,7 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>()
                 .SetProperty("MyGuid", "map_myguid")
                 .SetProperty("MyInt", "map_myint")
@@ -1360,7 +1367,7 @@ namespace JsonLibTest
 
             var json = "[{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"myint\":1,\"mydouble\":1.5,\"mystring\":\"my \\\"escape\\\" value\",\"mybool\":true,\"mynullable\":null,\"myenum\":1,\"mydate\":\"12/12/1990 00:00:00\",\"myobj\":{\"myinnerstring\":\"my \\\"inner\\\" value 1\"},\"mylist\":[\"a1\",\"b1\"],\"myarray\":[\"y1\",\"z1\"]},{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"myint\":2,\"mydouble\":2.5,\"mystring\":\"my \\\"escape\\\"value 2\",\"mybool\":false,\"mynullable\":null,\"myenum\":0,\"mydate\":\"12/10/1990 00:00:00\",\"myobj\":{\"myinnerstring\":\"my \\\"inner\\\" value 2\"},\"mylist\":[\"a2\",\"b2\"],\"myarray\":[\"y2\",\"z2\"]}]";
 
-            var mappings = new MappingContainer().SetLowerStrategyForAllTypes();
+            var mappings = new JsonMappingContainer().SetLowerStrategyForAllTypes();
 
             var results = service.Parse<AssemblyItem[]>(json, mappings);
 
@@ -1409,7 +1416,7 @@ namespace JsonLibTest
 
             var json = "[{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"myint\":1,\"mydouble\":1.5,\"mystring\":\"my \\\"escape\\\" value\",\"mybool\":true,\"mynullable\":null,\"myenum\":1,\"mydate\":\"12/12/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 1\"},\"mylist\":[\"a1\",\"b1\"],\"myarray\":[\"y1\",\"z1\"]},{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"myint\":2,\"mydouble\":2.5,\"mystring\":\"my \\\"escape\\\"value 2\",\"mybool\":false,\"mynullable\":null,\"myenum\":0,\"mydate\":\"12/10/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 2\"},\"mylist\":[\"a2\",\"b2\"],\"myarray\":[\"y2\",\"z2\"]}]";
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>().SetToLowerCaseStrategy();
             // AssemblyInner to upper
 
@@ -1460,7 +1467,7 @@ namespace JsonLibTest
 
             var json = "[{\"map_myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"map_myint\":1,\"map_mydouble\":1.5,\"map_mystring\":\"my \\\"escape\\\" value\",\"map_mybool\":true,\"map_mynullable\":null,\"map_myenum\":1,\"map_mydate\":\"12/12/1990 00:00:00\",\"map_myobj\":{\"MyInnerString\":\"my \\\"inner\\\" value 1\"},\"map_mylist\":[\"a1\",\"b1\"],\"map_myarray\":[\"y1\",\"z1\"]},{\"map_myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"map_myint\":2,\"map_mydouble\":2.5,\"map_mystring\":\"my \\\"escape\\\"value 2\",\"map_mybool\":false,\"map_mynullable\":null,\"map_myenum\":0,\"map_mydate\":\"12/10/1990 00:00:00\",\"map_myobj\":{\"MyInnerString\":\"my \\\"inner\\\" value 2\"},\"map_mylist\":[\"a2\",\"b2\"],\"map_myarray\":[\"y2\",\"z2\"]}]";
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>()
                 .SetProperty("MyGuid", "map_myguid")
                 .SetProperty("MyInt", "map_myint")
@@ -1521,7 +1528,7 @@ namespace JsonLibTest
 
             var json = "[{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"myint\":1,\"mydouble\":1.5,\"mystring\":\"my \\\"escape\\\" value\",\"mybool\":true,\"mynullable\":null,\"myenum\":1,\"mydate\":\"12/12/1990 00:00:00\",\"myobj\":{\"myinnerstring\":\"my \\\"inner\\\" value 1\"},\"mylist\":[\"a1\",\"b1\"],\"myarray\":[\"y1\",\"z1\"]},{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"myint\":2,\"mydouble\":2.5,\"mystring\":\"my \\\"escape\\\"value 2\",\"mybool\":false,\"mynullable\":null,\"myenum\":0,\"mydate\":\"12/10/1990 00:00:00\",\"myobj\":{\"myinnerstring\":\"my \\\"inner\\\" value 2\"},\"mylist\":[\"a2\",\"b2\"],\"myarray\":[\"y2\",\"z2\"]}]";
 
-            var mappings = new MappingContainer().SetLowerStrategyForAllTypes();
+            var mappings = new JsonMappingContainer().SetLowerStrategyForAllTypes();
 
             var results = service.Parse<AssemblyItem[]>(json, mappings);
 
@@ -1570,7 +1577,7 @@ namespace JsonLibTest
 
             var json = "[{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"myint\":1,\"mydouble\":1.5,\"mystring\":\"my \\\"escape\\\" value\",\"mybool\":true,\"mynullable\":null,\"myenum\":1,\"mydate\":\"12/12/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 1\"},\"mylist\":[\"a1\",\"b1\"],\"myarray\":[\"y1\",\"z1\"]},{\"myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"myint\":2,\"mydouble\":2.5,\"mystring\":\"my \\\"escape\\\"value 2\",\"mybool\":false,\"mynullable\":null,\"myenum\":0,\"mydate\":\"12/10/1990 00:00:00\",\"MyObj\":{\"MyInnerString\":\"my \\\"inner\\\" value 2\"},\"mylist\":[\"a2\",\"b2\"],\"myarray\":[\"y2\",\"z2\"]}]";
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>().SetToLowerCaseStrategy();
 
             var results = service.Parse<AssemblyItem[]>(json, mappings);
@@ -1620,7 +1627,7 @@ namespace JsonLibTest
 
             var json = "[{\"map_myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585176\",\"map_myint\":1,\"map_mydouble\":1.5,\"map_mystring\":\"my \\\"escape\\\" value\",\"map_mybool\":true,\"map_mynullable\":null,\"map_myenum\":1,\"map_mydate\":\"12/12/1990 00:00:00\",\"map_myobj\":{\"MyInnerString\":\"my \\\"inner\\\" value 1\"},\"map_mylist\":[\"a1\",\"b1\"],\"map_myarray\":[\"y1\",\"z1\"]},{\"map_myguid\":\"344ac1a2-9613-44d7-b64c-8d45b4585178\",\"map_myint\":2,\"map_mydouble\":2.5,\"map_mystring\":\"my \\\"escape\\\"value 2\",\"map_mybool\":false,\"map_mynullable\":null,\"map_myenum\":0,\"map_mydate\":\"12/10/1990 00:00:00\",\"map_myobj\":{\"MyInnerString\":\"my \\\"inner\\\" value 2\"},\"map_mylist\":[\"a2\",\"b2\"],\"map_myarray\":[\"y2\",\"z2\"]}]";
 
-            var mappings = new MappingContainer();
+            var mappings = new JsonMappingContainer();
             mappings.SetType<AssemblyItem>()
                 .SetProperty("MyGuid", "map_myguid")
                 .SetProperty("MyInt", "map_myint")
@@ -2097,6 +2104,104 @@ namespace JsonLibTest
             Assert.AreEqual(2, result2.MyArray.Length);
             Assert.AreEqual("y2", result2.MyArray[0]);
             Assert.AreEqual("z2", result2.MyArray[1]);
+        }
+
+        // to xml
+
+        [TestMethod]
+        public void TestToXml_WithArray()
+        {
+            var service = this.GetService();
+
+            var value = new List<User>
+            {
+                new User{ Id=1, UserName="Marie"},
+                new User{ Id=2, UserName="Pat", Age=20, Email="pat@domain.com"}
+            };
+
+            var result =  service.ToXml(value);
+
+            Assert.AreEqual("<?xml version=\"1.0\"?>\r<ArrayOfUser xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><User><Id>1</Id><UserName>Marie</UserName><Age xsi:nil=\"true\" /><Email xsi:nil=\"true\" /></User><User><Id>2</Id><UserName>Pat</UserName><Age>20</Age><Email>pat@domain.com</Email></User></ArrayOfUser>", result);
+        }
+
+        [TestMethod]
+        public void TestToXml_WithArrayAndMapping()
+        {
+            var service = this.GetService();
+
+            var value = new List<User>
+            {
+                new User{ Id=1, UserName="Marie"},
+                new User{ Id=2, UserName="Pat", Age=20, Email="pat@domain.com"}
+            };
+
+            var mappings = new XmlMappingContainer();
+            mappings.SetType<User>("MapUser")
+                .SetArrayName("MapMyUsers")
+                .SetProperty("Id", "MapId")
+                .SetProperty("UserName", "MapUserName")
+                .SetProperty("Email", "MapEmail");
+
+            var result = service.ToXml(value, mappings);
+
+            Assert.AreEqual("<?xml version=\"1.0\"?>\r<MapMyUsers xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><MapUser><MapId>1</MapId><MapUserName>Marie</MapUserName><Age xsi:nil=\"true\" /><MapEmail xsi:nil=\"true\" /></MapUser><MapUser><MapId>2</MapId><MapUserName>Pat</MapUserName><Age>20</Age><MapEmail>pat@domain.com</MapEmail></MapUser></MapMyUsers>", result);
+        }
+
+        // from xml
+
+        [TestMethod]
+        public void TestFromXml_WithArray()
+        {
+            var service = this.GetService();
+
+            var xml = "<?xml version=\"1.0\"?>\r<ArrayOfUser xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><User><Id>1</Id><UserName>Marie</UserName><Age xsi:nil=\"true\" /><Email xsi:nil=\"true\" /></User><User><Id>2</Id><UserName>Pat</UserName><Age>20</Age><Email>pat@domain.com</Email></User></ArrayOfUser>";
+
+            var results = service.FromXml<List<User>>(xml);
+
+            var result = results[0];
+
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("Marie", result.UserName);
+            Assert.AreEqual(null, result.Age);
+            Assert.AreEqual(null, result.Email);
+
+            var result2 = results[1];
+
+            Assert.AreEqual(2, result2.Id);
+            Assert.AreEqual("Pat", result2.UserName);
+            Assert.AreEqual(20, result2.Age);
+            Assert.AreEqual("pat@domain.com", result2.Email);
+        }
+
+        [TestMethod]
+        public void TestFromXml_WithArrayAndMapping()
+        {
+            var service = this.GetService();
+
+            var xml = "<?xml version=\"1.0\"?>\r<MapMyUsers xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><MapUser><MapId>1</MapId><MapUserName>Marie</MapUserName><Age xsi:nil=\"true\" /><MapEmail xsi:nil=\"true\" /></MapUser><MapUser><MapId>2</MapId><MapUserName>Pat</MapUserName><Age>20</Age><MapEmail>pat@domain.com</MapEmail></MapUser></MapMyUsers>";
+
+            var mappings = new XmlMappingContainer();
+            mappings.SetType<User>("MapUser")
+                .SetArrayName("MapMyUsers")
+                .SetProperty("Id", "MapId")
+                .SetProperty("UserName", "MapUserName")
+                .SetProperty("Email", "MapEmail");
+
+            var results = service.FromXml<List<User>>(xml, mappings);
+
+            var result = results[0];
+
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("Marie", result.UserName);
+            Assert.AreEqual(null, result.Age);
+            Assert.AreEqual(null, result.Email);
+
+            var result2 = results[1];
+
+            Assert.AreEqual(2, result2.Id);
+            Assert.AreEqual("Pat", result2.UserName);
+            Assert.AreEqual(20, result2.Age);
+            Assert.AreEqual("pat@domain.com", result2.Email);
         }
 
         // cache

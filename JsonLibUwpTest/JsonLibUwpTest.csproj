@@ -102,23 +102,30 @@
     <SDKReference Include="TestPlatform.Universal, Version=$(UnitTestPlatformVersion)" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cache\CacheTest.cs" />
     <Compile Include="Common\Models.cs" />
     <Compile Include="JsonObjectSerializerServiceTest.cs" />
-    <Compile Include="JsonValues\JsonElementTest.cs" />
-    <Compile Include="Mappings\TypeMappingTest.cs" />
+    <Compile Include="Json\Cache\CacheTest.cs" />
+    <Compile Include="Json\JsonValues\JsonElementTest.cs" />
+    <Compile Include="Json\Mappings\TypeMappingTest.cs" />
+    <Compile Include="Json\ToJson\JsonValueToJsonServiceTest.cs" />
+    <Compile Include="Json\ToJson\JsonValueToJsonTest.cs" />
+    <Compile Include="Json\ToJson\ObjectToJsonTest.cs" />
+    <Compile Include="Json\ToJson\ObjectToJsonValueTest.cs" />
+    <Compile Include="Json\ToObject\JsonToJsonValueTest.cs" />
+    <Compile Include="Json\ToObject\JsonToObjectTest.cs" />
+    <Compile Include="Json\ToObject\JsonValueToObjectTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AssemblyInfoServiceTest.cs" />
-    <Compile Include="Services\JsonValueToJsonServiceTest.cs" />
-    <Compile Include="ToJson\JsonValueToJsonTest.cs" />
-    <Compile Include="ToJson\ObjectToJsonTest.cs" />
-    <Compile Include="ToJson\ObjectToJsonValueTest.cs" />
-    <Compile Include="ToObject\JsonToJsonValueTest.cs" />
-    <Compile Include="ToObject\JsonToObjectTest.cs" />
-    <Compile Include="ToObject\JsonValueToObjectTest.cs" />
     <Compile Include="UnitTestApp.xaml.cs">
       <DependentUpon>UnitTestApp.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Xml\FromXml\XmlToXmlValueTest.cs" />
+    <Compile Include="Xml\FromXml\XmlValueToObjectTest.cs" />
+    <Compile Include="Xml\Mappings\XmlMappingTest.cs" />
+    <Compile Include="Xml\ToXml\ObjectToXmlValueTest.cs" />
+    <Compile Include="Xml\ToXml\XmlValueToXmlServiceTest.cs" />
+    <Compile Include="Xml\ToXml\XmlValueToXmlTest.cs" />
+    <Compile Include="Xml\XmlValues\XmlValuesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="UnitTestApp.xaml">

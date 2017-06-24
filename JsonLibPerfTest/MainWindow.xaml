@@ -22,7 +22,10 @@
             <Button Click="OnTestJsonObject">Test with JsonObjectSerializer</Button>
             <Button Click="OnTestDataContractJsonSerializer">Test with DataContractJsonSerializer</Button>
             <Button Click="OnTestJsonNet">Test with Json.Net</Button>
+            
             <Button Click="OnStringifyAndBeautify" Margin="0,6">Stringify and Beautify</Button>
+
+            <Button Click="OnToXml" Margin="0,6">Conert Object To Xml</Button>
         </StackPanel>
         <ListView x:Name="ListView" Grid.Row="1"></ListView>
         <ListView x:Name="DataListView" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Grid.Row="2">

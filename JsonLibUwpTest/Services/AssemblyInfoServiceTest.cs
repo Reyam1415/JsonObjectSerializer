@@ -1,8 +1,10 @@
 ﻿using JsonLib;
+using JsonLib.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +17,96 @@ namespace JsonLibTest.Services
         {
             return new AssemblyInfoService();
         }
+
+        // check is system type
+
+        [TestMethod]
+        public void TestIsSystemType()
+        {
+            var service = this.GetService();
+
+            // namespace => System
+            Assert.IsTrue(service.IsSystemType(typeof(int)));
+            Assert.IsTrue(service.IsSystemType(typeof(double)));
+            Assert.IsTrue(service.IsSystemType(typeof(string)));
+            Assert.IsTrue(service.IsSystemType(typeof(bool)));
+            Assert.IsTrue(service.IsSystemType(typeof(string[])));
+            Assert.IsTrue(service.IsSystemType(typeof(Guid)));
+            Assert.IsTrue(service.IsSystemType(typeof(DateTime)));
+
+            Assert.IsTrue(service.IsSystemType(typeof(int?)));
+
+            // namespace => System.Collections.Generic
+            Assert.IsFalse(service.IsSystemType(typeof(List<string>)));
+            Assert.IsFalse(service.IsSystemType(typeof(List<User>)));
+
+            Assert.IsFalse(service.IsSystemType(typeof(User)));
+            Assert.IsFalse(service.IsSystemType(typeof(AssemblyEnum)));
+        }
+
+        // check numeric
+
+        [TestMethod]
+        public void TestIsNumberWithValue()
+        {
+            var service = this.GetService();
+
+            Assert.IsTrue(service.IsNumber(10));
+            Assert.IsTrue(service.IsNumber(10.99));
+            Assert.IsFalse(service.IsNumber("10"));
+            Assert.IsFalse(service.IsNumber(true));
+        }
+
+        [TestMethod]
+        public void TestIsNumberWithType()
+        {
+            var service = this.GetService();
+
+            Assert.IsTrue(service.IsNumberType(typeof(int)));
+            Assert.IsTrue(service.IsNumberType(typeof(uint)));
+            Assert.IsTrue(service.IsNumberType(typeof(UInt64)));
+            Assert.IsFalse(service.IsNumberType(typeof(string)));
+        }
+
+        // check nullable
+
+        [TestMethod]
+        public void TestIsNullable()
+        {
+            var service = this.GetService();
+
+            Assert.IsTrue(service.IsNullable(typeof(int?)));
+            Assert.IsFalse(service.IsNullable(typeof(int)));
+        }
+
+        // check generic
+
+        [TestMethod]
+        public void TestIsGeneric()
+        {
+            var service = this.GetService();
+
+            Assert.IsTrue(service.IsGenericType(typeof(MyItemGeneric<string>)));
+            Assert.IsTrue(service.IsGenericType(typeof(List<string>)));
+            Assert.IsTrue(service.IsGenericType(typeof(List<User>)));
+            Assert.IsFalse(service.IsGenericType(typeof(User)));
+            Assert.IsFalse(service.IsGenericType(typeof(int)));
+        }
+
+        // check enum
+
+        [TestMethod]
+        public void TestIsEnum()
+        {
+            var service = this.GetService();
+
+            var propertyMyEnum = typeof(AssemblyItem).GetProperty("MyEnum");
+            var propertyMyString = typeof(AssemblyItem).GetProperty("MyString");
+
+            Assert.IsTrue(service.IsEnum(propertyMyEnum.PropertyType));
+            Assert.IsFalse(service.IsEnum(propertyMyString.PropertyType));
+        }
+
 
         // get properties
 
@@ -420,35 +512,5 @@ namespace JsonLibTest.Services
 
     }
 
-    public class AssemblyItem
-    {
-        public Guid MyGuid { get; set; }
-        public int MyInt { get; set; }
-        public double MyDouble { get; set; }
-        public string MyString { get; set; }
-        public bool MyBool { get; set; }
-        public int? MyNullable { get; set; }
-        public AssemblyEnum MyEnum { get; set; }
-        public DateTime MyDate { get; set; }
-        public AssemblyInner MyObj { get; set; }
-        public List<string> MyList { get; set; }
-        public string[] MyArray { get; set; }
-    }
-
-    public class AssemblyItem2
-    {
-        public Int64 MyInt64 { get; set; }
-    }
-
-    public class AssemblyInner
-    {
-        public string MyInnerString { get; set; }
-    }
-
-    public enum AssemblyEnum
-    {
-        Default,
-        Other
-    }
    
 }

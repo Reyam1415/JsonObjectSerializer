@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -165,13 +166,31 @@ namespace JsonLibPerfTest
             var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
             var json = JsonObjectSerializer.StringifyAndBeautify(items);
 
-            var w = new BeautifierWindow
+            var w = new InfoWindow
             {
                 Width = 800,
                 Height = 600,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             w.SetContent(json);
+            w.Show();
+        }
+
+        private void OnToXml(object sender, RoutedEventArgs e)
+        {
+            var items = Service.GetItems(Convert.ToInt32(TestCountTextBox.Text));
+
+            var xml = JsonObjectSerializer.ToXmlAndBeautify(items);
+
+            // File.WriteAllText("data.xml", xml);
+
+            var w = new InfoWindow
+            {
+                Width = 800,
+                Height = 600,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            w.SetContent(xml);
             w.Show();
         }
     }

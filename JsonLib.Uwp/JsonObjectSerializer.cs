@@ -1,4 +1,5 @@
-﻿using JsonLib.Mappings;
+﻿using JsonLib.Json.Mappings;
+using JsonLib.Mappings.Xml;
 
 namespace JsonLib
 {
@@ -18,19 +19,34 @@ namespace JsonLib
             serializationService.ActiveCache(value);
         }
 
-        public static string Stringify(object value, MappingContainer mappings = null)
+        public static string Stringify(object value, JsonMappingContainer mappings = null)
         {
             return serializationService.Stringify(value, mappings);
         }
 
-        public static string StringifyAndBeautify(object value, MappingContainer mappings = null)
+        public static string StringifyAndBeautify(object value, JsonMappingContainer mappings = null)
         {
             return serializationService.StringifyAndBeautify(value, mappings);
         }
 
-        public static T Parse<T>(string json, MappingContainer mappings = null)
+        public static T Parse<T>(string json, JsonMappingContainer mappings = null)
         {
             return serializationService.Parse<T>(json, mappings);
+        }
+
+        public static string ToXml<T>(T value, XmlMappingContainer mappings = null)
+        {
+            return serializationService.ToXml<T>(value, mappings);
+        }
+
+        public static string ToXmlAndBeautify<T>(T value, XmlMappingContainer mappings = null)
+        {
+            return serializationService.ToXmlAndBeautify<T>(value, mappings);
+        }
+
+        public static T FromXml<T>(string xml, XmlMappingContainer mappings = null)
+        {
+            return serializationService.FromXml<T>(xml, mappings);
         }
     }
 }
