@@ -35,9 +35,9 @@ PM> Install-Package JsonObjectSerializer
    * **Number** (JsonNumber) => Value Number (int, double, Int64, etc.) or for Enum
    * **Bool** (JsonBool) => Value true | false
    * **Nullable** (JsonNullable) => value null or value (10 for example for a nullable "int?")
-   * **Object** (JsonObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonElementValue)
+   * **Object** (JsonObject) => values: dictionary of key (Json property name used for Json) and Json Value (IJsonValue)
    * **Array** (JsonArray) => Values: List of Json Values
-   * **JsonElementValue** is a _helper_ .Allow to create easily Json Values:
+   * **JsonValue** is a _helper_ .Allow to create easily Json Values:
        * _CreateString_
        * _CreateNumber_
        * _CreateBool_
@@ -48,26 +48,26 @@ PM> Install-Package JsonObjectSerializer
 _Examples:_
 
 ```cs
-var jsonValue = JsonElementValue.CreateString("my string value");
+var jsonValue = JsonValue.CreateString("my string value");
 ```
 
 With Object
 ```cs
-var jsonValue = JsonElementValue
+var jsonValue = JsonValue
     .CreateObject()
     .AddNumber("Id",1)
     .AddString("UserName","Marie")
     .AddNullable("Age", null)
     .AddString("Email", null)
-    .AddObject("Role", JsonElementValue.CreateObject().AddNumber("RoleId",2).AddString("Name","Admin"))
-    .AddArray("Hobbies", JsonElementValue.CreateArray().AddString("Shopping").AddString("Cooking"));
+    .AddObject("Role", JsonValue.CreateObject().AddNumber("RoleId",2).AddString("Name","Admin"))
+    .AddArray("Hobbies", JsonValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 ```
 
 With Array of Objects
 ```cs
-var jsonValue = JsonElementValue.CreateArray()
-    .AddObject(JsonElementValue.CreateObject().AddString("UserName", "Marie"))
-    .AddObject(JsonElementValue.CreateObject().AddString("UserName", "Pat"));
+var jsonValue = JsonValue.CreateArray()
+    .AddObject(JsonValue.CreateObject().AddString("UserName", "Marie"))
+    .AddObject(JsonValue.CreateObject().AddString("UserName", "Pat"));
 ```
 
 * **Converters**:
@@ -106,25 +106,25 @@ JsonValue to Json
 ```cs
 var service = new JsonValueToJson();
 
-var jsonValue = JsonElementValue
+var jsonValue = JsonValue
         .CreateObject()
         .AddNumber("Id", 1)
         .AddString("UserName", "Marie")
         .AddNullable("Age", null)
         .AddString("Email", null)
-        .AddObject("Role", JsonElementValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
-        .AddArray("Hobbies", JsonElementValue.CreateArray().AddString("Shopping").AddString("Cooking"));
+        .AddObject("Role", JsonValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
+        .AddArray("Hobbies", JsonValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 
 var json = service.ToObject(jsonValue);
 
 // => {"Id":1,"UserName":"Marie","Age":null,"Email":null,"Role":{"RoleId":2,"Name":"Admin"},"Hobbies":["Shopping","Cooking"]}
 ```
 Other Methods:
-* _ToArray : (from JsonElementArray)_
-* _ToNumber: (from JsonElementNumber)_
-* _ToString : (from JsonElementString)_
-* _ToBool : (from JsonElementBool)_
-* _ToNullable: (from JsonElementNullable)_
+* _ToArray : (from JsonArray)_
+* _ToNumber: (from JsonNumber)_
+* _ToString : (from JsonString)_
+* _ToBool : (from JsonBool)_
+* _ToNullable: (from JsonNullable)_
 
 
 ## Stringify Object => Json
