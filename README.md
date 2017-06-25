@@ -378,8 +378,6 @@ var xml = JsonObjectSerializer.ToXml(users);
 
 _output:_
 
-The key have to be the first element.
-
 ```xml
 <?xml version="1.0"?>
 <ArrayOfUser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -406,6 +404,8 @@ The key have to be the first element.
 _note: support Mapping_
 
 Xml => Object
+
+Note: Nodes not require to be named "Key" and "Value". But The key have to be the first element of key / value pair. 
 
 ```cs
 var results = service.FromXml<Dictionary<int,User>>(xml);
