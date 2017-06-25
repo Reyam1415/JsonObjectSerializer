@@ -70,6 +70,10 @@ namespace JsonLib.Xml
                 // is nullable
                 return xmlValue.Value == null ? null : this.ResolveValue(nullableType, xmlValue);
             }
+            else if(propertyType == typeof(string))
+            {
+                return Convert.ToString(xmlValue.Value, CultureInfo.InvariantCulture);
+            }
             else
             {
                 return this.ResolveValue(propertyType, xmlValue);
@@ -78,7 +82,14 @@ namespace JsonLib.Xml
 
         public object ToValue(Type propertyType, XmlBool xmlValue)
         {
-            return xmlValue.Value;
+            if (propertyType == typeof(string))
+            {
+                return xmlValue.Value == true ? "true" : "false";
+            }
+            else
+            {
+                return xmlValue.Value;
+            }
         }
 
         public object ToValue(Type propertyType, XmlNullable xmlValue)
@@ -115,37 +126,7 @@ namespace JsonLib.Xml
                 }
             }
             return null;
-        }
-
-        public object ResolveValue(Type propertyType, IXmlValue xmlValue, XmlMappingContainer mappings = null)
-        {
-            if (xmlValue.ValueType == XmlValueType.String)
-            {
-                return this.ToValue(propertyType, (XmlString)xmlValue);
-            }
-            else if (xmlValue.ValueType == XmlValueType.Number)
-            {
-                return this.ToValue(propertyType, (XmlNumber)xmlValue);
-            }
-            else if (xmlValue.ValueType == XmlValueType.Bool)
-            {
-                return this.ToValue(propertyType, (XmlBool)xmlValue);
-            }
-            else if (xmlValue.ValueType == XmlValueType.Nullable)
-            {
-                return this.ToValue(propertyType, (XmlNullable)xmlValue);
-            }
-            else if (xmlValue.ValueType == XmlValueType.Object)
-            {
-                return this.ToObject(propertyType, (XmlObject)xmlValue, mappings);
-            }
-            else if (xmlValue.ValueType == XmlValueType.Array)
-            {
-                return this.ToEnumerable(propertyType, (XmlArray)xmlValue, mappings);
-            }
-
-            throw new JsonLibException("Cannot resolve Value");
-        }
+        }    
 
         public object ToObject(Type objType, XmlObject xmlObject, XmlMappingContainer mappings = null)
         {
@@ -166,7 +147,7 @@ namespace JsonLib.Xml
                      : this.FindProperty(properties, xmlValue.Key);
                 if (property != null)
                 {
-                    var value = this.ResolveValue(property.PropertyType, xmlValue.Value, mappings);
+                    var value = this.Resolve(property.PropertyType, xmlValue.Value, mappings);
                     this.assemblyInfoService.SetValue(instance, property, value);
                 }
             }
@@ -182,7 +163,7 @@ namespace JsonLib.Xml
 
             foreach (var xmlValue in xmlArray.Values)
             {
-                var value = this.ResolveValue(singleItemType, xmlValue, mappings);
+                var value = this.Resolve(singleItemType, xmlValue, mappings);
                 result.Add(value);
             }
             return result;
@@ -196,7 +177,7 @@ namespace JsonLib.Xml
 
             foreach (var xmlValue in xmlArray.Values)
             {
-                var value = this.ResolveValue(singleItemType, xmlValue, mappings);
+                var value = this.Resolve(singleItemType, xmlValue, mappings);
                 result.SetValue(value, index);
                 index++;
             }
@@ -224,8 +205,7 @@ namespace JsonLib.Xml
                 {
                     return Convert.ToString(((XmlNumber)xmlValueKey).Value, CultureInfo.InvariantCulture);
                 }
-                else
-                {
+                else {
                     return ((XmlNumber)xmlValueKey).Value;
                 }
             }            
@@ -239,7 +219,7 @@ namespace JsonLib.Xml
             var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
 
             var result = this.assemblyInfoService.CreateInstance(type) as IDictionary;
-            if (result == null) { throw new JsonLibException("Cannot create dictionary"); }
+            if(result == null) { throw new JsonLibException("Cannot create dictionary"); }
 
             foreach (var xmlValue in xmlArray.Values)
             {
@@ -250,7 +230,7 @@ namespace JsonLib.Xml
                 var key = this.ResolveDictionaryKey(keyType, xmlEntryKey);
 
                 var xmlEntryValue = xmlObject.Values.ElementAt(1).Value;
-                var value = this.ResolveValue(valueType, xmlEntryValue, mappings);
+                var value = this.Resolve(valueType, xmlEntryValue, mappings);
 
                 result.Add(key, value);
             }

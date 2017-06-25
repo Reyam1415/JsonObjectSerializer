@@ -14,6 +14,58 @@ namespace JsonLibTest
         public string Email { get; set; }
     }
 
+    public class MyItemWithDictionaryIntString
+    {
+        public Dictionary<int,string> Items { get; set; }
+    }
+
+    public class MyItemWithDictionaryIntUser
+    {
+        public Dictionary<int, User> Users { get; set; }
+    }
+
+    public class UserWithMapping
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public int? Age { get; set; }
+        public string Email { get; set; }
+        public MyEnum EnumValue { get; set; }
+        public UserRole Role { get; set; }
+        public List<Post> Posts { get; set; }
+        public Tip[] Tips { get; set; }
+
+        public UserWithMapping()
+        {
+
+        }
+    }
+
+    public class UserRole
+    {
+        public string RoleName { get; set; }
+
+        public UserRole()
+        {
+
+        }
+    }
+
+    public class Post
+    {
+        public string Title { get; set; }
+
+        public Post()
+        {
+
+        }
+    }
+
+    public class Tip
+    {
+        public string TipName { get; set; }
+    }
+
     //
     public class AssemblyItem
     {
@@ -46,6 +98,14 @@ namespace JsonLibTest
         Other
     }
 
+    // guess
+
+    public class MyItemGuess
+    {
+        public string MyIntString { get; set; }
+        public string MyDoubleString { get; set; }
+        public string MyBoolString { get; set; }
+    }
 
     //
     public enum MyEnum
@@ -107,4 +167,46 @@ namespace JsonLibTest
         public string MyInnerString { get; set; }
     }
 
+    public class CompleteUser
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public int? Age { get; set; }
+        public string Email { get; set; }
+        public double Quota { get; set; }
+        public Int64 MyInt64 { get; set; }
+    }
+
+    public class UserWithInner
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public Role Role { get; set; }
+
+        public UserWithInner()
+        {
+            this.Role = new Role();
+        }
+    }
+
+    public class UserWithInnerAndList
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public Role Role { get; set; }
+        public List<string> Strings { get; set; }
+
+        public UserWithInnerAndList()
+        {
+            this.Role = new Role();
+            this.Strings = new List<string>();
+        }
+    }
+
+    public class Role
+    {
+        public int RoleId { get; set; }
+        public string Name { get; set; }
+        public int? Status { get; set; }
+    }
 }

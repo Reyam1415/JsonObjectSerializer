@@ -79,7 +79,14 @@ namespace JsonLib.Json
 
         public object ToValue(Type propertyType, JsonBool jsonValue)
         {
-            return jsonValue.Value;
+            if (propertyType == typeof(string))
+            {
+                return jsonValue.Value == true ? "true" : "false";
+            }
+            else
+            {
+                return jsonValue.Value;
+            }
         }
 
         public object ToValue(Type propertyType, JsonNullable jsonValue)

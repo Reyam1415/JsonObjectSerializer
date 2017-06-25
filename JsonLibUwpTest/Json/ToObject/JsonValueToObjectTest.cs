@@ -156,19 +156,6 @@ namespace JsonLibTest
             Assert.AreEqual(10, result);
         }
 
-        //[TestMethod]
-        //public void TestNumber_WithNullableNull()
-        //{
-        // can not be null from json else is JsonElementNullable from json
-        //    var service = this.GetService();
-
-        //    var jsonValue = JsonElementValue.CreateNumber(10);
-
-        //    var result = service.ToValue(typeof(int?), jsonValue);
-
-        //    Assert.AreEqual(null, result);
-        //}
-
         [TestMethod]
         public void TestNumber_WithDouble()
         {
@@ -205,10 +192,22 @@ namespace JsonLibTest
             Assert.AreEqual((Int64)10, result);
         }
 
+        [TestMethod]
+        public void TestGuessNumberFromJson_ToPropertyString()
+        {
+            var service = this.GetService();
+
+            var jsonValue = JsonValue.CreateNumber(10);
+
+            var result = service.ToValue(typeof(string), jsonValue);
+
+            Assert.AreEqual("10", result);
+        }
+
         // bool
 
         [TestMethod]
-        public void TestBool()
+        public void TestBool_WithTrue()
         {
             // json value true | false => property could be bool, nullable, or not bool
             // can not be null else is JsonElementNullable from Json
@@ -220,6 +219,42 @@ namespace JsonLibTest
             var result = service.ToValue(typeof(bool), jsonValue);
 
             Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public void TestBool_WithFalse()
+        {
+            var service = this.GetService();
+
+            var jsonValue = JsonValue.CreateBool(false);
+
+            var result = service.ToValue(typeof(bool), jsonValue);
+
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public void TestGuessBool_ToPropertyString()
+        {
+            var service = this.GetService();
+
+            var jsonValue = JsonValue.CreateBool(true);
+
+            var result = service.ToValue(typeof(string), jsonValue);
+
+            Assert.AreEqual("true", result);
+        }
+
+        [TestMethod]
+        public void TestGuessBool_ToPropertyString_WithFalse()
+        {
+            var service = this.GetService();
+
+            var jsonValue = JsonValue.CreateBool(false);
+
+            var result = service.ToValue(typeof(string), jsonValue);
+
+            Assert.AreEqual("false", result);
         }
 
         [TestMethod]
@@ -239,6 +274,8 @@ namespace JsonLibTest
         [TestMethod]
         public void TestNullable()
         {
+            // int, Int64, double ... DateTime, Guid,Enum
+
             var service = this.GetService();
 
             var jsonValue = JsonValue.CreateNullable(10);
@@ -261,7 +298,7 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestNullableConvert()
+        public void TestNullable_ConvertNumber()
         {
             var service = this.GetService();
 
@@ -270,6 +307,34 @@ namespace JsonLibTest
             var result = service.ToValue(typeof(Int64?), jsonValue);
 
             Assert.AreEqual((Int64)10, result);
+        }
+
+        [TestMethod]
+        public void TestNullable_WithGuid()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+
+            var jsonValue = JsonValue.CreateNullable(g);
+
+            var result = service.ToValue(typeof(Guid?), jsonValue);
+
+            Assert.AreEqual(g, result);
+        }
+
+        [TestMethod]
+        public void TestNullable_WithDateTime()
+        {
+            var service = this.GetService();
+
+            var t = new DateTime(1990, 12, 12);
+
+            var jsonValue = JsonValue.CreateNullable(t);
+
+            var result = service.ToValue(typeof(DateTime?), jsonValue);
+
+            Assert.AreEqual(t, result);
         }
 
         // object
@@ -450,6 +515,24 @@ namespace JsonLibTest
             Assert.AreEqual("a", result.Strings[0]);
             Assert.AreEqual("b", result.Strings[1]);
 
+        }
+
+        [TestMethod]
+        public void TestObjectGuessTypes_ToPropertyTypes()
+        {
+            // guess number, bool
+
+            var service = this.GetService();
+
+            var jsonObject = new JsonObject()
+               .AddNumber("MyIntString", 10)
+               .AddBool("MyBoolString", true);
+
+            var result = service.ToObject(typeof(MyItemGuess), jsonObject) as MyItemGuess;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("10", result.MyIntString);
+            Assert.AreEqual("true", result.MyBoolString);
         }
 
         // find property
@@ -1107,6 +1190,59 @@ namespace JsonLibTest
         }
 
 
+        [TestMethod]
+        public void TestArrayGuessTypes_ToPropertyTypes()
+        {
+            // guess number, bool
+
+            var service = this.GetService();
+
+            var jsonArray = new JsonArray()
+                .AddObject(new JsonObject()
+                   .AddNumber("MyIntString", 10)
+                   .AddBool("MyBoolString", true))
+               .AddObject(new JsonObject()
+                   .AddNumber("MyIntString", 20)
+                   .AddBool("MyBoolString", false));
+
+            var result = service.ToArray(typeof(MyItemGuess[]), jsonArray) as MyItemGuess[];
+
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual("10", result[0].MyIntString);
+            Assert.AreEqual("true", result[0].MyBoolString);
+
+            Assert.AreEqual("20", result[1].MyIntString);
+            Assert.AreEqual("false", result[1].MyBoolString);
+        }
+
+
+        [TestMethod]
+        public void TestListGuessTypes_ToPropertyTypes()
+        {
+            // guess number, bool
+
+            var service = this.GetService();
+
+            var jsonArray = new JsonArray()
+                .AddObject(new JsonObject()
+                   .AddNumber("MyIntString", 10)
+                   .AddBool("MyBoolString", true))
+               .AddObject(new JsonObject()
+                   .AddNumber("MyIntString", 20)
+                   .AddBool("MyBoolString", false));
+
+            var result = service.ToList(typeof(List<MyItemGuess>), jsonArray) as List<MyItemGuess>;
+
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual("10", result[0].MyIntString);
+            Assert.AreEqual("true", result[0].MyBoolString);
+
+            Assert.AreEqual("20", result[1].MyIntString);
+            Assert.AreEqual("false", result[1].MyBoolString);
+        }
+
         // list of objects
 
 
@@ -1583,46 +1719,5 @@ namespace JsonLibTest
         }
     }
 
-    public class CompleteUser
-    {
-        public int Id { get; set; }
-        public string UserName { get; set; }
-        public int? Age { get; set; }
-        public string Email { get; set; }
-        public double Quota { get; set; }
-        public Int64 MyInt64 { get; set; }
-    }
-
-    public class UserWithInner
-    {
-        public int Id { get; set; }
-        public string UserName { get; set; }
-        public Role Role { get; set; }
-
-        public UserWithInner()
-        {
-            this.Role = new Role();
-        }
-    }
-
-    public class UserWithInnerAndList
-    {
-        public int Id { get; set; }
-        public string UserName { get; set; }
-        public Role Role { get; set; }
-        public List<string> Strings { get; set; }
-
-        public UserWithInnerAndList()
-        {
-            this.Role = new Role();
-            this.Strings = new List<string>();
-        }
-    }
-
-    public class Role
-    {
-        public int RoleId { get; set; }
-        public string Name { get; set; }
-        public int? Status { get; set; }
-    }
+    
 }

@@ -63,6 +63,7 @@
     <Compile Include="Json\ToJson\ObjectToJsonTest.cs" />
     <Compile Include="Json\ToJson\ObjectToJsonValueTest.cs" />
     <Compile Include="Json\ToObject\JsonValueToObjectTest.cs" />
+    <Compile Include="Xml\FromXml\XmlToObjectTest.cs" />
     <Compile Include="Xml\FromXml\XmlValueToObjectTest.cs" />
     <Compile Include="Xml\FromXml\XmlToXmlValueTest.cs" />
     <Compile Include="Xml\Mappings\XmlMappingTest.cs" />

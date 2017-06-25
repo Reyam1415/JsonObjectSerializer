@@ -363,6 +363,7 @@ namespace JsonLibTest
             Assert.AreEqual("z", ((XmlString)myArray.Values[1]).Value);
         }
 
+
         [TestMethod]
         public void TestObjectNullablesNull()
         {
@@ -422,8 +423,10 @@ namespace JsonLibTest
             Assert.AreEqual(true, ((XmlString)((XmlObject)result).Values["MyArray"]).IsNil);
         }
 
+        // dictionary
+
         [TestMethod]
-        public void TestDictionary()
+        public void TestDictionary_WithStringKeyAndIntValue()
         {
             var service = this.GetService();
 
@@ -466,7 +469,37 @@ namespace JsonLibTest
         }
 
         [TestMethod]
-        public void TestDictionary_WithExoticKeyAndIntValue()
+        public void TestDictionary_WithStringKeyAndIntValueGuesObject()
+        {
+            var service = this.GetService();
+
+            //var value = new Dictionary<string, int>
+            //{
+            //    {"key1", 10 },
+            //};
+
+            var xml = "<?xml version=\"1.0\"?>\r<ArrayOfInt32><Int32><Key>key1</Key><Value>10</Value></Int32></ArrayOfInt32>";
+
+            var result = service.ToXmlValue(xml);
+
+            Assert.AreEqual(XmlValueType.Object, result.ValueType);
+            Assert.AreEqual("ArrayOfInt32", result.NodeName);
+
+            Assert.AreEqual(XmlValueType.Object, ((XmlObject)result).Values["Int32"].ValueType);
+
+            var result1 = ((XmlObject)result).Values["Int32"] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result1.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result1.Values["Key"].NodeName);
+            Assert.AreEqual("key1", ((XmlString)result1.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result1.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result1.Values["Value"].NodeName);
+            Assert.AreEqual(10, ((XmlNumber)result1.Values["Value"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionary_WithTypeKeyAndIntValue()
         {
             var service = this.GetService();
 

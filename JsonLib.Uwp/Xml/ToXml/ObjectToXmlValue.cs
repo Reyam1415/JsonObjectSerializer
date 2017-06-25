@@ -182,6 +182,28 @@ namespace JsonLib.Xml
             return result;
         }
 
+        public XmlArray ToXmlArray_FromDictionary(Type type, IDictionary dictionary, string mainNodeName, XmlMappingContainer mappings = null)
+        {
+            var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
+            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
+
+            XmlTypeMapping mapping = null;
+            if (mappings != null && mappings.Has(valueType))
+            {
+                mapping = mappings.Get(valueType);
+            }
+
+            var nullableType = Nullable.GetUnderlyingType(valueType);
+            if (nullableType != null)
+            {
+                return this.DoToXmlArray_FromDictionary(type, keyType, nullableType, dictionary, mainNodeName, mappings);
+            }
+            else
+            {
+                return this.DoToXmlArray_FromDictionary(type, keyType, valueType, dictionary, mainNodeName, mappings);
+            }
+        }
+
         public XmlArray ToXmlArray_FromDictionary(Type type, IDictionary dictionary, XmlMappingContainer mappings = null)
         {
             var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
@@ -321,12 +343,10 @@ namespace JsonLib.Xml
             else if (this.assemblyInfoService.IsEnum(type))
             {
                 return new XmlString(nodeName, value.ToString());
-               // return new XmlNumber(nodeName, Convert.ToInt32(value));
             }
             else if (this.assemblyInfoService.IsDictionary(type))
             {
-                var l = 10;
-                return null;
+                return this.ToXmlArray_FromDictionary(type, (IDictionary)value, nodeName, mappings);
             }
             else if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
             {

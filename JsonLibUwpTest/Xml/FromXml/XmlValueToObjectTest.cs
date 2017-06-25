@@ -4,6 +4,7 @@ using JsonLib;
 using JsonLib.Xml;
 using System.Collections.Generic;
 using JsonLib.Mappings.Xml;
+using System.Collections;
 using System.Reflection;
 
 namespace JsonLibTest.Xml.FromXml
@@ -81,6 +82,18 @@ namespace JsonLibTest.Xml.FromXml
         }
 
         [TestMethod]
+        public void TestGuessInt_ToPropertyTypeString()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlNumber("Int32", 10);
+
+            var result = service.Resolve<string>(xmlValue);
+
+            Assert.AreEqual("10", result);
+        }
+
+        [TestMethod]
         public void TestNumber_WithDouble()
         {
             var service = this.GetService();
@@ -102,6 +115,19 @@ namespace JsonLibTest.Xml.FromXml
             var result = service.Resolve<Int64>(xmlValue);
 
             Assert.AreEqual((Int64)10, result);
+        }
+
+
+        [TestMethod]
+        public void TestGuessDouble_ToPropertyTypeString()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlNumber("Double", 10.5);
+
+            var result = service.Resolve<string>(xmlValue);
+
+            Assert.AreEqual("10.5", result);
         }
 
         // bool
@@ -128,6 +154,30 @@ namespace JsonLibTest.Xml.FromXml
             var result = service.Resolve<bool>(xmlValue);
 
             Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public void TestGuessBool_ToPropertyTypeString()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlBool("Boolean", true);
+
+            var result = service.Resolve<string>(xmlValue);
+
+            Assert.AreEqual("true", result);
+        }
+
+        [TestMethod]
+        public void TestGuessBool_ToPropertyTypeString_WithFalse()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlBool("Boolean", false);
+
+            var result = service.Resolve<string>(xmlValue);
+
+            Assert.AreEqual("false", result);
         }
 
         // nils
@@ -211,19 +261,7 @@ namespace JsonLibTest.Xml.FromXml
         }
 
 
-        // object
-
-        [TestMethod]
-        public void TestGuessObject()
-        {
-            var service = this.GetService();
-
-            var xmlValue = new XmlObject("ArrayOfString").AddString("String","value 1");
-
-            var result = service.Resolve<string[]>(xmlValue);
-
-            Assert.AreEqual("value 1", result[0]);
-        }
+        // object      
 
         [TestMethod]
         public void TestCompleteObject()
@@ -272,6 +310,35 @@ namespace JsonLibTest.Xml.FromXml
             Assert.AreEqual(2, result.MyArray.Length);
             Assert.AreEqual("y", result.MyArray[0]);
             Assert.AreEqual("z", result.MyArray[1]);
+        }
+
+        [TestMethod]
+        public void TestGuessObject_WithPropertyTypeIntAndBool()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlObject("MyItem")
+                .AddNumber("MyIntString", 10)
+                .AddNumber("MyDoubleString", 10.5)
+                .AddBool("MyBoolString", true);
+
+            var result = service.Resolve<MyItemGuess>(xmlValue);
+
+            Assert.AreEqual("10", result.MyIntString);
+            Assert.AreEqual("10.5", result.MyDoubleString);
+            Assert.AreEqual("true", result.MyBoolString);
+        }
+
+        [TestMethod]
+        public void TestGuessObject_ToPropertyTypeArray()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlObject("ArrayOfString").AddString("String", "value 1");
+
+            var result = service.Resolve<string[]>(xmlValue);
+
+            Assert.AreEqual("value 1", result[0]);
         }
 
         [TestMethod]
@@ -356,6 +423,58 @@ namespace JsonLibTest.Xml.FromXml
 
             Assert.AreEqual(true, result[0]);
             Assert.AreEqual(false, result[1]);
+        }
+
+        [TestMethod]
+        public void TestGuessArray_WithPropertyTypeIntAndBool()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlArray("MyItems")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("MyIntString", 10)
+                    .AddNumber("MyDoubleString", 10.5)
+                    .AddBool("MyBoolString", true))
+                 .Add(new XmlObject("MyItem")
+                    .AddNumber("MyIntString", 20)
+                    .AddNumber("MyDoubleString", 20.5)
+                    .AddBool("MyBoolString", false));
+
+            var result = service.Resolve<MyItemGuess[]>(xmlValue);
+
+            Assert.AreEqual("10", result[0].MyIntString);
+            Assert.AreEqual("10.5", result[0].MyDoubleString);
+            Assert.AreEqual("true", result[0].MyBoolString);
+
+            Assert.AreEqual("20", result[1].MyIntString);
+            Assert.AreEqual("20.5", result[1].MyDoubleString);
+            Assert.AreEqual("false", result[1].MyBoolString);
+        }
+
+        [TestMethod]
+        public void TestGuessList_WithPropertyTypeIntAndBool()
+        {
+            var service = this.GetService();
+
+            var xmlValue = new XmlArray("MyItems")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("MyIntString", 10)
+                    .AddNumber("MyDoubleString", 10.5)
+                    .AddBool("MyBoolString", true))
+                 .Add(new XmlObject("MyItem")
+                    .AddNumber("MyIntString", 20)
+                    .AddNumber("MyDoubleString", 20.5)
+                    .AddBool("MyBoolString", false));
+
+            var result = service.Resolve<List<MyItemGuess>>(xmlValue);
+
+            Assert.AreEqual("10", result[0].MyIntString);
+            Assert.AreEqual("10.5", result[0].MyDoubleString);
+            Assert.AreEqual("true", result[0].MyBoolString);
+
+            Assert.AreEqual("20", result[1].MyIntString);
+            Assert.AreEqual("20.5", result[1].MyDoubleString);
+            Assert.AreEqual("false", result[1].MyBoolString);
         }
 
         [TestMethod]
@@ -506,6 +625,489 @@ namespace JsonLibTest.Xml.FromXml
             Assert.AreEqual("Pat", result2.UserName);
             Assert.AreEqual(20, result2.Age);
             Assert.AreEqual("pat@domain.com", result2.Email);
+        }
+
+        // resolve dictionary key
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithInt()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(int), new XmlNumber("MyItnt", 10));
+            
+            Assert.AreEqual(10, result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithGuessInt_ToPropertyTypeString()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(string), new XmlNumber("MyItnt", 10));
+
+            Assert.AreEqual("10", result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithDouble()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(double), new XmlNumber("MyDouble", 10.5));
+
+            Assert.AreEqual(10.5, result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithGuessDouble_ToPropertyTypeString()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(string), new XmlNumber("MyDouble", 10.5));
+
+            Assert.AreEqual("10.5", result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithType()
+        {
+            var service = this.GetService();
+
+            // "JsonLibTest.MyItem, JsonLibTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+            var r = typeof(MyItem).AssemblyQualifiedName;
+
+            var result = service.ResolveDictionaryKey(typeof(Type), new XmlString("MyItem", r));
+
+            Assert.AreEqual(typeof(MyItem), result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithType_ThrowExceptionIfNotFound()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+
+            try
+            {
+                var result = service.ResolveDictionaryKey(typeof(Type), new XmlString("MyItem", "not found"));
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithBool_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+
+            try
+            {
+                var result = service.ResolveDictionaryKey(typeof(bool), new XmlBool("MyBool", true));
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+
+
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithObject_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+
+            try
+            {
+                var result = service.ResolveDictionaryKey(typeof(MyItem), new XmlObject("MyItem"));
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithArray_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+
+            try
+            {
+                var result = service.ResolveDictionaryKey(typeof(MyItem[]), new XmlArray("MyItems"));
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        // dictionary
+
+        [TestMethod]
+        public void TestResolveDictionary_WithNoItems_ReturnsEmptyDictionary()
+        {
+            var service = this.GetService();
+
+            var xmlArray = new XmlArray("ArrayOfString");
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithArrayString_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlString("MyItem", "value 1"));
+            try
+            {
+                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithArrayOfBool_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+            var xmlArray = new XmlArray("Array")
+                .Add(new XmlBool("MyItem", true));
+            try
+            {
+                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithArrayOfArray_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+            var xmlArray = new XmlArray("Array")
+                .Add(new XmlArray("MyArray"));
+            try
+            {
+                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithObjectButNot2Values_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem").AddNumber("Int32",10));
+            try
+            {
+                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithObjectButWith2ValuesButNotGoodType_Fail()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem").AddString("MyString", "10").AddString("String","value 1"));
+            try
+            {
+                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsTrue(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithObjectButWith2Values_Success()
+        {
+            bool failed = false;
+
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem").AddNumber("Int32", 10).AddString("String", "value 1"));
+            try
+            {
+                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            }
+            catch (Exception)
+            {
+                failed = true;
+            }
+
+            Assert.IsFalse(failed);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithIntKeyStringValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 10).AddString("String", "value 1"))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 20).AddString("String", "value 2"));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+
+            Assert.AreEqual("value 1",result[10]);
+            Assert.AreEqual("value 2", result[20]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithStringKeyStringValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key1").AddString("String", "value 1"))
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key2").AddString("String", "value 2"));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
+
+            Assert.AreEqual("value 1", result["key1"]);
+            Assert.AreEqual("value 2", result["key2"]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithIntKeyIntValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 10).AddNumber("Value", 100))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 20).AddNumber("Value", 200));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, int>), xmlArray) as Dictionary<int, int>;
+
+            Assert.AreEqual(100, result[10]);
+            Assert.AreEqual(200, result[20]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithIntKeyGuessIntStringValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 10).AddNumber("Value", 100))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 20).AddNumber("Value", 200));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+
+            Assert.AreEqual("100", result[10]);
+            Assert.AreEqual("200", result[20]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithIntKeyGuessDoubleStringValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 10).AddNumber("Value", 1.5))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 20).AddNumber("Value", 2.5));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+
+            Assert.AreEqual("1.5", result[10]);
+            Assert.AreEqual("2.5", result[20]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithIntKeyBoolValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 10).AddBool("Value", true))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 20).AddBool("Value", false));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, bool>), xmlArray) as Dictionary<int, bool>;
+
+            Assert.AreEqual(true, result[10]);
+            Assert.AreEqual(false, result[20]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithIntKeyGuessBoolStringValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 10).AddBool("Value", true))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 20).AddBool("Value", false));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+
+            Assert.AreEqual("true", result[10]);
+            Assert.AreEqual("false", result[20]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithStringKeyDateTimeValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key1").AddString("Value", "12/12/1990 00:00:00"))
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key2").AddString("Value", "12/10/1990 00:00:00"));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, DateTime>), xmlArray) as Dictionary<string, DateTime>;
+
+            Assert.AreEqual(new DateTime(1990,12,12), result["key1"]);
+            Assert.AreEqual(new DateTime(1990, 10, 12), result["key2"]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithStringKeyGuidValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key1").AddString("Value", "344ac1a2-9613-44d7-b64c-8d45b4585176"))
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key2").AddString("Value", "344ac1a2-9613-44d7-b64c-8d45b4585178"));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, Guid>), xmlArray) as Dictionary<string, Guid>;
+
+            Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176"), result["key1"]);
+            Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178"), result["key2"]);
+        }
+        [TestMethod]
+        public void TestResolveDictionary_WithStringKeyEnumValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key1").AddString("Value", "Other"))
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key2").AddString("Value", "Default"));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, MyEnum>), xmlArray) as Dictionary<string, MyEnum>;
+
+            Assert.AreEqual(MyEnum.Other, result["key1"]);
+            Assert.AreEqual(MyEnum.Default, result["key2"]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithGuessIntStringKeyStringValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 10).AddString("Value", "value 1"))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Int32", 20).AddString("Value", "value 2"));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
+
+            Assert.AreEqual("value 1", result["10"]);
+            Assert.AreEqual("value 2", result["20"]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithGuessDoubleStringKeyStringValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Key", 1.5).AddString("Value", "value 1"))
+                .Add(new XmlObject("MyItem")
+                    .AddNumber("Key", 2.5).AddString("Value", "value 2"));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
+
+            Assert.AreEqual("value 1", result["1.5"]);
+            Assert.AreEqual("value 2", result["2.5"]);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionary_WithStringKeyObjectValue()
+        {
+            var service = this.GetService();
+            var xmlArray = new XmlArray("ArrayOfString")
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key1")
+                    .AddObject("User", new XmlObject("User").AddNumber("Id",1).AddString("UserName", "Marie")))
+                .Add(new XmlObject("MyItem")
+                    .AddString("Key", "key2")
+                   .AddObject("User", new XmlObject("User").AddNumber("Id", 2).AddString("UserName", "Pat").AddNumber("Age", 20).AddString("Email", "pat@domain.com")));
+
+            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, User>), xmlArray) as Dictionary<string, User>;
+
+            Assert.AreEqual(1, result["key1"].Id);
+            Assert.AreEqual("Marie", result["key1"].UserName);
+            Assert.AreEqual(null, result["key1"].Age);
+            Assert.AreEqual(null, result["key1"].Email);
+
+            Assert.AreEqual(2, result["key2"].Id);
+            Assert.AreEqual("Pat", result["key2"].UserName);
+            Assert.AreEqual(20, result["key2"].Age);
+            Assert.AreEqual("pat@domain.com", result["key2"].Email);
         }
     }
 }

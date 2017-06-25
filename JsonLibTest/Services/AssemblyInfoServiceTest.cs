@@ -106,6 +106,21 @@ namespace JsonLibTest.Services
             Assert.IsFalse(service.IsEnum(propertyMyString.PropertyType));
         }
 
+        // check dictionary
+
+        [TestMethod]
+        public void TestIsDictionary()
+        {
+            var service = this.GetService();
+
+            Assert.IsTrue(service.IsDictionary(typeof(Dictionary<int,int>)));
+            Assert.IsTrue(service.IsDictionary(typeof(Dictionary<int, User>)));
+            Assert.IsTrue(service.IsDictionary(typeof(Dictionary<Type, User>)));
+
+            Assert.IsFalse(service.IsDictionary(typeof(List<User>)));
+            Assert.IsFalse(service.IsDictionary(typeof(User[])));
+            Assert.IsFalse(service.IsDictionary(typeof(MyItemGeneric<string>)));
+        }
 
         // get properties
 
@@ -452,27 +467,6 @@ namespace JsonLibTest.Services
             Assert.IsFalse(failed);
         }
 
-        //[TestMethod]
-        //public void TestSetValue_WithInt32ToInt64_Fail()
-        //{
-        //    bool failed = false;
-
-        //    var service = this.GetService();
-
-        //    object value = 10;
-        //    var item = new AssemblyItem2();
-
-        //    try
-        //    {
-        //        service.SetValue(item, "MyInt64", value);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        failed = true;
-        //    }
-        //    Assert.IsTrue(failed);
-        //}
-
         [TestMethod]
         public void TestSetValue_WithDoubleToInt_Fail()
         {
@@ -508,8 +502,32 @@ namespace JsonLibTest.Services
             Assert.AreEqual(value, result.ToString());
         }
 
+        // get dictionray entries
+
+        [TestMethod]
+        public void TestIsDictionaryKeyType()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, int>();
+
+            var result = service.GetDictionaryKeyType(value.GetType());
+
+            Assert.AreEqual(typeof(string), result);
+        }
+
+        [TestMethod]
+        public void TestIsDictionaryValueType()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, int>();
+
+            var result = service.GeDictionaryValueType(value.GetType());
+
+            Assert.AreEqual(typeof(int), result);
+        }
 
     }
 
-   
 }

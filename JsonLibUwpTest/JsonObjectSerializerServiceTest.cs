@@ -2247,12 +2247,11 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            var value = new Dictionary<int, User>
-            {
-                { 1, new User { Id = 1, UserName = "Marie" } },
-                { 2, new User { Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com" } }
-            };
-
+            //var value = new Dictionary<int, User>
+            //{
+            //    { 1, new User { Id = 1, UserName = "Marie" } },
+            //    { 2, new User { Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com" } }
+            //};
 
             var xml = "<?xml version=\"1.0\"?>\r<MyUsers xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><User><Key>1</Key><Value><map_id>1</map_id><map_username>Marie</map_username><Age xsi:nil=\"true\" /><map_email xsi:nil=\"true\" /></Value></User><User><Key>2</Key><Value><map_id>2</map_id><map_username>Pat</map_username><Age>20</Age><map_email>pat@domain.com</map_email></Value></User></MyUsers>";
 
@@ -2282,7 +2281,7 @@ namespace JsonLibTest
 
 
         [TestMethod]
-        public void TestTFromXml_WithComments()
+        public void TestTFromXml_WithCommands()
         {
             var service = this.GetService();
 
@@ -2317,7 +2316,6 @@ namespace JsonLibTest
             Assert.AreEqual(20, result2.Age);
             Assert.AreEqual("pat@domain.com", result2.Email);
         }
-
         // cache
 
         //[TestMethod]
