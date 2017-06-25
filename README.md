@@ -116,9 +116,27 @@ var jsonValue = JsonValue
         .AddArray("Hobbies", JsonValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 
 var json = service.ToObject(jsonValue);
-
-// => {"Id":1,"UserName":"Marie","Age":null,"Email":null,"Role":{"RoleId":2,"Name":"Admin"},"Hobbies":["Shopping","Cooking"]}
 ```
+
+_output:_
+
+```json
+{
+  "Id": 1,
+  "UserName": "Marie",
+  "Age": null,
+  "Email": null,
+  "Role": {
+    "RoleId": 2,
+    "Name": "Admin"
+  },
+  "Hobbies": [
+    "Shopping",
+    "Cooking"
+  ]
+}
+```
+
 Other Methods:
 * _ToArray : (from JsonArray)_
 * _ToNumber: (from JsonNumber)_
