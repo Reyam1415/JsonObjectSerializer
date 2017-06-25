@@ -401,7 +401,7 @@ _output:_
 	</User>
 </ArrayOfUser>
 ```
-_note: support Mapping_
+_Note: support Mapping_
 
 #### Xml => Object
 
