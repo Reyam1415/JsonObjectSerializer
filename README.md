@@ -364,7 +364,7 @@ var users = JsonObjectSerializer.FromXml<List<User>(xml);
 
 ### With Dictionaries
 
-oject => Xml
+Object => Xml
 
 ```cs
  var users = new Dictionary<int, User>
