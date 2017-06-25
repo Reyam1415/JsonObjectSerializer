@@ -2,6 +2,7 @@
 using JsonLib.Mappings.Xml;
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Reflection;
 
 namespace JsonLib.Xml
@@ -136,6 +137,75 @@ namespace JsonLib.Xml
             return this.DoToXmlObject(type, obj, nodeName, mapping, mappings);
         }
 
+        public string ResolveDictionaryKey(Type type, object key)
+        {
+            if (type == typeof(string) || type == typeof(Guid))
+            {
+                return key.ToString();
+            }
+            else if (type.FullName == "System.Type")
+            {
+                return ((Type)key).AssemblyQualifiedName;
+            }
+            else if (this.assemblyInfoService.IsNumberType(type))
+            {
+                return Convert.ToString(key, CultureInfo.InvariantCulture);
+            }
+
+            throw new JsonLibException("Unsupported type in xml for dictionary key");
+        }
+
+        public XmlArray DoToXmlArray_FromDictionary(Type type, Type keyType, Type valueType, IDictionary dictionary, string mainNodeName, XmlMappingContainer mappings = null)
+        {
+            var result = new XmlArray(mainNodeName);
+
+            var valueTypeName = valueType.Name;
+
+            foreach (var keyValue in dictionary)
+            {
+                var entry = (DictionaryEntry)keyValue;
+
+                // Int32 for example
+                var keyValueXmlObject = new XmlObject(valueTypeName);
+
+                // key
+                var keyString = this.ResolveDictionaryKey(keyType, entry.Key);
+                keyValueXmlObject.Add("Key", new XmlString("Key", keyString));   
+
+                // value
+                var resultValue = this.ToXmlValue(valueType, entry.Value, "Value", mappings);
+                keyValueXmlObject.Add("Value", resultValue);
+
+                result.Add(keyValueXmlObject);
+            }
+
+            return result;
+        }
+
+        public XmlArray ToXmlArray_FromDictionary(Type type, IDictionary dictionary, XmlMappingContainer mappings = null)
+        {
+            var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
+            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
+
+            XmlTypeMapping mapping = null;
+            if (mappings != null && mappings.Has(valueType))
+            {
+                mapping = mappings.Get(valueType);
+            }
+
+            var nullableType = Nullable.GetUnderlyingType(valueType);
+            if (nullableType != null)
+            {
+                var mainNodeName = mapping != null && mapping.HasXmlArrayName ? mapping.XmlArrayName : "ArrayOf" + nullableType.Name;
+                return this.DoToXmlArray_FromDictionary(type, keyType, nullableType, dictionary, mainNodeName, mappings);
+            }
+            else
+            {
+                var mainNodeName = mapping != null && mapping.HasXmlArrayName ? mapping.XmlArrayName : "ArrayOf" + valueType.Name;
+                return this.DoToXmlArray_FromDictionary(type, keyType, valueType, dictionary, mainNodeName, mappings);
+            }
+        }
+
         public IXmlValue ToXmlValue(Type type, object value, XmlMappingContainer mappings = null)
         {
             XmlTypeMapping mapping = null;
@@ -184,17 +254,18 @@ namespace JsonLib.Xml
                 }
                 else if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
                 {
-                    // array example string[]
+                    // array example string[] 
                     return this.ToXmlArray(type, (IEnumerable)value, mappings);
                 }
+            }
+            else if (this.assemblyInfoService.IsDictionary(type))
+            {
+              return this.ToXmlArray_FromDictionary(type, (IDictionary) value, mappings);
             }
             else if (this.assemblyInfoService.IsEnum(type))
             {
                 var nodeName = hasMapping ? mapping.XmlTypeName : type.Name;
                 return new XmlString(nodeName, value.ToString());
-
-                //var nodeName = hasMapping ? mapping.XmlTypeName : type.Name;
-                //return new XmlNumber(nodeName, Convert.ToInt32(value));
             }
             else if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
             {
@@ -251,6 +322,11 @@ namespace JsonLib.Xml
             {
                 return new XmlString(nodeName, value.ToString());
                // return new XmlNumber(nodeName, Convert.ToInt32(value));
+            }
+            else if (this.assemblyInfoService.IsDictionary(type))
+            {
+                var l = 10;
+                return null;
             }
             else if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
             {

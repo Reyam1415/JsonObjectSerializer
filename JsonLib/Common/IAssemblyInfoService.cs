@@ -10,6 +10,8 @@ namespace JsonLib.Common
         object ConvertJsonValueToPropertyValue(PropertyInfo propertyInfo, object jsonValue);
         object ConvertValueToPropertyType(object value, Type propertyType);
         object CreateInstance(Type type);
+        Type GeDictionaryValueType(Type type);
+        Type GetDictionaryKeyType(Type type);
         object GetEnumValue(Type propertyType, object value);
         Type GetNullableTargetType(Type propertyType);
         PropertyInfo[] GetProperties(object obj);
@@ -18,6 +20,7 @@ namespace JsonLib.Common
         object GetValue(object instance, PropertyInfo property);
         object GetValue(object instance, string propertyName);
         bool IsArray(Type type);
+        bool IsDictionary(Type type);
         bool IsEnum(Type type);
         bool IsGenericType(Type type);
         bool IsNullable(Type type);

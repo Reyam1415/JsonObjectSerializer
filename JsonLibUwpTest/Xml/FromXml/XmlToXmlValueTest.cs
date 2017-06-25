@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using JsonLib;
 using JsonLib.Xml;
 using System.Collections.Generic;
+using JsonLib.Json;
 
 namespace JsonLibTest
 {
@@ -419,6 +420,92 @@ namespace JsonLibTest
             Assert.AreEqual(XmlValueType.String, ((XmlObject)result).Values["MyArray"].ValueType);
             Assert.AreEqual("MyArray", ((XmlObject)result).Values["MyArray"].NodeName);
             Assert.AreEqual(true, ((XmlString)((XmlObject)result).Values["MyArray"]).IsNil);
+        }
+
+        [TestMethod]
+        public void TestDictionary()
+        {
+            var service = this.GetService();
+
+            //var value = new Dictionary<string, int>
+            //{
+            //    {"key1", 10 },
+            //    {"key2", 20 },
+            //};
+
+            var xml = "<?xml version=\"1.0\"?>\r<ArrayOfInt32><Int32><Key>key1</Key><Value>10</Value></Int32><Int32><Key>key2</Key><Value>20</Value></Int32></ArrayOfInt32>";
+
+            var result = service.ToXmlValue(xml);
+
+            Assert.AreEqual(XmlValueType.Array, result.ValueType);
+            Assert.AreEqual("ArrayOfInt32", result.NodeName);
+
+            Assert.AreEqual(2, ((XmlArray)result).Values.Count);
+
+            Assert.AreEqual(XmlValueType.Object, ((XmlArray)result).Values[0].ValueType);
+
+            var result1 = ((XmlArray)result).Values[0] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result1.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result1.Values["Key"].NodeName);
+            Assert.AreEqual("key1", ((XmlString)result1.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result1.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result1.Values["Value"].NodeName);
+            Assert.AreEqual(10, ((XmlNumber)result1.Values["Value"]).Value);
+
+            var result2 = ((XmlArray)result).Values[1] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result2.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result2.Values["Key"].NodeName);
+            Assert.AreEqual("key2", ((XmlString)result2.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result2.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result2.Values["Value"].NodeName);
+            Assert.AreEqual(20, ((XmlNumber)result2.Values["Value"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionary_WithExoticKeyAndIntValue()
+        {
+            var service = this.GetService();
+
+            //var value = new Dictionary<Type, int>
+            //{
+            //    {typeof(MyItem), 10 },
+            //    {typeof(MyItem2), 20 },
+            //};
+
+            var xml = "<?xml version=\"1.0\"?>\r<ArrayOfInt32><Int32><Key>JsonLibTest.MyItem</Key><Value>10</Value></Int32><Int32><Key>JsonLibTest.MyItem2</Key><Value>20</Value></Int32></ArrayOfInt32>";
+
+            var result = service.ToXmlValue(xml);
+
+            Assert.AreEqual(XmlValueType.Array, result.ValueType);
+            Assert.AreEqual("ArrayOfInt32", result.NodeName);
+
+            Assert.AreEqual(2, ((XmlArray)result).Values.Count);
+
+            Assert.AreEqual(XmlValueType.Object, ((XmlArray)result).Values[0].ValueType);
+
+            var result1 = ((XmlArray)result).Values[0] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result1.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result1.Values["Key"].NodeName);
+            Assert.AreEqual("JsonLibTest.MyItem", ((XmlString)result1.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result1.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result1.Values["Value"].NodeName);
+            Assert.AreEqual(10, ((XmlNumber)result1.Values["Value"]).Value);
+
+            var result2 = ((XmlArray)result).Values[1] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result2.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result2.Values["Key"].NodeName);
+            Assert.AreEqual("JsonLibTest.MyItem2", ((XmlString)result2.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result2.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result2.Values["Value"].NodeName);
+            Assert.AreEqual(20, ((XmlNumber)result2.Values["Value"]).Value);
         }
     }
 }

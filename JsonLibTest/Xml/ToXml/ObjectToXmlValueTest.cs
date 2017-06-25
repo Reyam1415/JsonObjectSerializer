@@ -60,6 +60,19 @@ namespace JsonLibTest
             Assert.AreEqual(null, ((XmlNullable)result).Value);
         }
 
+        //[TestMethod]
+        //public void TestType()
+        //{
+        //    var service = this.GetService();
+
+        //    var result = service.ToXmlValue(typeof(MyItem));
+
+        //    //Assert.AreEqual(XmlValueType.String, result.ValueType);
+        //    //Assert.AreEqual(typeof(XmlString), result.GetType());
+        //    //Assert.AreEqual("String", result.NodeName);
+        //    //Assert.AreEqual("my string", ((XmlString)result).Value);
+        //}
+
         // string
 
         [TestMethod]
@@ -736,5 +749,153 @@ namespace JsonLibTest
             Assert.AreEqual("pat@domain.com", ((XmlString)((XmlObject)result.Values[1]).Values["map_email"]).Value);
         }
 
+        // dictionary
+
+        [TestMethod]
+        public void TestDictionary_WithStringKeyAndIntValue()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, int>
+            {
+                {"key1", 10 },
+                {"key2", 20 },
+            };
+
+            var result = service.ToXmlValue(value);
+
+            Assert.AreEqual(XmlValueType.Array, result.ValueType);
+            Assert.AreEqual("ArrayOfInt32", result.NodeName);
+
+            Assert.AreEqual(2, ((XmlArray)result).Values.Count);
+
+            Assert.AreEqual(XmlValueType.Object, ((XmlArray)result).Values[0].ValueType);
+
+            var result1 = ((XmlArray)result).Values[0] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result1.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result1.Values["Key"].NodeName);
+            Assert.AreEqual("key1" ,((XmlString) result1.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result1.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result1.Values["Value"].NodeName);
+            Assert.AreEqual(10, ((XmlNumber)result1.Values["Value"]).Value);
+
+            var result2 = ((XmlArray)result).Values[1] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result2.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result2.Values["Key"].NodeName);
+            Assert.AreEqual("key2", ((XmlString)result2.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result2.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result2.Values["Value"].NodeName);
+            Assert.AreEqual(20, ((XmlNumber)result2.Values["Value"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionary_WithExoticKeyAndIntValue()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<Type, int>
+            {
+                {typeof(MyItem), 10 },
+                {typeof(MyItem2), 20 },
+            };
+
+            var result = service.ToXmlValue(value);
+
+            Assert.AreEqual(XmlValueType.Array, result.ValueType);
+            Assert.AreEqual("ArrayOfInt32", result.NodeName);
+
+            Assert.AreEqual(2, ((XmlArray)result).Values.Count);
+
+            Assert.AreEqual(XmlValueType.Object, ((XmlArray)result).Values[0].ValueType);
+
+            var result1 = ((XmlArray)result).Values[0] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result1.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result1.Values["Key"].NodeName);
+            Assert.AreEqual("JsonLibTest.MyItem, JsonLibTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", ((XmlString)result1.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result1.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result1.Values["Value"].NodeName);
+            Assert.AreEqual(10, ((XmlNumber)result1.Values["Value"]).Value);
+
+            var result2 = ((XmlArray)result).Values[1] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result2.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result2.Values["Key"].NodeName);
+            Assert.AreEqual("JsonLibTest.MyItem2, JsonLibTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", ((XmlString)result2.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Number, result2.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result2.Values["Value"].NodeName);
+            Assert.AreEqual(20, ((XmlNumber)result2.Values["Value"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionary_WithStringKeyAndObjectValue()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, User>
+            {
+                {"key1", new User { Id = 1, UserName = "Marie" } },
+                {"key2", new User { Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com" } },
+            };
+
+            var result = service.ToXmlValue(value);
+
+            Assert.AreEqual(XmlValueType.Array, result.ValueType);
+            Assert.AreEqual("ArrayOfUser", result.NodeName);
+
+            Assert.AreEqual(2, ((XmlArray)result).Values.Count);
+
+            Assert.AreEqual(XmlValueType.Object, ((XmlArray)result).Values[0].ValueType);
+
+            var result1 = ((XmlArray)result).Values[0] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result1.Values["Key"].ValueType);
+            Assert.AreEqual("Key", result1.Values["Key"].NodeName);
+            Assert.AreEqual("key1", ((XmlString)result1.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Object, result1.Values["Value"].ValueType);
+
+            var user1 = result1.Values["Value"] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.Number, user1.Values["Id"].ValueType);
+            Assert.AreEqual(1, ((XmlNumber)user1.Values["Id"]).Value);
+
+            Assert.AreEqual(XmlValueType.String, user1.Values["UserName"].ValueType);
+            Assert.AreEqual("Marie", ((XmlString)user1.Values["UserName"]).Value);
+
+            Assert.AreEqual(XmlValueType.Nullable, user1.Values["Age"].ValueType);
+            Assert.AreEqual(null, ((XmlNullable)user1.Values["Age"]).Value);
+
+            Assert.AreEqual(XmlValueType.String, user1.Values["Email"].ValueType);
+            Assert.AreEqual(null, ((XmlString)user1.Values["Email"]).Value);
+
+            var result2 = ((XmlArray)result).Values[1] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.String, result2.Values["Key"].ValueType);
+            Assert.AreEqual("key2", ((XmlString)result2.Values["Key"]).Value);
+
+            Assert.AreEqual(XmlValueType.Object, result2.Values["Value"].ValueType);
+            Assert.AreEqual("Value", result2.Values["Value"].NodeName);
+
+            var user2 = result2.Values["Value"] as XmlObject;
+
+            Assert.AreEqual(XmlValueType.Number, user2.Values["Id"].ValueType);
+            Assert.AreEqual(2, ((XmlNumber)user2.Values["Id"]).Value);
+
+            Assert.AreEqual(XmlValueType.String, user2.Values["UserName"].ValueType);
+            Assert.AreEqual("Pat", ((XmlString)user2.Values["UserName"]).Value);
+
+            Assert.AreEqual(XmlValueType.Nullable, user2.Values["Age"].ValueType);
+            Assert.AreEqual(20, ((XmlNullable)user2.Values["Age"]).Value);
+
+            Assert.AreEqual(XmlValueType.String, user2.Values["Email"].ValueType);
+            Assert.AreEqual("pat@domain.com", ((XmlString)user2.Values["Email"]).Value);
+        }
     }
 }

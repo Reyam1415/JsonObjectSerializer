@@ -3,6 +3,7 @@ using JsonLib.Mappings.Xml;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace JsonLib.Xml
@@ -201,11 +202,63 @@ namespace JsonLib.Xml
             return result;
         }
 
+        public object ResolveDictionaryKey(Type propertyType, IXmlValue xmlValueKey)
+        {
+            if(xmlValueKey.ValueType == XmlValueType.String)
+            {
+                if (propertyType.FullName == "System.Type")
+                {
+                    var resolvedType =  Type.GetType(((XmlString)xmlValueKey).Value);
+                    if(resolvedType == null) { throw new JsonLibException("cannot resolve Type with the qualified name " + ((XmlString)xmlValueKey).Value); }
+                    return resolvedType;
+                }
+                else
+                {
+                    return this.ResolveValue(propertyType, (XmlString)xmlValueKey);
+                }
+            }
+            else if (xmlValueKey.ValueType == XmlValueType.Number)
+            {
+                return ((XmlNumber)xmlValueKey).Value;
+            }            
+
+            throw new JsonLibException("Unsupported type in xml for dictionary key");
+        }
+
+        public object ToXmlArray_FromDictionary(Type type, XmlArray xmlArray, XmlMappingContainer mappings = null)
+        {
+            var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
+            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
+
+            var result = Activator.CreateInstance(type) as IDictionary;
+            if(result == null) { throw new JsonLibException("Cannot create dictionary"); }
+
+            foreach (var xmlValue in xmlArray.Values)
+            {
+                var xmlObject = xmlValue as XmlObject;
+                if(xmlObject == null || xmlObject.Values.Count != 2) { throw new JsonLibException("Cannot resolve dictionary from xml");  }
+
+                var xmlEntryKey = xmlObject.Values.ElementAt(0).Value;
+                var key = this.ResolveDictionaryKey(keyType, xmlEntryKey);
+
+                var xmlEntryValue = xmlObject.Values.ElementAt(1).Value;
+                var value = this.ResolveValue(valueType, xmlEntryValue, mappings);
+
+                result.Add(key, value);
+            }
+
+            return result;
+        }
+
         public object ToEnumerable(Type type, XmlArray xmlArray, XmlMappingContainer mappings = null)
         {
             if (this.assemblyInfoService.IsArray(type))
             {
                 return this.ToArray(type, xmlArray, mappings);
+            }
+            else if (this.assemblyInfoService.IsDictionary(type))
+            {
+                return this.ToXmlArray_FromDictionary(type, xmlArray, mappings);
             }
             else if (this.assemblyInfoService.IsGenericType(type))
             {

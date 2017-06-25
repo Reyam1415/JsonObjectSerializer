@@ -68,6 +68,11 @@ namespace JsonLib.Common
             return type.IsArray;
         }
 
+        public bool IsDictionary(Type type)
+        {
+            return this.IsGenericType(type) && type.GetGenericTypeDefinition() == typeof(Dictionary<,>);
+        }
+
         public Type GetSingleItemType(Type type)
         {
             if (this.IsArray(type))
@@ -80,6 +85,16 @@ namespace JsonLib.Common
             }
 
             return null;
+        }
+
+        public Type GetDictionaryKeyType(Type type)
+        {
+            return type.GetGenericArguments()[0];
+        }
+
+        public Type GeDictionaryValueType(Type type)
+        {
+            return type.GetGenericArguments()[1];
         }
 
         public PropertyInfo[] GetProperties(object obj)

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace JsonLibTest
 {
     [TestClass]
-    public class JsonObjectSerializerServiceTest
+    public class JsonObjectSerializerServiceUwpTest
     {
         public JsonObjectSerializerService GetService()
         {
@@ -2202,6 +2202,95 @@ namespace JsonLibTest
             Assert.AreEqual("Pat", result2.UserName);
             Assert.AreEqual(20, result2.Age);
             Assert.AreEqual("pat@domain.com", result2.Email);
+        }
+
+        [TestMethod]
+        public void TestDictionaryOfStringInt32()
+        {
+            var service = this.GetService();
+
+            //var value = new Dictionary<string, int>
+            //{
+            //    {"key1", 10 },
+            //    {"key2", 20 },
+            //};
+
+            var xml = "<?xml version=\"1.0\"?>\r<ArrayOfInt32><Int32><Key>key1</Key><Value>10</Value></Int32><Int32><Key>key2</Key><Value>20</Value></Int32></ArrayOfInt32>";
+
+            var result = service.FromXml<Dictionary<string, int>>(xml);
+
+            Assert.AreEqual(10, result["key1"]);
+            Assert.AreEqual(20, result["key2"]);
+        }
+
+        [TestMethod]
+        public void TestDictionary_WithExoticKeyAndIntValue()
+        {
+            var service = this.GetService();
+
+            //var value = new Dictionary<Type, int>
+            //{
+            //    {typeof(MyItem), 10 },
+            //    {typeof(MyItem2), 20 },
+            //};
+
+            var xml = "<?xml version=\"1.0\"?>\r<ArrayOfInt32><Int32><Key>JsonLibTest.MyItem, JsonLibUwpTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Key><Value>10</Value></Int32><Int32><Key>JsonLibTest.MyItem2, JsonLibUwpTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</Key><Value>20</Value></Int32></ArrayOfInt32>";
+
+            var result = service.FromXml<Dictionary<Type,int>>(xml);
+
+            Assert.AreEqual(10, result[typeof(MyItem)]);
+            Assert.AreEqual(20, result[typeof(MyItem2)]);
+        }
+
+        [TestMethod]
+        public void TestDictionary_WithMapping()
+        {
+            var service = this.GetService();
+
+            //var value = new Dictionary<int, User>
+            //{
+            //    { 1, new User { Id = 1, UserName = "Marie" } },
+            //    { 2, new User { Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com" } }
+            //};
+
+            var xml = "<?xml version=\"1.0\"?>\r<MyUsers xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><User><Key>1</Key><Value><map_id>1</map_id><map_username>Marie</map_username><Age xsi:nil=\"true\" /><map_email xsi:nil=\"true\" /></Value></User><User><Key>2</Key><Value><map_id>2</map_id><map_username>Pat</map_username><Age>20</Age><map_email>pat@domain.com</map_email></Value></User></MyUsers>";
+
+            var mappings = new XmlMappingContainer();
+            mappings.SetType<User>("user")
+                    .SetArrayName("MyUsers")
+                    .SetProperty("Id", "map_id")
+                    .SetProperty("UserName", "map_username")
+                    .SetProperty("Email", "map_email");
+
+            var results = service.FromXml<Dictionary<int,User>>(xml, mappings);
+
+            var result = results[1]; // key 1
+
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("Marie", result.UserName);
+            Assert.AreEqual(null, result.Age);
+            Assert.AreEqual(null, result.Email);
+
+            var result2 = results[2]; // key 2
+
+            Assert.AreEqual(2, result2.Id);
+            Assert.AreEqual("Pat", result2.UserName);
+            Assert.AreEqual(20, result2.Age);
+            Assert.AreEqual("pat@domain.com", result2.Email);
+        }
+
+
+        [TestMethod]
+        public void TestTFromXml_WithComments()
+        {
+            var service = this.GetService();
+
+            var xml = File.ReadAllText("comment1.xml");
+
+            var result = service.FromXml<string[]>(xml);
+
+            Assert.AreEqual("a", result[0]);
+            Assert.AreEqual("b", result[1]);
         }
 
         // cache

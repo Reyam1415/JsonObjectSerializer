@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\IAssemblyInfoService.cs" />
     <Compile Include="IJsonObjectSerializerService.cs" />
     <Compile Include="Json\Cache\IJsonCacheService.cs" />
     <Compile Include="Json\Cache\JsonCacheItem.cs" />
@@ -66,7 +67,6 @@
     <Compile Include="Json\Mapping\JsonMappingContainer.cs" />
     <Compile Include="Json\Mapping\JsonPropertyMapping.cs" />
     <Compile Include="Json\Mapping\JsonTypeMapping.cs" />
-    <Compile Include="Common\IAssemblyInfoService.cs" />
     <Compile Include="Xml\Beautifier\XmlBeautifier.cs" />
     <Compile Include="Xml\FromXml\IXmlToObject.cs" />
     <Compile Include="Xml\FromXml\IXmlToXmlValue.cs" />

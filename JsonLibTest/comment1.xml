@@ -1,0 +1,14 @@
+﻿<?xml version="1.0"?>
+<!-- 
+a comment
+-->
+<ArrayOfString>
+    <!-- 
+    comment b
+    -->
+    <String>a</String>
+     <!-- 
+    comment c
+    -->
+    <String>b</String>
+</ArrayOfString>
