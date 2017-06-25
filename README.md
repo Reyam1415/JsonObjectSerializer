@@ -362,6 +362,47 @@ Example :
 var users = JsonObjectSerializer.FromXml<List<User>(xml);
 ```
 
+### With Dictionaries
+
+oject => Xml
+
+```cs
+ var users = new Dictionary<int, User>
+            {
+                { 1, new User { Id = 1, UserName = "Marie" } },
+                { 2, new User { Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com" } }
+            };
+
+var xml = JsonObjectSerializer.ToXml(users);
+```
+
+_output:_
+```xml
+<?xml version="1.0"?>
+<ArrayOfUser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<User>
+		<Id>1</Id>
+		<UserName>Marie</UserName>
+		<Age xsi:nil="true" />
+		<Email xsi:nil="true" />
+	</User>
+	<User>
+		<Id>2</Id>
+		<UserName>Pat</UserName>
+		<Age>20</Age>
+		<Email>pat@domain.com</Email>
+	</User>
+</ArrayOfUser>
+```
+_note: support Mapping_
+
+Xml => Object
+
+```cs
+var results = service.FromXml<Dictionary<int,User>>(xml);
+```
+
+
 ## Pro / Cons
 
 Pro:
