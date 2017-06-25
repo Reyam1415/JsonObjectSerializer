@@ -377,20 +377,29 @@ var xml = JsonObjectSerializer.ToXml(users);
 ```
 
 _output:_
+
+The key have to be the first element.
+
 ```xml
 <?xml version="1.0"?>
 <ArrayOfUser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<User>
-		<Id>1</Id>
-		<UserName>Marie</UserName>
-		<Age xsi:nil="true" />
-		<Email xsi:nil="true" />
+		<Key>1</Key>
+		<Value>
+			<Id>1</Id>
+			<UserName>Marie</UserName>
+			<Age xsi:nil="true" />
+			<Email xsi:nil="true" />
+		</Value>
 	</User>
 	<User>
-		<Id>2</Id>
-		<UserName>Pat</UserName>
-		<Age>20</Age>
-		<Email>pat@domain.com</Email>
+		<Key>2</Key>
+		<Value>
+			<Id>2</Id>
+			<UserName>Pat</UserName>
+			<Age>20</Age>
+			<Email>pat@domain.com</Email>
+		</Value>
 	</User>
 </ArrayOfUser>
 ```
