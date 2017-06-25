@@ -405,7 +405,7 @@ _Note: support Mapping_
 
 #### Xml => Object
 
-Nodes not require to be named "Key" and "Value". But The key have to be the first element of key / value pair. 
+Nodes do not require to be named "Key" and "Value". But The key have to be the first element of key / value pair. 
 
 ```cs
 var users = service.FromXml<Dictionary<int,User>>(xml);
