@@ -2247,11 +2247,12 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            //var value = new Dictionary<int, User>
-            //{
-            //    { 1, new User { Id = 1, UserName = "Marie" } },
-            //    { 2, new User { Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com" } }
-            //};
+            var value = new Dictionary<int, User>
+            {
+                { 1, new User { Id = 1, UserName = "Marie" } },
+                { 2, new User { Id = 2, UserName = "Pat", Age = 20, Email = "pat@domain.com" } }
+            };
+
 
             var xml = "<?xml version=\"1.0\"?>\r<MyUsers xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><User><Key>1</Key><Value><map_id>1</map_id><map_username>Marie</map_username><Age xsi:nil=\"true\" /><map_email xsi:nil=\"true\" /></Value></User><User><Key>2</Key><Value><map_id>2</map_id><map_username>Pat</map_username><Age>20</Age><map_email>pat@domain.com</map_email></Value></User></MyUsers>";
 
@@ -2291,6 +2292,30 @@ namespace JsonLibTest
 
             Assert.AreEqual("a", result[0]);
             Assert.AreEqual("b", result[1]);
+        }
+
+        [TestMethod]
+        public void TestDictionaryWithNumberKeyString()
+        {
+            var service = this.GetService();
+
+            var xml = "<?xml version=\"1.0\"?>\r<ArrayOfUser xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><User><Key>1</Key><Value><Id>1</Id><UserName>Marie</UserName><Age xsi:nil=\"true\" /><Email xsi:nil=\"true\" /></Value></User><User><Key>2</Key><Value><Id>2</Id><UserName>Pat</UserName><Age>20</Age><Email>pat@domain.com</Email></Value></User></ArrayOfUser>";
+
+            var results = service.FromXml<Dictionary<string, User>>(xml);
+
+            var result = results["1"]; // key 1
+
+            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual("Marie", result.UserName);
+            Assert.AreEqual(null, result.Age);
+            Assert.AreEqual(null, result.Email);
+
+            var result2 = results["2"]; // key 2
+
+            Assert.AreEqual(2, result2.Id);
+            Assert.AreEqual("Pat", result2.UserName);
+            Assert.AreEqual(20, result2.Age);
+            Assert.AreEqual("pat@domain.com", result2.Email);
         }
 
         // cache

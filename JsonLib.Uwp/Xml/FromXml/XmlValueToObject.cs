@@ -3,6 +3,7 @@ using JsonLib.Mappings.Xml;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -219,7 +220,14 @@ namespace JsonLib.Xml
             }
             else if (xmlValueKey.ValueType == XmlValueType.Number)
             {
-                return ((XmlNumber)xmlValueKey).Value;
+                if (propertyType == typeof(string))
+                {
+                    return Convert.ToString(((XmlNumber)xmlValueKey).Value, CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    return ((XmlNumber)xmlValueKey).Value;
+                }
             }            
 
             throw new JsonLibException("Unsupported type in xml for dictionary key");
@@ -230,8 +238,8 @@ namespace JsonLib.Xml
             var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
             var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
 
-            var result = Activator.CreateInstance(type) as IDictionary;
-            if(result == null) { throw new JsonLibException("Cannot create dictionary"); }
+            var result = this.assemblyInfoService.CreateInstance(type) as IDictionary;
+            if (result == null) { throw new JsonLibException("Cannot create dictionary"); }
 
             foreach (var xmlValue in xmlArray.Values)
             {

@@ -22385,16 +22385,16 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLibUwpTest\\JsonLibUwpTest.csproj",
+      "projectUniqueName": "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonLib\\JsonLibUwpTest\\JsonLibUwpTest.csproj",
       "projectName": "JsonLibUwpTest",
-      "projectPath": "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLibUwpTest\\JsonLibUwpTest.csproj",
-      "projectJsonPath": "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLibUwpTest\\project.json",
+      "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonLib\\JsonLibUwpTest\\JsonLibUwpTest.csproj",
+      "projectJsonPath": "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonLib\\JsonLibUwpTest\\project.json",
       "projectStyle": "ProjectJson",
       "frameworks": {
         "uap10.0": {
           "projectReferences": {
-            "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLib.Uwp\\JsonLib.Uwp.csproj": {
-              "projectPath": "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLib.Uwp\\JsonLib.Uwp.csproj"
+            "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonLib\\JsonLib.Uwp\\JsonLib.Uwp.csproj": {
+              "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonLib\\JsonLib.Uwp\\JsonLib.Uwp.csproj"
             }
           }
         }
