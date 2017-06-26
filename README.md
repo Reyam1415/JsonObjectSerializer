@@ -239,61 +239,6 @@ var json = "null";
 var myInt = JsonObjectSerializer.Parse<int?>(json); // => null
 ```
 
-## Mapping
-
-* **LowerCase Strategy** for a **Type** (User for example) or for **all types**
-    * Object => Json : property names are converted to lower case in Json
-    * Json => Object:  Check property names in lower case to resolve json names
-* Or **Mapping** for each property of a Type
-
-Set Lower Strategy for all Types
-
-```cs
-Mapping.SetLowerStrategyForAllTypes();
-```
-
-Set Lower Case for a Type
-```cs
- Mapping.SetType<User>().SetToLowerCaseStrategy();
- ```
-
- Set The Mapping for a Type
- ```cs
-Mapping.SetType<User>()
-        .SetProperty("Id", "id")
-        .SetProperty("UserName", "username")
-        .SetProperty("Age", "age")
-        .SetProperty("Email", "email");
-```
-
-**Use**
-
-```cs
-var json = JsonObjectSerializer.Stringify(user, Mapping.GetContainer());
-
-var user = JsonObjectSerializer.Parse<User>(json, Mapping.GetContainer());
-```
-
-Or **Create** a **container** (contains mappings for all types)
-```cs
-var mappings = new MappingContainer();
-
-mappings.SetType<User>()
-        .SetProperty("Id", "user_id")
-        .SetProperty("UserName", "user_username")
-        .SetProperty("Age", "user_age")
-        .SetProperty("Email", "user_email");
-
-mappings.SetType<Role>().SetToLowerCaseStrategy();
-```
-
-And use the container
-```cs
-var json = JsonObjectSerializer.Stringify(user, mappings);
-
-var user = JsonObjectSerializer.Parse<User>(json, mappings);
-```
-
 ### With Dictionaries
 
 #### Object => Json
@@ -353,6 +298,61 @@ _output:_
 
 ```cs
 var users = JsonObjectSerializer.Parse<Dictionary<int,User>>(json);
+```
+
+## Mapping
+
+* **LowerCase Strategy** for a **Type** (User for example) or for **all types**
+    * Object => Json : property names are converted to lower case in Json
+    * Json => Object:  Check property names in lower case to resolve json names
+* Or **Mapping** for each property of a Type
+
+Set Lower Strategy for all Types
+
+```cs
+Mapping.SetLowerStrategyForAllTypes();
+```
+
+Set Lower Case for a Type
+```cs
+ Mapping.SetType<User>().SetToLowerCaseStrategy();
+ ```
+
+ Set The Mapping for a Type
+ ```cs
+Mapping.SetType<User>()
+        .SetProperty("Id", "id")
+        .SetProperty("UserName", "username")
+        .SetProperty("Age", "age")
+        .SetProperty("Email", "email");
+```
+
+**Use**
+
+```cs
+var json = JsonObjectSerializer.Stringify(user, Mapping.GetContainer());
+
+var user = JsonObjectSerializer.Parse<User>(json, Mapping.GetContainer());
+```
+
+Or **Create** a **container** (contains mappings for all types)
+```cs
+var mappings = new MappingContainer();
+
+mappings.SetType<User>()
+        .SetProperty("Id", "user_id")
+        .SetProperty("UserName", "user_username")
+        .SetProperty("Age", "user_age")
+        .SetProperty("Email", "user_email");
+
+mappings.SetType<Role>().SetToLowerCaseStrategy();
+```
+
+And use the container
+```cs
+var json = JsonObjectSerializer.Stringify(user, mappings);
+
+var user = JsonObjectSerializer.Parse<User>(json, mappings);
 ```
 
 ## Xml
