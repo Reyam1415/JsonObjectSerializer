@@ -1,8 +1,5 @@
-﻿using JsonLib;
-using JsonLib.Json;
+﻿using JsonLib.Json;
 using JsonLib.Json.Mappings;
-using JsonLib.Mappings;
-using JsonLibTest.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -17,11 +14,13 @@ namespace JsonLibTest
             return new ObjectToJsonValue();
         }
        
-        // get property name
+        // get json property name
 
         [TestMethod]
         public void TestGetJsonPropertyName_WithAllLowerAndNoMapping_ReturnsLowerName()
         {
+            // Object property name => get json property name
+            // ( example: UserName => username )
             var service = this.GetService();
 
             var result = service.GetJsonPropertyName("UserName", true, null);
@@ -76,7 +75,6 @@ namespace JsonLibTest
         }
 
         // to json value
-
 
         [TestMethod]
         public void TestToJsonValue_WithNoValueAndNullable()
@@ -748,6 +746,60 @@ namespace JsonLibTest
             Assert.AreEqual("pat@domain.com", ((JsonString)((JsonObject)((JsonArray)result).Values[1]).Values["email"]).Value);
         }
 
+        // resolve dictionary key
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithString()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(string), "mykey");
+
+            Assert.AreEqual("mykey", result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithGuid()
+        {
+            var service = this.GetService();
+
+            var g = new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176");
+
+            var result = service.ResolveDictionaryKey(typeof(Guid), g);
+
+            Assert.AreEqual("344ac1a2-9613-44d7-b64c-8d45b4585176", result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithType()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(Type), typeof(MyItem));
+
+            Assert.AreEqual("JsonLibTest.MyItem, JsonLibUwpTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithInt()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(int), 10);
+
+            Assert.AreEqual("10", result);
+        }
+
+        [TestMethod]
+        public void TestResolveDictionaryKey_WithDouble()
+        {
+            var service = this.GetService();
+
+            var result = service.ResolveDictionaryKey(typeof(double), 10.5);
+
+            Assert.AreEqual("10.5", result);
+        }
+
         // dictionary
 
         [TestMethod]
@@ -870,6 +922,129 @@ namespace JsonLibTest
             Assert.AreEqual("12/10/1990 00:00:00", ((JsonString)((JsonObject)result).Values["key2"]).Value);
         }
 
+        [TestMethod]
+        public void TestDictionaryStringNullable()
+        {
+            var service = this.GetService();
+            var t = new DateTime(1990, 12, 12);
+
+            var value = new Dictionary<string, DateTime?>
+            {
+                { "key1", t },
+                { "key2",  null }
+            };
+
+            var result = service.ToJsonValue(value);
+
+            Assert.AreEqual(JsonValueType.Object, result.ValueType);
+
+            Assert.AreEqual(2, ((JsonObject)result).Values.Count);
+
+            Assert.AreEqual(JsonValueType.Nullable, ((JsonObject)result).Values["key1"].ValueType);
+            Assert.AreEqual(t, ((JsonNullable)((JsonObject)result).Values["key1"]).Value);
+
+            Assert.AreEqual(JsonValueType.Nullable, ((JsonObject)result).Values["key2"].ValueType);
+            Assert.AreEqual(null, ((JsonNullable)((JsonObject)result).Values["key2"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionaryStringObjectNull()
+        {
+            var service = this.GetService();
+            var t = new DateTime(1990, 12, 12);
+
+            var value = new Dictionary<string, User>
+            {
+                { "key1", new User{ Id=1, UserName= "Marie" } },
+                { "key2",  null }
+            };
+
+            var result = service.ToJsonValue(value);
+
+            //var r = JsonObjectSerializer.Stringify(value);
+
+            Assert.AreEqual(JsonValueType.Object, result.ValueType);
+
+            Assert.AreEqual(2, ((JsonObject)result).Values.Count);
+
+            Assert.AreEqual(JsonValueType.Object, ((JsonObject)result).Values["key1"].ValueType);
+            Assert.AreEqual(1, ((JsonNumber)((JsonObject)((JsonObject)result).Values["key1"]).Values["Id"]).Value);
+            Assert.AreEqual("Marie",((JsonString) ((JsonObject)((JsonObject)result).Values["key1"]).Values["UserName"]).Value);
+            Assert.AreEqual(null, ((JsonNullable)((JsonObject)((JsonObject)result).Values["key1"]).Values["Age"]).Value);
+            Assert.AreEqual(null, ((JsonString)((JsonObject)((JsonObject)result).Values["key1"]).Values["Email"]).Value);
+
+            Assert.AreEqual(JsonValueType.Object, ((JsonObject)result).Values["key2"].ValueType);
+            Assert.AreEqual(true, ((JsonObject)((JsonObject)result).Values["key2"]).IsNil);
+        }
+
+        // nillables
+
+        [TestMethod]
+        public void TestStringNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue<string>("my value") as JsonString;
+
+            var result2 = service.ToJsonValue<string>(null) as JsonString;
+
+            Assert.IsFalse(result.IsNil);
+            Assert.IsTrue(result2.IsNil);
+        }
+
+        [TestMethod]
+        public void TestNullableNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue<int?>(10) as JsonNullable;
+
+            var result2 = service.ToJsonValue<int?>(null) as JsonNullable;
+
+            Assert.IsFalse(result.IsNil);
+            Assert.IsTrue(result2.IsNil);
+        }
+
+        [TestMethod]
+        public void TestObjectNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue<User>(new User { Id=1, UserName = "Marie" }) as JsonObject;
+
+            var result2 = service.ToJsonValue<User>(null) as JsonObject;
+
+            Assert.IsFalse(result.IsNil);
+            Assert.IsTrue(result2.IsNil);
+        }
+
+        [TestMethod]
+        public void TestDictionaryNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue<Dictionary<int,string>>(new Dictionary<int, string> { }) as JsonObject;
+
+            var result2 = service.ToJsonValue<Dictionary<int, string>>(null) as JsonObject;
+            result2.SetNil();
+
+            Assert.IsFalse(result.IsNil);
+            Assert.IsTrue(result2.IsNil);
+        }
+
+        [TestMethod]
+        public void TestArrayNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue<string[]>(new string[] { "a", "b" }) as JsonArray;
+
+            var result2 = service.ToJsonValue<string[]>(null) as JsonArray;
+            result2.SetNil();
+
+            Assert.IsFalse(result.IsNil);
+            Assert.IsTrue(result2.IsNil);
+        }
     }
 
 

@@ -182,9 +182,8 @@ namespace JsonLibTest
 
             var result = service.ToJsonValue(json);
 
-            Assert.AreEqual(typeof(JsonNullable), result.GetType());
-            Assert.AreEqual(JsonValueType.Nullable, result.ValueType);
-            Assert.AreEqual(null, ((JsonNullable)result).Value);
+            Assert.AreEqual(typeof(JsonUndefinedNil), result.GetType());
+            Assert.AreEqual(JsonValueType.UndefinedNil, result.ValueType);
         }
 
         // object
@@ -232,11 +231,15 @@ namespace JsonLibTest
             Assert.AreEqual(JsonValueType.String, ((JsonObject)result).Values["UserName"].ValueType);
             Assert.AreEqual("Marie", ((JsonString)((JsonObject)result).Values["UserName"]).Value);
 
-            Assert.AreEqual(JsonValueType.Nullable, ((JsonObject)result).Values["Age"].ValueType);
-            Assert.AreEqual(null, ((JsonNullable)((JsonObject)result).Values["Age"]).Value);
+            //Assert.AreEqual(JsonValueType.Nullable, ((JsonObject)result).Values["Age"].ValueType);
+            //Assert.AreEqual(null, ((JsonNullable)((JsonObject)result).Values["Age"]).Value);
 
-            Assert.AreEqual(JsonValueType.Nullable, ((JsonObject)result).Values["Email"].ValueType);
-            Assert.AreEqual(null, ((JsonNullable)((JsonObject)result).Values["Email"]).Value);
+            //Assert.AreEqual(JsonValueType.Nullable, ((JsonObject)result).Values["Email"].ValueType);
+            //Assert.AreEqual(null, ((JsonNullable)((JsonObject)result).Values["Email"]).Value);
+
+            Assert.AreEqual(JsonValueType.UndefinedNil, ((JsonObject)result).Values["Age"].ValueType);
+
+            Assert.AreEqual(JsonValueType.UndefinedNil, ((JsonObject)result).Values["Email"].ValueType);
         }
 
         [TestMethod]
@@ -294,11 +297,15 @@ namespace JsonLibTest
             Assert.AreEqual(JsonValueType.Number, role.Values["RoleId"].ValueType);
             Assert.AreEqual(10, ((JsonNumber)role.Values["RoleId"]).Value);
 
-            Assert.AreEqual(JsonValueType.Nullable, role.Values["Name"].ValueType);
-            Assert.AreEqual(null, ((JsonNullable)role.Values["Name"]).Value);
+            //Assert.AreEqual(JsonValueType.Nullable, role.Values["Name"].ValueType);
+            //Assert.AreEqual(null, ((JsonNullable)role.Values["Name"]).Value);
 
-            Assert.AreEqual(JsonValueType.Nullable, role.Values["Status"].ValueType);
-            Assert.AreEqual(null, ((JsonNullable)role.Values["Status"]).Value);
+            //Assert.AreEqual(JsonValueType.Nullable, role.Values["Status"].ValueType);
+            //Assert.AreEqual(null, ((JsonNullable)role.Values["Status"]).Value);
+
+            Assert.AreEqual(JsonValueType.UndefinedNil, role.Values["Name"].ValueType);
+
+            Assert.AreEqual(JsonValueType.UndefinedNil, role.Values["Status"].ValueType);
         }
 
         // array
@@ -422,6 +429,50 @@ namespace JsonLibTest
             Assert.AreEqual(JsonValueType.String, array.Values[1].ValueType);
             Assert.AreEqual("b", ((JsonString)array.Values[1]).Value);
 
+        }
+
+        // nillables
+
+        [TestMethod]
+        public void TestStringNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue("\"my value\"") as JsonString;
+
+            var result2 = service.ToJsonValue("null") as JsonUndefinedNil;
+
+            Assert.IsFalse(result.IsNil);
+            Assert.IsTrue(result2.IsNil);
+        }
+
+
+        [TestMethod]
+        public void TestObjectNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue("{\"key1\":\"value 1\"}") as JsonObject;
+
+            var result2 = service.ToJsonValue("{\"key1\":null}") as JsonObject;
+
+            Assert.IsFalse(result.IsNil);
+
+            Assert.AreEqual(JsonValueType.UndefinedNil, result2.Values["key1"].ValueType);
+        }
+
+        [TestMethod]
+        public void TestArrayNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJsonValue("[\"a\",\"b\"]") as JsonArray;
+
+            var result2 = service.ToJsonValue("[\"a\",null]") as JsonArray;
+
+            Assert.IsFalse(result.IsNil);
+
+            Assert.AreEqual(JsonValueType.UndefinedNil, result2.Values[1].ValueType);
         }
     }
 }

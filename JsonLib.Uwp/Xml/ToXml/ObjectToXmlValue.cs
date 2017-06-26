@@ -185,7 +185,7 @@ namespace JsonLib.Xml
         public XmlArray ToXmlArray_FromDictionary(Type type, IDictionary dictionary, string mainNodeName, XmlMappingContainer mappings = null)
         {
             var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
-            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
+            var valueType = this.assemblyInfoService.GetDictionaryValueType(type);
 
             XmlTypeMapping mapping = null;
             if (mappings != null && mappings.Has(valueType))
@@ -207,7 +207,7 @@ namespace JsonLib.Xml
         public XmlArray ToXmlArray_FromDictionary(Type type, IDictionary dictionary, XmlMappingContainer mappings = null)
         {
             var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
-            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
+            var valueType = this.assemblyInfoService.GetDictionaryValueType(type);
 
             XmlTypeMapping mapping = null;
             if (mappings != null && mappings.Has(valueType))

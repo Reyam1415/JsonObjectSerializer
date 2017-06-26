@@ -44,7 +44,7 @@ namespace JsonLib.Xml
 
         protected object ResolveValue(Type propertyType, XmlNumber xmlValue)
         {
-            var type = this.assemblyInfoService.GetNullableTargetType(propertyType);
+            var type = this.assemblyInfoService.GetNullableUnderlyingType(propertyType);
             return this.assemblyInfoService.ConvertValueToPropertyType(xmlValue.Value, type);
         }
 
@@ -94,7 +94,7 @@ namespace JsonLib.Xml
 
         public object ToValue(Type propertyType, XmlNullable xmlValue)
         {
-            var type = this.assemblyInfoService.GetNullableTargetType(propertyType);
+            var type = this.assemblyInfoService.GetNullableUnderlyingType(propertyType);
             return this.assemblyInfoService.ConvertValueToPropertyType(xmlValue.Value, type);
         }
 
@@ -216,7 +216,7 @@ namespace JsonLib.Xml
         public object ToDictionary(Type type, XmlArray xmlArray, XmlMappingContainer mappings = null)
         {
             var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
-            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
+            var valueType = this.assemblyInfoService.GetDictionaryValueType(type);
 
             var result = this.assemblyInfoService.CreateInstance(type) as IDictionary;
             if(result == null) { throw new JsonLibException("Cannot create dictionary"); }

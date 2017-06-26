@@ -47,17 +47,6 @@ namespace JsonLibTest.Services
         // check numeric
 
         [TestMethod]
-        public void TestIsNumberWithValue()
-        {
-            var service = this.GetService();
-
-            Assert.IsTrue(service.IsNumber(10));
-            Assert.IsTrue(service.IsNumber(10.99));
-            Assert.IsFalse(service.IsNumber("10"));
-            Assert.IsFalse(service.IsNumber(true));
-        }
-
-        [TestMethod]
         public void TestIsNumberWithType()
         {
             var service = this.GetService();
@@ -68,6 +57,33 @@ namespace JsonLibTest.Services
             Assert.IsFalse(service.IsNumberType(typeof(string)));
         }
 
+        [TestMethod]
+        public void TestIsNumberWithValue()
+        {
+            var service = this.GetService();
+
+            Assert.IsTrue(service.IsNumber(10));
+            Assert.IsTrue(service.IsNumber(10.99));
+            Assert.IsFalse(service.IsNumber("10"));
+            Assert.IsFalse(service.IsNumber(true));
+        }
+
+        // check is base type
+
+
+        [TestMethod]
+        public void TestIsBaseType()
+        {
+            var service = this.GetService();
+
+            Assert.IsTrue(service.IsBaseType(typeof(Type)));
+
+            Assert.IsFalse(service.IsBaseType(typeof(MyItem)));
+            Assert.IsFalse(service.IsBaseType(typeof(MyItem[])));
+            Assert.IsFalse(service.IsBaseType(typeof(List<MyItem>)));
+        }
+
+
         // check nullable
 
         [TestMethod]
@@ -77,6 +93,20 @@ namespace JsonLibTest.Services
 
             Assert.IsTrue(service.IsNullable(typeof(int?)));
             Assert.IsFalse(service.IsNullable(typeof(int)));
+        }
+
+        // check enum
+
+        [TestMethod]
+        public void TestIsEnum()
+        {
+            var service = this.GetService();
+
+            var propertyMyEnum = typeof(AssemblyItem).GetProperty("MyEnum");
+            var propertyMyString = typeof(AssemblyItem).GetProperty("MyString");
+
+            Assert.IsTrue(service.IsEnum(propertyMyEnum.PropertyType));
+            Assert.IsFalse(service.IsEnum(propertyMyString.PropertyType));
         }
 
         // check generic
@@ -93,18 +123,22 @@ namespace JsonLibTest.Services
             Assert.IsFalse(service.IsGenericType(typeof(int)));
         }
 
-        // check enum
+        // check is array
 
         [TestMethod]
-        public void TestIsEnum()
+        public void TestIsArray()
         {
             var service = this.GetService();
 
-            var propertyMyEnum = typeof(AssemblyItem).GetProperty("MyEnum");
-            var propertyMyString = typeof(AssemblyItem).GetProperty("MyString");
+            Assert.IsTrue(service.IsArray(typeof(string[])));
+            Assert.IsTrue(service.IsArray(typeof(int?[])));
+            Assert.IsTrue(service.IsArray(typeof(User[])));
 
-            Assert.IsTrue(service.IsEnum(propertyMyEnum.PropertyType));
-            Assert.IsFalse(service.IsEnum(propertyMyString.PropertyType));
+            Assert.IsFalse(service.IsArray(typeof(List<string>)));
+            Assert.IsFalse(service.IsArray(typeof(Dictionary<string, string>)));
+            Assert.IsFalse(service.IsArray(typeof(User)));
+            Assert.IsFalse(service.IsArray(typeof(MyEnum)));
+            Assert.IsFalse(service.IsArray(typeof(int)));
         }
 
         // check dictionary
@@ -123,10 +157,126 @@ namespace JsonLibTest.Services
             Assert.IsFalse(service.IsDictionary(typeof(MyItemGeneric<string>)));
         }
 
+        // get sinlgle tiem
+
+        [TestMethod]
+        public void TestGetSingleItemType()
+        {
+            var service = this.GetService();
+
+           Assert.AreEqual(typeof(string), service.GetSingleItemType(typeof(List<string>)));
+           Assert.AreEqual(typeof(int), service.GetSingleItemType(typeof(int[])));
+        }
+
+        // get type from assembly qualified name
+
+        [TestMethod]
+        public void TestGetAssemblyQualifiedName()
+        {
+            var service = this.GetService();
+
+            Assert.AreEqual("JsonLibTest.MyItem, JsonLibUwpTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", service.GetAssemblyQualitiedName(typeof(MyItem)));
+        }
+
+        [TestMethod]
+        public void TestGetTypefromAssemblyQualifiedName()
+        {
+            var service = this.GetService();
+
+            var name = "JsonLibTest.MyItem, JsonLibUwpTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null";
+
+            Assert.AreEqual(typeof(MyItem), service.GetTypeFromAssemblyQualifiedName(name));
+        }
+
+        // get dictionary infos
+
+        [TestMethod]
+        public void TestIsDictionaryKeyType()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, int>();
+
+            var result = service.GetDictionaryKeyType(value.GetType());
+
+            Assert.AreEqual(typeof(string), result);
+        }
+
+        [TestMethod]
+        public void TestIsDictionaryValueType()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, int>();
+
+            var result = service.GetDictionaryValueType(value.GetType());
+
+            Assert.AreEqual(typeof(int), result);
+        }
+
+        // ConvertToStringWithInvariantCulture
+
+        [TestMethod]
+        public void TestConvertToStringWithInvariantCulture()
+        {
+            var service = this.GetService();
+
+            Assert.AreEqual("10.5", service.ConvertToStringWithInvariantCulture("10.5"));
+        }
+
+        // create instance
+
+        [TestMethod]
+        public void TestCreateInstance()
+        {
+            var service = this.GetService();
+
+            var result = service.CreateInstance(typeof(User));
+            var result2 = service.CreateInstance(typeof(List<string>));
+            var result3 = service.CreateInstance(typeof(Dictionary<int,string>));
+            var result4 = service.CreateInstance(typeof(List<User>));
+            // var result5 = service.CreateInstance(typeof(string[]));
+
+            Assert.AreEqual(typeof(User), result.GetType());
+            Assert.AreEqual(typeof(List<string>),result2.GetType());
+            Assert.AreEqual(typeof(Dictionary<int,string>), result3.GetType());
+            Assert.AreEqual(typeof(List<User>), result4.GetType());
+            // Assert.AreEqual(typeof(string[]), result5.GetType()); // => use Array.CreateInstance
+        }
+
+        // create list
+
+        [TestMethod]
+        public void TestCreateList()
+        {
+            var service = this.GetService();
+
+            var result = service.CreateList(typeof(User));
+
+            Assert.AreEqual(typeof(List<User>), result.GetType());
+        }
+
+        // create array
+
+        [TestMethod]
+        public void TestCreateArray()
+        {
+            var service = this.GetService();
+
+            var result = service.CreateArray(typeof(string),10);
+            var result2 = service.CreateArray(typeof(User), 5);
+
+            Assert.AreEqual(typeof(string[]), result.GetType());
+            Assert.AreEqual(10, ((string[]) result).Length);
+
+            Assert.AreEqual(typeof(User[]), result2.GetType());
+            Assert.AreEqual(5, ((User[])result2).Length);
+        }
+
         // get properties
 
         [TestMethod]
-        public void TestGetPorperties()
+        public void TestGetProperties()
         {
             var service = this.GetService();
 
@@ -209,6 +359,24 @@ namespace JsonLibTest.Services
             Assert.AreEqual("MyString", property.Name);
         }
 
+        // get nullable target type
+
+        [TestMethod]
+        public void TestGetNullableTargetType_WithNotNullable_ReturnsType()
+        {
+            var service = this.GetService();
+
+            Assert.AreEqual(typeof(string), service.GetNullableUnderlyingType(typeof(string)));
+        }
+
+        [TestMethod]
+        public void TestGetNullableTargetType_WithNullable()
+        {
+            var service = this.GetService();
+
+            Assert.AreEqual(typeof(int), service.GetNullableUnderlyingType(typeof(int?)));
+        }
+
         // set value
 
         [TestMethod]
@@ -224,6 +392,32 @@ namespace JsonLibTest.Services
 
             Assert.AreEqual(typeof(AssemblyItem), instance.GetType());
             Assert.AreEqual("my new value",((AssemblyItem)instance).MyString);
+        }
+
+        [TestMethod]
+        public void TestSetValue_WithExotic()
+        {
+            var service = this.GetService();
+
+            var instance = service.CreateInstance(typeof(MyItem)) as MyItem;
+
+            // Int32 => string : fail
+            // service.SetValue(instance, "MyString", 10);
+
+            // string => Int32 : fail
+            // service.SetValue(instance, "MyInt", "10");
+
+            // Int32 => double : success
+            service.SetValue(instance, "MyDouble", (int)10);
+
+            // string => enum : fail
+            // service.SetValue(instance, "MyEnumValue", "Other");
+
+            // Int32 => Enum : success
+             service.SetValue(instance, "MyEnumValue", 1);
+
+            Assert.AreEqual((double)10, instance.MyDouble);
+            Assert.AreEqual(MyEnum.Other, instance.MyEnumValue);
         }
 
         [TestMethod]
@@ -326,24 +520,6 @@ namespace JsonLibTest.Services
             Assert.IsTrue(failed);
         }
 
-        // get nullable target type
-
-        [TestMethod]
-        public void TestGetNullableTargetType_WithNotNullable_ReetunrsType()
-        {
-            var service = this.GetService();
-
-            Assert.AreEqual(typeof(string), service.GetNullableTargetType(typeof(string)));
-        }
-
-        [TestMethod]
-        public void TestGetNullableTargetType_WithNullable()
-        {
-            var service = this.GetService();
-
-            Assert.AreEqual(typeof(int), service.GetNullableTargetType(typeof(int?)));
-        }
-
 
         // get converted value
 
@@ -362,6 +538,32 @@ namespace JsonLibTest.Services
             Assert.AreEqual((double)10, result);
             Assert.AreEqual(10.0, result);
         }
+
+        [TestMethod]
+        public void TestConvertValueStringToDateTime()
+        {
+            var service = this.GetService();
+
+            var value = "12/12/1990 00:00:00";
+
+            var result = service.ConvertValueToPropertyType(value, typeof(DateTime));
+            Assert.AreEqual(typeof(DateTime), result.GetType());
+            Assert.AreEqual(value, result.ToString());
+        }
+
+        //[TestMethod]
+        //public void TestConvertValueStringToGuid()
+        //{
+        //    // string => Guid : fail
+        //    var service = this.GetService();
+
+        //    var value = "344ac1a2-9613-44d7-b64c-8d45b4585176";
+
+        //    var result = service.ConvertValueToPropertyType(value, typeof(Guid));
+
+        //    Assert.AreEqual(typeof(Guid), result.GetType());
+        //    Assert.AreEqual(value, result.ToString());
+        //}
 
         [TestMethod]
         public void TestConvertValue_WithNull_ReturnsNull()
@@ -489,45 +691,7 @@ namespace JsonLibTest.Services
         }
 
 
-        [TestMethod]
-        public void TestConvertValueStringToDateTime()
-        {
-            var service = this.GetService();
-
-            var value = "12/12/1990 00:00:00";
-
-            var item = new AssemblyItem();
-
-            var result = service.ConvertValueToPropertyType(value, typeof(DateTime));
-            Assert.AreEqual(typeof(DateTime), result.GetType());
-            Assert.AreEqual(value, result.ToString());
-        }
-
-        // get dictionray entries
-
-        [TestMethod]
-        public void TestIsDictionaryKeyType()
-        {
-            var service = this.GetService();
-
-            var value = new Dictionary<string, int>();
-
-            var result = service.GetDictionaryKeyType(value.GetType());
-
-            Assert.AreEqual(typeof(string), result);
-        }
-
-        [TestMethod]
-        public void TestIsDictionaryValueType()
-        {
-            var service = this.GetService();
-
-            var value = new Dictionary<string, int>();
-
-            var result = service.GeDictionaryValueType(value.GetType());
-
-            Assert.AreEqual(typeof(int), result);
-        }
+      
 
     }
 

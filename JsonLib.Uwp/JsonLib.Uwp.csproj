@@ -143,6 +143,7 @@
     <Compile Include="Json\Values\JsonNumber.cs" />
     <Compile Include="Json\Values\JsonObject.cs" />
     <Compile Include="Json\Values\JsonString.cs" />
+    <Compile Include="Json\Values\JsonUndefinedNil.cs" />
     <Compile Include="Json\Values\JsonValue.cs" />
     <Compile Include="Json\Values\JsonValueType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

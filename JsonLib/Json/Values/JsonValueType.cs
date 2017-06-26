@@ -7,7 +7,8 @@
         Nullable,
         Number,
         Object,
-        String
+        String,
+        UndefinedNil
     }
 
 }

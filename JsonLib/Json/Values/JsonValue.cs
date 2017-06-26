@@ -32,6 +32,11 @@
         {
             return new JsonArray();
         }
+
+        public static JsonUndefinedNil CreateUndefinedNil()
+        {
+            return new JsonUndefinedNil();
+        }
     }
 
 }

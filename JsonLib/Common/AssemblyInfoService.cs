@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 
 namespace JsonLib.Common
@@ -26,6 +28,11 @@ namespace JsonLib.Common
                 };
         }
 
+        public bool IsSystemType(Type type)
+        {
+            return type.Namespace == "System";
+        }
+
         public bool IsNumberType(Type type)
         {
             foreach (var numericType in this.numericTypes)
@@ -43,9 +50,9 @@ namespace JsonLib.Common
             return this.IsNumberType(value.GetType());
         }
 
-        public bool IsSystemType(Type type)
+        public bool IsBaseType(Type type)
         {
-            return type.Namespace == "System";
+            return type.FullName == "System.Type";
         }
 
         public bool IsNullable(Type type)
@@ -87,14 +94,45 @@ namespace JsonLib.Common
             return null;
         }
 
+        public string GetAssemblyQualitiedName(Type type)
+        {
+            return type.AssemblyQualifiedName;
+        }
+
+        public Type GetTypeFromAssemblyQualifiedName(string assemblyQualifiedName)
+        {
+            return Type.GetType(assemblyQualifiedName);
+        }
+
         public Type GetDictionaryKeyType(Type type)
         {
             return type.GetGenericArguments()[0];
         }
 
-        public Type GeDictionaryValueType(Type type)
+        public Type GetDictionaryValueType(Type type)
         {
             return type.GetGenericArguments()[1];
+        }
+
+        public string ConvertToStringWithInvariantCulture(object value)
+        {
+            return Convert.ToString(value, CultureInfo.InvariantCulture);
+        }
+
+        public object CreateInstance(Type type)
+        {
+            return Activator.CreateInstance(type);
+        }
+
+        public IList CreateList(Type singleItemType)
+        {
+            var listType = typeof(List<>).MakeGenericType(singleItemType);
+            return this.CreateInstance(listType) as IList;
+        }
+
+        public Array CreateArray(Type singleItemType, int length)
+        {
+            return Array.CreateInstance(singleItemType, length);
         }
 
         public PropertyInfo[] GetProperties(object obj)
@@ -107,12 +145,7 @@ namespace JsonLib.Common
             return type.GetProperty(name);
         }
 
-        public object CreateInstance(Type type)
-        {
-            return Activator.CreateInstance(type);
-        }
-
-        public Type GetNullableTargetType(Type propertyType)
+        public Type GetNullableUnderlyingType(Type propertyType)
         {
             return Nullable.GetUnderlyingType(propertyType) ?? propertyType;
         }
@@ -125,10 +158,8 @@ namespace JsonLib.Common
         public void SetValue(object instance, string propertyName, object convertedValue)
         {
             var property = this.GetProperty(instance.GetType(), propertyName);
-            if(property == null)
-            {
-                throw new JsonLibException("No property found for " + propertyName);
-            } 
+            if(property == null) { throw new JsonLibException("No property found for " + propertyName); } 
+
             property.SetValue(instance, convertedValue);
         }
 
@@ -150,24 +181,6 @@ namespace JsonLib.Common
         public object ConvertValueToPropertyType(object value, Type propertyType)
         {
             return value == null ? null : Convert.ChangeType(value, propertyType);
-        }
-
-        public object ConvertJsonValueToPropertyValue(PropertyInfo propertyInfo, object jsonValue)
-        {
-            var propertyType = this.GetNullableTargetType(propertyInfo.PropertyType);
-            return this.ConvertValueToPropertyType(jsonValue, propertyType);
-        }
-
-        public void ConvertAndSetValueWithNullable(object instance, PropertyInfo propertyInfo, object jsonValue)
-        {
-            var propertyValue = this.ConvertJsonValueToPropertyValue(propertyInfo, jsonValue);
-            this.SetValue(instance, propertyInfo, propertyValue);
-        }
-
-        public void ConvertAndSetValue(object instance, PropertyInfo propertyInfo, object jsonValue)
-        {
-            var propertyValue = this.ConvertValueToPropertyType(jsonValue, propertyInfo.PropertyType);
-            this.SetValue(instance, propertyInfo, propertyValue);
         }
 
         public object GetEnumValue(Type propertyType, object value)

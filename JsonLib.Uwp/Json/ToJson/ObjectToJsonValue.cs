@@ -2,7 +2,6 @@
 using JsonLib.Json.Mappings;
 using System;
 using System.Collections;
-using System.Globalization;
 using System.Reflection;
 
 namespace JsonLib.Json
@@ -12,15 +11,15 @@ namespace JsonLib.Json
         protected IAssemblyInfoService assemblyInfoService;
 
         public ObjectToJsonValue()
-            :this(new AssemblyInfoService())
-        {  }
+            : this(new AssemblyInfoService())
+        { }
 
         public ObjectToJsonValue(IAssemblyInfoService assemblyInfoService)
         {
             this.assemblyInfoService = assemblyInfoService;
         }
 
-        public string GetStringValueOrNull(object value)
+        protected string GetStringValueOrNull(object value)
         {
             return value == null ? null : value.ToString();
         }
@@ -45,20 +44,22 @@ namespace JsonLib.Json
             return propertyName;
         }
 
-        public JsonArray ToJsonArray(IEnumerable array, JsonMappingContainer mappings = null)
+        protected JsonArray ToJsonArray(IEnumerable array, JsonMappingContainer mappings = null)
         {
+            var singleItemType = this.assemblyInfoService.GetSingleItemType(array.GetType());
+
             var result = new JsonArray();
             foreach (var value in array)
             {
-                var jsonValue = this.ToJsonValue(value.GetType(), value, mappings);
+                var jsonValue = this.ToJsonValue(singleItemType, value, mappings);
                 result.Add(jsonValue);
             }
             return result;
         }
 
-        public JsonObject ToJsonObject(object obj, JsonMappingContainer mappings = null)
+        protected JsonObject ToJsonObject(object obj, JsonMappingContainer mappings = null)
         {
-            var result = JsonValue.CreateObject();
+            var result = new JsonObject();
 
             var properties = this.assemblyInfoService.GetProperties(obj);
 
@@ -93,21 +94,24 @@ namespace JsonLib.Json
             {
                 return key.ToString();
             }
-            else if (type.FullName == "System.Type")
+            else if (this.assemblyInfoService.IsBaseType(type))
             {
-                return ((Type)key).AssemblyQualifiedName;
+                return this.assemblyInfoService.GetAssemblyQualitiedName((Type)key);
             }
             else if (this.assemblyInfoService.IsNumberType(type))
             {
-                return Convert.ToString(key, CultureInfo.InvariantCulture);
+                return this.assemblyInfoService.ConvertToStringWithInvariantCulture(key);
             }
 
             throw new JsonLibException("Unsupported type for dictionary key");
         }
 
-        public JsonObject DoToJsonObjectFromDictionary(Type type, Type keyType, Type valueType, IDictionary dictionary, JsonMappingContainer mappings = null)
+        protected JsonObject ToJsonObjectFromDictionary(Type type, IDictionary dictionary, JsonMappingContainer mappings = null)
         {
             var result = new JsonObject();
+
+            var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
+            var valueType = this.assemblyInfoService.GetDictionaryValueType(type);
 
             foreach (var keyValue in dictionary)
             {
@@ -123,25 +127,33 @@ namespace JsonLib.Json
             return result;
         }
 
-        public JsonObject ToJsonObjectFromDictionary(Type type, IDictionary dictionary, JsonMappingContainer mappings = null)
+        protected IJsonValue ToJsonValue(Type type, object value, JsonMappingContainer mappings = null)
         {
-            var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
-            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
-
-            var nullableType = Nullable.GetUnderlyingType(valueType);
-            if (nullableType != null)
+            if (value == null)
             {
-                return this.DoToJsonObjectFromDictionary(type, keyType, nullableType, dictionary, mappings);
+                // accept null: string, nullables, object, array
+                if (type == typeof(string))
+                {
+                    return new JsonString(null);
+                }
+                else if (this.assemblyInfoService.IsNullable(type))
+                {
+                    return new JsonNullable(null);
+                }
+                else if (this.assemblyInfoService.IsDictionary(type))
+                {
+                    return new JsonObject().SetNil();
+                }
+                else if (typeof(IEnumerable).IsAssignableFrom(type))
+                {
+                    return new JsonArray().SetNil();
+                }
+                else
+                {
+                    return new JsonObject().SetNil();
+                }
             }
-            else
-            {
-                return this.DoToJsonObjectFromDictionary(type, keyType, valueType, dictionary, mappings);
-            }
-        }
-
-        public IJsonValue ToJsonValue(Type type, object value, JsonMappingContainer mappings = null)
-        {
-            if (this.assemblyInfoService.IsSystemType(type))
+            else if (this.assemblyInfoService.IsSystemType(type))
             {
                 if (type == typeof(string))
                 {

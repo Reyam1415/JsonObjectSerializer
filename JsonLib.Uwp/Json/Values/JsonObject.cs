@@ -3,15 +3,24 @@ using System.Collections.Generic;
 
 namespace JsonLib.Json
 {
-    public class JsonObject : IJsonValue
+    public class JsonObject : IJsonValue, IJsonNillable
     {
         public JsonValueType ValueType => JsonValueType.Object;
 
         public Dictionary<string, IJsonValue> Values { get; set; }
 
+        public bool IsNil { get; protected set; }
+
         public JsonObject()
         {
             this.Values = new Dictionary<string, IJsonValue>();
+        }
+
+        public JsonObject SetNil()
+        {
+            this.IsNil = true;
+            this.Values.Clear();
+            return this;
         }
 
         public bool HasValue(string key)

@@ -16,94 +16,138 @@ namespace JsonLib.Json
             this.jsonService = jsonService;
         }
 
-        public string ToString(JsonString element)
+        public string ToString(JsonString jsonValue)
         {
-            return this.jsonService.GetString(element.Value);
+            return jsonValue.IsNil ? "null" : this.jsonService.GetString(jsonValue.Value);
         }
 
-        public string ToNumber(JsonNumber element)
+        public string ToNumber(JsonNumber jsonValue)
         {
-            return this.jsonService.GetNumber(element.Value);
+            return this.jsonService.GetNumber(jsonValue.Value);
         }
 
-        public string ToBool(JsonBool element)
+        public string ToBool(JsonBool jsonValue)
         {
-            return this.jsonService.GetBool(element.Value);
+            return this.jsonService.GetBool(jsonValue.Value);
         }
 
-        public string ToNullable(JsonNullable element)
+        public string ToNullable(JsonNullable jsonValue)
         {
-            return this.jsonService.GetNullable(element.Value);
+            return jsonValue.IsNil ? "null" : this.jsonService.GetNullable(jsonValue.Value);
         }
 
         public string ToArray(JsonArray jsonArray)
         {
             var result = new List<string>();
 
-            foreach (var jsonValue in jsonArray.Values)
+            if (jsonArray.IsNil)
             {
-                if(jsonValue.ValueType == JsonValueType.String)
-                {
-                    result.Add(this.jsonService.GetString(((JsonString)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Number)
-                {
-                    result.Add(this.jsonService.GetNumber(((JsonNumber)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Bool)
-                {
-                    result.Add(this.jsonService.GetBool(((JsonBool)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Nullable)
-                {
-                    result.Add(this.jsonService.GetNullable(((JsonNullable)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Array)
-                {
-                    result.Add(this.ToArray((JsonArray)jsonValue));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Object)
-                {
-                    result.Add(this.ToObject((JsonObject)jsonValue));
-                }
+                return "null";
             }
-            return "[" + string.Join(",", result) + "]";
+            else
+            {
+                foreach (var jsonValue in jsonArray.Values)
+                {
+                    if (jsonValue.ValueType == JsonValueType.String)
+                    {
+                        result.Add(this.jsonService.GetString(((JsonString)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Number)
+                    {
+                        result.Add(this.jsonService.GetNumber(((JsonNumber)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Bool)
+                    {
+                        result.Add(this.jsonService.GetBool(((JsonBool)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Nullable)
+                    {
+                        result.Add(this.jsonService.GetNullable(((JsonNullable)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Array)
+                    {
+                        result.Add(this.ToArray((JsonArray)jsonValue));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Object)
+                    {
+                        result.Add(this.ToObject((JsonObject)jsonValue));
+                    }
+                }
+                return "[" + string.Join(",", result) + "]";
+            }
         }
 
         public string ToObject(JsonObject jsonObject)
         {
             var result = new List<string>();
-            foreach (var keyValue in jsonObject.Values)
+
+            if (jsonObject.IsNil)
             {
-                var key = keyValue.Key;
-                var jsonValue = keyValue.Value;
-                if (jsonValue.ValueType == JsonValueType.String)
-                {
-                    result.Add(this.jsonService.GetString(key, ((JsonString)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Number)
-                {
-                    result.Add(this.jsonService.GetNumber(key, ((JsonNumber)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Bool)
-                {
-                    result.Add(this.jsonService.GetBool(key, ((JsonBool)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Nullable)
-                {
-                    result.Add(this.jsonService.GetNullable(key, ((JsonNullable)jsonValue).Value));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Array)
-                {
-                    result.Add(this.jsonService.GetKey(key) + ":" + this.ToArray((JsonArray)jsonValue));
-                }
-                else if (jsonValue.ValueType == JsonValueType.Object)
-                {
-                    result.Add(this.jsonService.GetKey(key) + ":" + this.ToObject((JsonObject)jsonValue));
-                }
+                return "null";
             }
-            return "{" + string.Join(",", result) + "}";
+            else
+            {
+                foreach (var keyValue in jsonObject.Values)
+                {
+                    var key = keyValue.Key;
+                    var jsonValue = keyValue.Value;
+                    if (jsonValue.ValueType == JsonValueType.String)
+                    {
+                        result.Add(this.jsonService.GetString(key, ((JsonString)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Number)
+                    {
+                        result.Add(this.jsonService.GetNumber(key, ((JsonNumber)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Bool)
+                    {
+                        result.Add(this.jsonService.GetBool(key, ((JsonBool)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Nullable)
+                    {
+                        result.Add(this.jsonService.GetNullable(key, ((JsonNullable)jsonValue).Value));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Array)
+                    {
+                        result.Add(this.jsonService.GetKey(key) + ":" + this.ToArray((JsonArray)jsonValue));
+                    }
+                    else if (jsonValue.ValueType == JsonValueType.Object)
+                    {
+                        result.Add(this.jsonService.GetKey(key) + ":" + this.ToObject((JsonObject)jsonValue));
+                    }
+                }
+                return "{" + string.Join(",", result) + "}";
+            }
         }
 
+        public string Resolve(IJsonValue jsonValue)
+        {
+            if (jsonValue.ValueType == JsonValueType.Object)
+            {
+                return this.ToObject((JsonObject)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.Array)
+            {
+                return this.ToArray((JsonArray)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.String)
+            {
+                return this.ToString((JsonString)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.Number)
+            {
+                return this.ToNumber((JsonNumber)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.Bool)
+            {
+                return this.ToBool((JsonBool)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.Nullable)
+            {
+                return this.ToNullable((JsonNullable)jsonValue);
+            }
+
+            throw new JsonLibException("Cannot resolve json for object");
+        }
     }
 }

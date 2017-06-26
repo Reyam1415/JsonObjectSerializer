@@ -26,7 +26,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString("my value");
 
-            var result = service.ToValue(typeof(string), jsonValue);
+            var result = service.Resolve<string>(jsonValue);
 
             Assert.AreEqual("my value", result);
         }
@@ -39,7 +39,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString(null);
 
-            var result = service.ToValue(typeof(string), jsonValue);
+            var result = service.Resolve<string>(jsonValue);
 
             Assert.AreEqual(null, result);
         }
@@ -53,7 +53,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString(g.ToString());
 
-            var result = service.ToValue(typeof(Guid), jsonValue);
+            var result = service.Resolve<Guid>(jsonValue);
 
             Assert.AreEqual(g, result);
         }
@@ -67,7 +67,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString(g.ToString());
 
-            var result = service.ToValue(typeof(Guid?), jsonValue);
+            var result = service.Resolve<Guid?>(jsonValue);
 
             Assert.AreEqual(g, result);
         }
@@ -79,7 +79,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString(null);
 
-            var result = service.ToValue(typeof(Guid?), jsonValue);
+            var result = service.Resolve<Guid?>(jsonValue);
 
             Assert.AreEqual(null, result);
         }
@@ -95,7 +95,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString(value.ToString());
 
-            var result = service.ToValue(typeof(DateTime), jsonValue);
+            var result = service.Resolve<DateTime>(jsonValue);
 
             Assert.AreEqual(value, result);
         }
@@ -109,7 +109,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString(value.ToString());
 
-            var result = service.ToValue(typeof(DateTime?), jsonValue);
+            var result = service.Resolve<DateTime?>(jsonValue);
 
             Assert.AreEqual(value, result);
         }
@@ -121,7 +121,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateString(null);
 
-            var result = service.ToValue(typeof(DateTime?), jsonValue);
+            var result = service.Resolve<DateTime?>(jsonValue);
 
             Assert.AreEqual(null, result);
         }
@@ -138,7 +138,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNumber(10);
 
-            var result = service.ToValue(typeof(int), jsonValue);
+            var result = service.Resolve<int>(jsonValue);
 
             Assert.AreEqual(10, result);
         }
@@ -150,7 +150,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNumber(10);
 
-            var result = service.ToValue(typeof(int?), jsonValue);
+            var result = service.Resolve<int?>(jsonValue);
 
             Assert.AreEqual(10, result);
         }
@@ -162,7 +162,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNumber(10.5);
 
-            var result = service.ToValue(typeof(double), jsonValue);
+            var result = service.Resolve<double>(jsonValue);
 
             Assert.AreEqual(10.5, result);
         }
@@ -174,7 +174,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNumber(10.5);
 
-            var result = service.ToValue(typeof(double?), jsonValue);
+            var result = service.Resolve<double?>(jsonValue);
 
             Assert.AreEqual(10.5, result);
         }
@@ -186,7 +186,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNumber(10);
 
-            var result = service.ToValue(typeof(Int64), jsonValue);
+            var result = service.Resolve<Int64>(jsonValue);
 
             Assert.AreEqual((Int64)10, result);
         }
@@ -198,7 +198,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNumber(10);
 
-            var result = service.ToValue(typeof(string), jsonValue);
+            var result = service.Resolve<string>(jsonValue);
 
             Assert.AreEqual("10", result);
         }
@@ -215,7 +215,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateBool(true);
 
-            var result = service.ToValue(typeof(bool), jsonValue);
+            var result = service.Resolve<bool>(jsonValue);
 
             Assert.AreEqual(true, result);
         }
@@ -227,7 +227,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateBool(false);
 
-            var result = service.ToValue(typeof(bool), jsonValue);
+            var result = service.Resolve<bool>(jsonValue);
 
             Assert.AreEqual(false, result);
         }
@@ -239,7 +239,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateBool(true);
 
-            var result = service.ToValue(typeof(string), jsonValue);
+            var result = service.Resolve<string>(jsonValue);
 
             Assert.AreEqual("true", result);
         }
@@ -251,7 +251,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateBool(false);
 
-            var result = service.ToValue(typeof(string), jsonValue);
+            var result = service.Resolve<string>(jsonValue);
 
             Assert.AreEqual("false", result);
         }
@@ -263,7 +263,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateBool(true);
 
-            var result = service.ToValue(typeof(bool?), jsonValue);
+            var result = service.Resolve<bool?>(jsonValue);
 
             Assert.AreEqual(true, result);
         }
@@ -279,7 +279,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNullable(10);
 
-            var result = service.ToValue(typeof(int?), jsonValue);
+            var result = service.Resolve<int?>(jsonValue);
 
             Assert.AreEqual(10, result);
         }
@@ -291,7 +291,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNullable(null);
 
-            var result = service.ToValue(typeof(int?), jsonValue);
+            var result = service.Resolve<int?>(jsonValue);
 
             Assert.AreEqual(null, result);
         }
@@ -303,7 +303,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNullable(10);
 
-            var result = service.ToValue(typeof(Int64?), jsonValue);
+            var result = service.Resolve<Int64?>(jsonValue);
 
             Assert.AreEqual((Int64)10, result);
         }
@@ -317,7 +317,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNullable(g);
 
-            var result = service.ToValue(typeof(Guid?), jsonValue);
+            var result = service.Resolve<Guid?>(jsonValue);
 
             Assert.AreEqual(g, result);
         }
@@ -331,7 +331,7 @@ namespace JsonLibTest
 
             var jsonValue = JsonValue.CreateNullable(t);
 
-            var result = service.ToValue(typeof(DateTime?), jsonValue);
+            var result = service.Resolve<DateTime?>(jsonValue);
 
             Assert.AreEqual(t, result);
         }
@@ -357,7 +357,7 @@ namespace JsonLibTest
                .AddArray("MyList", new JsonArray().AddString("a").AddString("b"))
                .AddArray("MyArray", new JsonArray().AddString("y").AddString("z"));
 
-            var result = service.ToObject(typeof(AssemblyItem), jsonObject) as AssemblyItem;
+            var result = service.Resolve<AssemblyItem>(jsonObject);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(g, result.MyGuid);
@@ -391,7 +391,7 @@ namespace JsonLibTest
                .AddNumber("MyEnum", 1)
                .AddString("MyDate", t.ToString());
 
-            var result = service.ToObject(typeof(ItemNullable), jsonObject) as ItemNullable;
+            var result = service.Resolve<ItemNullable>(jsonObject);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(g, result.MyGuid);
@@ -415,7 +415,7 @@ namespace JsonLibTest
                .AddNullable("MyEnum", null)
                .AddNullable("MyDate", null);
 
-            var result = service.ToObject(typeof(ItemNullable), jsonObject) as ItemNullable;
+            var result = service.Resolve<ItemNullable>(jsonObject);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(null, result.MyGuid);
@@ -440,7 +440,7 @@ namespace JsonLibTest
                 .SetProperty("Id", "map_id")
                 .SetProperty("UserName", "map_username");
 
-            var result = service.ToObject(typeof(User), jsonValue, mappings) as User;
+            var result = service.Resolve<User>(jsonValue, mappings);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Id);
@@ -463,7 +463,7 @@ namespace JsonLibTest
                 .SetProperty("Id", "map_id")
                 .SetProperty("UserName", "map_username");
 
-            var result = service.ToObject(typeof(User), jsonValue, mappings) as User;
+            var result = service.Resolve<User>(jsonValue, mappings);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Id);
@@ -484,7 +484,7 @@ namespace JsonLibTest
             var mappings = new JsonMappingContainer();
             mappings.SetLowerStrategyForAllTypes();
 
-            var result = service.ToObject(typeof(User), jsonValue, mappings) as User;
+            var result = service.Resolve<User>(jsonValue, mappings);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Id);
@@ -506,7 +506,7 @@ namespace JsonLibTest
             var mappings = new JsonMappingContainer();
             mappings.SetLowerStrategyForAllTypes();
 
-            var result = service.ToObject(typeof(UserWithInnerAndList), jsonValue, mappings) as UserWithInnerAndList;
+            var result = service.Resolve<UserWithInnerAndList>(jsonValue, mappings);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Id);
@@ -527,7 +527,7 @@ namespace JsonLibTest
                .AddNumber("MyIntString", 10)
                .AddBool("MyBoolString", true);
 
-            var result = service.ToObject(typeof(MyItemGuess), jsonObject) as MyItemGuess;
+            var result = service.Resolve<MyItemGuess>(jsonObject);
 
             Assert.IsNotNull(result);
             Assert.AreEqual("10", result.MyIntString);
@@ -571,7 +571,7 @@ namespace JsonLibTest
         {
             var service = this.GetService();
 
-            var mapping = new JsonTypeMapping(typeof(User)).SetProperty("UserName","map_username");
+            var mapping = new JsonTypeMapping(typeof(User)).SetProperty("UserName", "map_username");
 
             var properties = typeof(User).GetProperties();
 
@@ -648,7 +648,7 @@ namespace JsonLibTest
                 .AddString("a")
                 .AddString("b");
 
-            var result = service.ToList(typeof(List<string>), jsonValue) as List<string>;
+            var result = service.Resolve<List<string>>(jsonValue) as List<string>;
 
             Assert.AreEqual("a", result[0]);
             Assert.AreEqual("b", result[1]);
@@ -665,9 +665,9 @@ namespace JsonLibTest
                 .AddString("12/12/1990 00:00:00")
                 .AddString("12/10/1990 00:00:00");
 
-            var result = service.ToList(typeof(List<DateTime>), jsonValue) as List<DateTime>;
+            var result = service.Resolve<List<DateTime>>(jsonValue);
 
-            Assert.AreEqual(new DateTime(1990,12,12), result[0]);
+            Assert.AreEqual(new DateTime(1990, 12, 12), result[0]);
             Assert.AreEqual(new DateTime(1990, 10, 12), result[1]);
         }
 
@@ -682,7 +682,7 @@ namespace JsonLibTest
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585176")
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585178");
 
-            var result = service.ToList(typeof(List<Guid>), jsonValue) as List<Guid>;
+            var result = service.Resolve<List<Guid>>(jsonValue);
 
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176"), result[0]);
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178"), result[1]);
@@ -699,7 +699,7 @@ namespace JsonLibTest
                 .AddNumber(1)
                 .AddNumber(2);
 
-            var result = service.ToList(typeof(List<int>), jsonValue) as List<int>;
+            var result = service.Resolve<List<int>>(jsonValue);
 
             Assert.AreEqual(1, result[0]);
             Assert.AreEqual(2, result[1]);
@@ -716,7 +716,7 @@ namespace JsonLibTest
                 .AddNumber(1.5)
                 .AddNumber(2.5);
 
-            var result = service.ToList(typeof(List<double>), jsonValue) as List<double>;
+            var result = service.Resolve<List<double>>(jsonValue);
 
             Assert.AreEqual(1.5, result[0]);
             Assert.AreEqual(2.5, result[1]);
@@ -733,7 +733,7 @@ namespace JsonLibTest
                 .AddBool(true)
                 .AddBool(false);
 
-            var result = service.ToList(typeof(List<bool>), jsonValue) as List<bool>;
+            var result = service.Resolve<List<bool>>(jsonValue);
 
             Assert.AreEqual(true, result[0]);
             Assert.AreEqual(false, result[1]);
@@ -750,7 +750,7 @@ namespace JsonLibTest
                 .AddNumber(1)
                 .AddNumber(2);
 
-            var result = service.ToList(typeof(List<int?>), jsonValue) as List<int?>;
+            var result = service.Resolve<List<int?>>(jsonValue);
 
             Assert.AreEqual(1, result[0]);
             Assert.AreEqual(2, result[1]);
@@ -767,7 +767,7 @@ namespace JsonLibTest
                 .AddNumber(1.5)
                 .AddNumber(2.5);
 
-            var result = service.ToList(typeof(List<double?>), jsonValue) as List<double?>;
+            var result = service.Resolve<List<double?>>(jsonValue);
 
             Assert.AreEqual(1.5, result[0]);
             Assert.AreEqual(2.5, result[1]);
@@ -784,7 +784,7 @@ namespace JsonLibTest
                 .AddBool(true)
                 .AddBool(false);
 
-            var result = service.ToList(typeof(List<bool?>), jsonValue) as List<bool?>;
+            var result = service.Resolve<List<bool?>>(jsonValue);
 
             Assert.AreEqual(true, result[0]);
             Assert.AreEqual(false, result[1]);
@@ -801,7 +801,7 @@ namespace JsonLibTest
                 .AddString("12/12/1990 00:00:00")
                 .AddString("12/10/1990 00:00:00");
 
-            var result = service.ToList(typeof(List<DateTime?>), jsonValue) as List<DateTime?>;
+            var result = service.Resolve<List<DateTime?>>(jsonValue);
 
             Assert.AreEqual(new DateTime(1990, 12, 12), result[0]);
             Assert.AreEqual(new DateTime(1990, 10, 12), result[1]);
@@ -818,7 +818,7 @@ namespace JsonLibTest
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585176")
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585178");
 
-            var result = service.ToList(typeof(List<Guid?>), jsonValue) as List<Guid?>;
+            var result = service.Resolve<List<Guid?>>(jsonValue);
 
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176"), result[0]);
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178"), result[1]);
@@ -837,7 +837,7 @@ namespace JsonLibTest
                 .AddNullable(null)
                 .AddNullable(null);
 
-            var result = service.ToList(typeof(List<int?>), jsonValue) as List<int?>;
+            var result = service.Resolve<List<int?>>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -854,7 +854,7 @@ namespace JsonLibTest
               .AddNullable(null)
               .AddNullable(null);
 
-            var result = service.ToList(typeof(List<double?>), jsonValue) as List<double?>;
+            var result = service.Resolve<List<double?>>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -871,7 +871,7 @@ namespace JsonLibTest
                .AddNullable(null)
                .AddNullable(null);
 
-            var result = service.ToList(typeof(List<bool?>), jsonValue) as List<bool?>;
+            var result = service.Resolve<List<bool?>>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -888,7 +888,7 @@ namespace JsonLibTest
                .AddNullable(null)
                .AddNullable(null);
 
-            var result = service.ToList(typeof(List<DateTime?>), jsonValue) as List<DateTime?>;
+            var result = service.Resolve<List<DateTime?>>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -905,7 +905,7 @@ namespace JsonLibTest
                 .AddNullable(null)
                 .AddNullable(null);
 
-            var result = service.ToList(typeof(List<Guid?>), jsonValue) as List<Guid?>;
+            var result = service.Resolve<List<Guid?>>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -925,7 +925,7 @@ namespace JsonLibTest
                 .AddString("a")
                 .AddString("b");
 
-            var result = service.ToArray(typeof(string[]), jsonValue) as string[];
+            var result = service.Resolve<string[]>(jsonValue);
 
             Assert.AreEqual("a", result[0]);
             Assert.AreEqual("b", result[1]);
@@ -942,7 +942,7 @@ namespace JsonLibTest
                 .AddString("12/12/1990 00:00:00")
                 .AddString("12/10/1990 00:00:00");
 
-            var result = service.ToArray(typeof(DateTime[]), jsonValue) as DateTime[];
+            var result = service.Resolve<DateTime[]>(jsonValue);
 
             Assert.AreEqual(new DateTime(1990, 12, 12), result[0]);
             Assert.AreEqual(new DateTime(1990, 10, 12), result[1]);
@@ -959,7 +959,7 @@ namespace JsonLibTest
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585176")
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585178");
 
-            var result = service.ToArray(typeof(Guid[]), jsonValue) as Guid[];
+            var result = service.Resolve<Guid[]>(jsonValue);
 
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176"), result[0]);
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178"), result[1]);
@@ -976,7 +976,7 @@ namespace JsonLibTest
                 .AddNumber(1)
                 .AddNumber(2);
 
-            var result = service.ToArray(typeof(int[]), jsonValue) as int[];
+            var result = service.Resolve<int[]>(jsonValue);
 
             Assert.AreEqual(1, result[0]);
             Assert.AreEqual(2, result[1]);
@@ -993,7 +993,7 @@ namespace JsonLibTest
                 .AddNumber(1.5)
                 .AddNumber(2.5);
 
-            var result = service.ToArray(typeof(double[]), jsonValue) as double[];
+            var result = service.Resolve<double[]>(jsonValue);
 
             Assert.AreEqual(1.5, result[0]);
             Assert.AreEqual(2.5, result[1]);
@@ -1010,7 +1010,7 @@ namespace JsonLibTest
                 .AddBool(true)
                 .AddBool(false);
 
-            var result = service.ToArray(typeof(bool[]), jsonValue) as bool[];
+            var result = service.Resolve<bool[]>(jsonValue);
 
             Assert.AreEqual(true, result[0]);
             Assert.AreEqual(false, result[1]);
@@ -1027,7 +1027,7 @@ namespace JsonLibTest
                 .AddNumber(1)
                 .AddNumber(2);
 
-            var result = service.ToArray(typeof(int?[]), jsonValue) as int?[];
+            var result = service.Resolve<int?[]>(jsonValue);
 
             Assert.AreEqual(1, result[0]);
             Assert.AreEqual(2, result[1]);
@@ -1044,7 +1044,7 @@ namespace JsonLibTest
                 .AddNumber(1.5)
                 .AddNumber(2.5);
 
-            var result = service.ToArray(typeof(double?[]), jsonValue) as double?[];
+            var result = service.Resolve<double?[]>(jsonValue);
 
             Assert.AreEqual(1.5, result[0]);
             Assert.AreEqual(2.5, result[1]);
@@ -1061,7 +1061,7 @@ namespace JsonLibTest
                 .AddBool(true)
                 .AddBool(false);
 
-            var result = service.ToArray(typeof(bool?[]), jsonValue) as bool?[];
+            var result = service.Resolve<bool?[]>(jsonValue);
 
             Assert.AreEqual(true, result[0]);
             Assert.AreEqual(false, result[1]);
@@ -1078,7 +1078,7 @@ namespace JsonLibTest
                 .AddString("12/12/1990 00:00:00")
                 .AddString("12/10/1990 00:00:00");
 
-            var result = service.ToArray(typeof(DateTime?[]), jsonValue) as DateTime?[];
+            var result = service.Resolve<DateTime?[]>(jsonValue);
 
             Assert.AreEqual(new DateTime(1990, 12, 12), result[0]);
             Assert.AreEqual(new DateTime(1990, 10, 12), result[1]);
@@ -1095,7 +1095,7 @@ namespace JsonLibTest
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585176")
                 .AddString("344ac1a2-9613-44d7-b64c-8d45b4585178");
 
-            var result = service.ToArray(typeof(Guid?[]), jsonValue) as Guid?[];
+            var result = service.Resolve<Guid?[]>(jsonValue);
 
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176"), result[0]);
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178"), result[1]);
@@ -1114,7 +1114,7 @@ namespace JsonLibTest
                 .AddNullable(null)
                 .AddNullable(null);
 
-            var result = service.ToArray(typeof(int?[]), jsonValue) as int?[];
+            var result = service.Resolve<int?[]>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -1131,7 +1131,7 @@ namespace JsonLibTest
               .AddNullable(null)
               .AddNullable(null);
 
-            var result = service.ToArray(typeof(double?[]), jsonValue) as double?[];
+            var result = service.Resolve<double?[]>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -1148,7 +1148,7 @@ namespace JsonLibTest
                .AddNullable(null)
                .AddNullable(null);
 
-            var result = service.ToArray(typeof(bool?[]), jsonValue) as bool?[];
+            var result = service.Resolve<bool?[]>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -1165,7 +1165,7 @@ namespace JsonLibTest
                .AddNullable(null)
                .AddNullable(null);
 
-            var result = service.ToArray(typeof(DateTime?[]), jsonValue) as DateTime?[];
+            var result = service.Resolve<DateTime?[]>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -1182,7 +1182,7 @@ namespace JsonLibTest
                 .AddNullable(null)
                 .AddNullable(null);
 
-            var result = service.ToArray(typeof(Guid?[]), jsonValue) as Guid?[];
+            var result = service.Resolve<Guid?[]>(jsonValue);
 
             Assert.AreEqual(null, result[0]);
             Assert.AreEqual(null, result[1]);
@@ -1204,7 +1204,7 @@ namespace JsonLibTest
                    .AddNumber("MyIntString", 20)
                    .AddBool("MyBoolString", false));
 
-            var result = service.ToArray(typeof(MyItemGuess[]), jsonArray) as MyItemGuess[];
+            var result = service.Resolve<MyItemGuess[]>(jsonArray);
 
             Assert.IsNotNull(result);
 
@@ -1231,7 +1231,7 @@ namespace JsonLibTest
                    .AddNumber("MyIntString", 20)
                    .AddBool("MyBoolString", false));
 
-            var result = service.ToList(typeof(List<MyItemGuess>), jsonArray) as List<MyItemGuess>;
+            var result = service.Resolve<List<MyItemGuess>>(jsonArray);
 
             Assert.IsNotNull(result);
 
@@ -1278,7 +1278,7 @@ namespace JsonLibTest
               .AddArray("MyList", new JsonArray().AddString("a2").AddString("b2"))
               .AddArray("MyArray", new JsonArray().AddString("y2").AddString("z2")));
 
-            var results = service.ToList(typeof(List<AssemblyItem>), jsonArray) as List<AssemblyItem>;
+            var results = service.Resolve<List<AssemblyItem>>(jsonArray);
 
             var result = results[0];
 
@@ -1341,7 +1341,7 @@ namespace JsonLibTest
               .AddNumber("MyEnum", 0)
               .AddString("MyDate", t2.ToString()));
 
-            var results = service.ToList(typeof(List<ItemNullable>), jsonArray) as List<ItemNullable>;
+            var results = service.Resolve<List<ItemNullable>>(jsonArray);
 
             var result = results[0];
 
@@ -1384,7 +1384,7 @@ namespace JsonLibTest
                 .AddNullable("MyEnum", null)
                 .AddNullable("MyDate", null));
 
-            var results = service.ToList(typeof(List<ItemNullable>), jsonArray) as List<ItemNullable>;
+            var results = service.Resolve<List<ItemNullable>>(jsonArray);
 
             var result = results[0];
 
@@ -1438,7 +1438,7 @@ namespace JsonLibTest
               .AddArray("MyList", new JsonArray().AddString("a2").AddString("b2"))
               .AddArray("MyArray", new JsonArray().AddString("y2").AddString("z2")));
 
-            var results = service.ToArray(typeof(AssemblyItem[]), jsonArray) as AssemblyItem[];
+            var results = service.Resolve<AssemblyItem[]>(jsonArray);
 
             var result = results[0];
 
@@ -1501,7 +1501,7 @@ namespace JsonLibTest
               .AddNumber("MyEnum", 0)
               .AddString("MyDate", t2.ToString()));
 
-            var results = service.ToArray(typeof(ItemNullable[]), jsonArray) as ItemNullable[];
+            var results = service.Resolve<ItemNullable[]>(jsonArray);
 
             var result = results[0];
 
@@ -1544,7 +1544,7 @@ namespace JsonLibTest
                 .AddNullable("MyEnum", null)
                 .AddNullable("MyDate", null));
 
-            var results = service.ToArray(typeof(ItemNullable[]), jsonArray) as ItemNullable[];
+            var results = service.Resolve<ItemNullable[]>(jsonArray);
 
             var result = results[0];
 
@@ -1576,7 +1576,7 @@ namespace JsonLibTest
                 .AddObject(JsonValue.CreateObject().AddNumber("Id", 1).AddString("UserName", "Marie"))
                 .AddObject(JsonValue.CreateObject().AddNumber("Id", 2).AddString("UserName", "Pat"));
 
-            var result = service.ToEnumerable(typeof(List<User>), jsonValue, mappings) as List<User>;
+            var result = service.Resolve<List<User>>(jsonValue, mappings);
 
             Assert.AreEqual(1, result[0].Id);
             Assert.AreEqual("Marie", result[0].UserName);
@@ -1600,7 +1600,7 @@ namespace JsonLibTest
                 .AddObject(JsonValue.CreateObject().AddNumber("Id", 1).AddString("UserName", "Marie"))
                 .AddObject(JsonValue.CreateObject().AddNumber("Id", 2).AddString("UserName", "Pat"));
 
-            var result = service.ToEnumerable(typeof(User[]), jsonValue, mappings) as User[];
+            var result = service.Resolve<User[]>(jsonValue, mappings);
 
             Assert.AreEqual(1, result[0].Id);
             Assert.AreEqual("Marie", result[0].UserName);
@@ -1627,7 +1627,7 @@ namespace JsonLibTest
                 .AddObject(JsonValue.CreateObject().AddNumber("map_id", 1).AddString("map_username", "Marie"))
                 .AddObject(JsonValue.CreateObject().AddNumber("map_id", 2).AddString("map_username", "Pat"));
 
-            var result = service.ToEnumerable(typeof(List<User>), jsonValue, mappings) as List<User>;
+            var result = service.Resolve<List<User>>(jsonValue, mappings);
 
             Assert.AreEqual(1, result[0].Id);
             Assert.AreEqual("Marie", result[0].UserName);
@@ -1654,7 +1654,7 @@ namespace JsonLibTest
                 .AddObject(JsonValue.CreateObject().AddNumber("map_id", 1).AddString("map_username", "Marie"))
                 .AddObject(JsonValue.CreateObject().AddNumber("map_id", 2).AddString("map_username", "Pat"));
 
-            var result = service.ToEnumerable(typeof(User[]), jsonValue, mappings) as User[];
+            var result = service.Resolve<User[]>(jsonValue, mappings);
 
             Assert.AreEqual(1, result[0].Id);
             Assert.AreEqual("Marie", result[0].UserName);
@@ -1679,7 +1679,7 @@ namespace JsonLibTest
                 .AddObject(JsonValue.CreateObject().AddNumber("id", 1).AddString("username", "Marie"))
                 .AddObject(JsonValue.CreateObject().AddNumber("id", 2).AddString("username", "Pat"));
 
-            var result = service.ToEnumerable(typeof(List<User>), jsonValue, mappings) as List<User>;
+            var result = service.Resolve<List<User>>(jsonValue, mappings);
 
             Assert.AreEqual(1, result[0].Id);
             Assert.AreEqual("Marie", result[0].UserName);
@@ -1704,7 +1704,7 @@ namespace JsonLibTest
                 .AddObject(JsonValue.CreateObject().AddNumber("id", 1).AddString("username", "Marie"))
                 .AddObject(JsonValue.CreateObject().AddNumber("id", 2).AddString("username", "Pat"));
 
-            var result = service.ToEnumerable(typeof(User[]), jsonValue, mappings) as User[];
+            var result = service.Resolve<User[]>(jsonValue, mappings) as User[];
 
             Assert.AreEqual(1, result[0].Id);
             Assert.AreEqual("Marie", result[0].UserName);
@@ -1716,7 +1716,8 @@ namespace JsonLibTest
             Assert.AreEqual(null, result[1].Age);
             Assert.AreEqual(null, result[1].Email);
         }
+
     }
 
-    
+
 }

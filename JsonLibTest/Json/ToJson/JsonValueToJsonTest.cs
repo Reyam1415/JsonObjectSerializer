@@ -361,5 +361,62 @@ namespace JsonLibTest
             Assert.AreEqual("[{\"MyGuid\":null,\"MyInt\":null,\"MyDouble\":null,\"MyBool\":null,\"MyEnum\":null,\"MyDate\":null},{\"MyGuid\":null,\"MyInt\":null,\"MyDouble\":null,\"MyBool\":null,\"MyEnum\":null,\"MyDate\":null}]", result);
         }
 
+
+        // nillables 
+
+        [TestMethod]
+        public void TestStringNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.Resolve(new JsonString("my value"));
+
+            var result2 = service.Resolve(new JsonString(null));
+
+            Assert.AreEqual("\"my value\"",result);
+            Assert.AreEqual("null", result2);
+        }
+
+        [TestMethod]
+        public void TestNullableNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.Resolve(new JsonNullable(10));
+
+            var result2 = service.Resolve(new JsonNullable(null));
+
+            Assert.AreEqual("10", result);
+            Assert.AreEqual("null", result2);
+        }
+
+        [TestMethod]
+        public void TestObjectNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.Resolve(new JsonObject().AddString("key1","value 1"));
+
+            var result2 = service.Resolve(new JsonObject().SetNil());
+
+            Assert.AreEqual("{\"key1\":\"value 1\"}", result);
+            Assert.AreEqual("null", result2);
+        }
+
+        [TestMethod]
+        public void TestArrayNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.Resolve(new JsonArray().AddString("a").AddString("b"));
+
+            var result2 = service.Resolve(new JsonArray().SetNil());
+
+            Assert.AreEqual("[\"a\",\"b\"]", result);
+            Assert.AreEqual("null", result2);
+
+        }
+
+
     }
 }

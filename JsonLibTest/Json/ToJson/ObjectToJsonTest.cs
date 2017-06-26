@@ -1,8 +1,5 @@
-﻿using JsonLib;
-using JsonLib.Json;
+﻿using JsonLib.Json;
 using JsonLib.Json.Mappings;
-using JsonLib.Mappings;
-using JsonLibTest.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -656,6 +653,81 @@ namespace JsonLibTest
             Assert.AreEqual("{\"10\":{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null},\"20\":{\"Id\":2,\"UserName\":\"Pat\",\"Age\":20,\"Email\":\"pat@domain.com\"}}", result);
         }
 
+        // nillables
+
+        [TestMethod]
+        public void TestStringNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJson<string>("my value");
+
+            var result2 = service.ToJson<string>(null);
+
+            Assert.AreEqual("\"my value\"", result);
+            Assert.AreEqual("null", result2);
+        }
+
+        [TestMethod]
+        public void TestNullableNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJson<int?>(10);
+
+            var result2 = service.ToJson<int?>(null);
+
+            Assert.AreEqual("10", result);
+            Assert.AreEqual("null", result2);
+        }
+
+        [TestMethod]
+        public void TestObjectNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJson<User>(new User { Id = 1, UserName = "Marie" });
+
+            var result2 = service.ToJson<User>(null);
+
+            Assert.AreEqual("{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null}", result);
+            Assert.AreEqual("null", result2);
+        }
+
+        [TestMethod]
+        public void TestDictionaryNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJson<Dictionary<int, string>>(new Dictionary<int, string> { { 1, "a" } });
+
+            var result2 = service.ToJson<Dictionary<int, string>>(null);
+
+            var result3 = service.ToJson<Dictionary<int, int?>>(new Dictionary<int, int?> { { 1,10 }, { 2, null } });
+
+            Assert.AreEqual("{\"1\":\"a\"}", result);
+            Assert.AreEqual("null", result2);
+            Assert.AreEqual("{\"1\":10,\"2\":null}", result3);
+        }
+
+        [TestMethod]
+        public void TestArrayNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToJson<string[]>(new string[] { "a", "b" });
+
+            var result2 = service.ToJson<string[]>(null);
+
+            var result3 = service.ToJson<string[]>(new string[] { "a", "b", null });
+
+            var result4 = service.ToJson<User[]>(new User[] { new User { Id = 1, UserName = "Marie" }, null });
+
+            Assert.AreEqual("[\"a\",\"b\"]", result);
+            Assert.AreEqual("null", result2);
+            Assert.AreEqual("[\"a\",\"b\",null]", result3);
+            Assert.AreEqual("[{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null},null]", result4);
+        }
 
     }
 

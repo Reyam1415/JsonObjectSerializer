@@ -1064,5 +1064,94 @@ namespace JsonLibTest.ToObject
             Assert.AreEqual(20, result[20].Age);
             Assert.AreEqual("pat@domain.com", result[20].Email);
         }
+
+        // nillables
+
+        [TestMethod]
+        public void TestStringNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToObject<string>("\"my value\"");
+
+            var result2 = service.ToObject<string>("null");
+
+            Assert.AreEqual("my value", result);
+            Assert.AreEqual(null, result2);
+        }
+
+        [TestMethod]
+        public void TestIntNullableNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToObject<int?>("10");
+
+            var result2 = service.ToObject<int?>("null");
+
+            Assert.AreEqual(10, result);
+            Assert.AreEqual(null, result2);
+        }
+
+
+        [TestMethod]
+        public void TestObjectNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToObject<UserNillable>("{\"UserName\":\"Marie\"}");
+
+            var result2 = service.ToObject<UserNillable>("{\"UserName\":null}");
+
+            Assert.AreEqual("Marie", result.UserName);
+            Assert.AreEqual(null, result2.UserName);
+        }
+
+        [TestMethod]
+        public void TestDictionaryNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToObject<Dictionary<string,string>>("{\"UserName\":\"Marie\"}");
+
+            var result2 = service.ToObject<Dictionary<string, string>>("{\"UserName\":null}");
+
+            Assert.AreEqual("Marie", result["UserName"]);
+            Assert.AreEqual(null, result2["UserName"]);
+        }
+
+        [TestMethod]
+        public void TestDictionaryNullableNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToObject<Dictionary<string, int?>>("{\"key1\":100}");
+
+            var result2 = service.ToObject<Dictionary<string, int?>>("{\"key2\":null}");
+
+            Assert.AreEqual(100, result["key1"]);
+            Assert.AreEqual(null, result2["key2"]);
+        }
+
+        [TestMethod]
+        public void TestArrayNillable()
+        {
+            var service = this.GetService();
+
+            var result = service.ToObject<string[]>("[\"a\",\"b\"]");
+
+            var result2 = service.ToObject<string[]>("[\"a\",null]");
+
+            Assert.AreEqual("a", result[0]);
+            Assert.AreEqual("b", result[1]);
+
+            Assert.AreEqual("a", result2[0]);
+            Assert.AreEqual(null, result2[1]);
+        }
+    }
+
+    public class UserNillable
+    {
+        public string UserName { get; set; }
     }
 }

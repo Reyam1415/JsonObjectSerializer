@@ -9,9 +9,8 @@ namespace JsonLib.Json
 
         public JsonToObject()
             :this(new JsonToJsonValue(), new JsonValueToObject())
-        {
+        { }
 
-        }
         public JsonToObject(
             IJsonToJsonValue jsonToJsonValue,
             IJsonValueToObject jsonValueToObject)

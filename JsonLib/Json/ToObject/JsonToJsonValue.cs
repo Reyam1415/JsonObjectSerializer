@@ -306,7 +306,7 @@ namespace JsonLib.Json
                     return new JsonBool(false);
                 case JsonToken.Null:
                     this.MoveAndGetNextToken(jsonChars, ref index);
-                    return new JsonNullable(null);
+                    return new JsonUndefinedNil();
                 case JsonToken.None:
                     break;
             }

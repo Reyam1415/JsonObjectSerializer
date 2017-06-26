@@ -1,17 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace JsonLib.Json
 {
 
-    public class JsonArray : IJsonValue
+    public class JsonArray : IJsonValue, IJsonNillable
     {
         public JsonValueType ValueType => JsonValueType.Array;
 
         public List<IJsonValue> Values { get; set; }
 
+        public bool IsNil { get; protected set; }
+
         public JsonArray()
         {
             this.Values = new List<IJsonValue>();
+        }
+
+        public JsonArray SetNil()
+        {
+            this.Values.Clear();
+            this.IsNil = true;
+            return this;
         }
 
         public JsonArray Add(IJsonValue value)
