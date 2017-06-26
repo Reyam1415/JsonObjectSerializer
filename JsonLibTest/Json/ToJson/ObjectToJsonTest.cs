@@ -1,4 +1,5 @@
-﻿using JsonLib.Json;
+﻿using JsonLib;
+using JsonLib.Json;
 using JsonLib.Json.Mappings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -647,6 +648,10 @@ namespace JsonLibTest
                 { 10,  new User{ Id=1, UserName="Marie"} },
                 { 20,  new User{ Id=2, UserName="Pat", Age=20, Email="pat@domain.com"} }
             };
+
+            var r = JsonObjectSerializer.Stringify(value);
+
+            var x = JsonObjectSerializer.Parse<Dictionary<int,User>>(r);
 
             var result = service.ToJson(value);
 

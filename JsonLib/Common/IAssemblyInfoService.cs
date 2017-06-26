@@ -11,7 +11,7 @@ namespace JsonLib.Common
         Array CreateArray(Type singleItemType, int length);
         object CreateInstance(Type type);
         IList CreateList(Type singleItemType);
-        string GetAssemblyQualitiedName(Type type);
+        string GetAssemblyQualifiedName(Type type);
         Type GetDictionaryKeyType(Type type);
         Type GetDictionaryValueType(Type type);
         object GetEnumValue(Type propertyType, object value);

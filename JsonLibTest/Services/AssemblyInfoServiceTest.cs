@@ -174,7 +174,7 @@ namespace JsonLibTest.Services
         {
             var service = this.GetService();
 
-            Assert.AreEqual("JsonLibTest.MyItem, JsonLibTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", service.GetAssemblyQualitiedName(typeof(MyItem)));
+            Assert.AreEqual("JsonLibTest.MyItem, JsonLibTest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", service.GetAssemblyQualifiedName(typeof(MyItem)));
         }
 
         [TestMethod]

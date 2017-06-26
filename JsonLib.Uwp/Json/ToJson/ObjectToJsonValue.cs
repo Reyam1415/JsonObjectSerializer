@@ -96,7 +96,7 @@ namespace JsonLib.Json
             }
             else if (this.assemblyInfoService.IsBaseType(type))
             {
-                return this.assemblyInfoService.GetAssemblyQualitiedName((Type)key);
+                return this.assemblyInfoService.GetAssemblyQualifiedName((Type)key);
             }
             else if (this.assemblyInfoService.IsNumberType(type))
             {

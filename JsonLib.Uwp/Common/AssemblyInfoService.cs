@@ -94,7 +94,7 @@ namespace JsonLib.Common
             return null;
         }
 
-        public string GetAssemblyQualitiedName(Type type)
+        public string GetAssemblyQualifiedName(Type type)
         {
             return type.AssemblyQualifiedName;
         }
