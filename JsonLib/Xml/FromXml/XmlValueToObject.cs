@@ -213,7 +213,7 @@ namespace JsonLib.Xml
             throw new JsonLibException("Unsupported type in xml for dictionary key");
         }
 
-        public object ToXmlArray_FromDictionary(Type type, XmlArray xmlArray, XmlMappingContainer mappings = null)
+        public object ToDictionary(Type type, XmlArray xmlArray, XmlMappingContainer mappings = null)
         {
             var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
             var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
@@ -246,7 +246,7 @@ namespace JsonLib.Xml
             }
             else if (this.assemblyInfoService.IsDictionary(type))
             {
-                return this.ToXmlArray_FromDictionary(type, xmlArray, mappings);
+                return this.ToDictionary(type, xmlArray, mappings);
             }
             else if (this.assemblyInfoService.IsGenericType(type))
             {

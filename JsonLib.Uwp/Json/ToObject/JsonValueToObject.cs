@@ -3,6 +3,7 @@ using JsonLib.Json.Mappings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 
 namespace JsonLib.Json
@@ -94,7 +95,6 @@ namespace JsonLib.Json
             var type = this.assemblyInfoService.GetNullableTargetType(propertyType);
             return this.assemblyInfoService.ConvertValueToPropertyType(jsonValue.Value, type);
         }
-
 
         public PropertyInfo FindProperty(PropertyInfo[] properties, string jsonName, bool lowerCaseStrategyForAllTypes, JsonTypeMapping mapping = null)
         {
@@ -232,6 +232,87 @@ namespace JsonLib.Json
             }
 
             return null;
+        }
+
+        public object ResolveDictionaryKey(Type propertyType, string jsonValueKey)
+        {
+            if (propertyType.FullName == "System.Type")
+            {
+                var resolvedType = Type.GetType(jsonValueKey);
+                if (resolvedType == null) { throw new JsonLibException("cannot resolve Type with the qualified name " + jsonValueKey); }
+                return resolvedType;
+            }
+            else if (this.assemblyInfoService.IsNumberType(propertyType))
+            {
+                return this.assemblyInfoService.ConvertValueToPropertyType(jsonValueKey, propertyType);
+            }
+            else if(propertyType == typeof(string))
+            {
+                return jsonValueKey;
+            }
+
+            throw new JsonLibException("Unsupported type in xml for dictionary key");
+        }
+
+        public object ToDictionary(Type type, JsonObject jsonObject, JsonMappingContainer mappings = null)
+        {
+            var keyType = this.assemblyInfoService.GetDictionaryKeyType(type);
+            var valueType = this.assemblyInfoService.GeDictionaryValueType(type);
+
+            var result = this.assemblyInfoService.CreateInstance(type) as IDictionary;
+            if (result == null) { throw new JsonLibException("Cannot create dictionary"); }
+
+            foreach (var jsonValue in jsonObject.Values)
+            {
+                var key = this.ResolveDictionaryKey(keyType, jsonValue.Key);
+                var value = this.Resolve(valueType, jsonValue.Value, mappings);
+
+                result.Add(key, value);
+            }
+
+            return result;
+        }
+
+        public object Resolve(Type type, IJsonValue jsonValue, JsonMappingContainer mappings = null)
+        {
+            if (jsonValue.ValueType == JsonValueType.Object)
+            {
+                if (this.assemblyInfoService.IsDictionary(type))
+                {
+                    return this.ToDictionary(type, (JsonObject)jsonValue, mappings);
+                }
+                else
+                {
+                    return this.ToObject(type, (JsonObject)jsonValue, mappings);
+                }
+            }
+            else if (jsonValue.ValueType == JsonValueType.Array)
+            {
+               return this.ToEnumerable(type, (JsonArray)jsonValue, mappings);
+            }
+            else if (jsonValue.ValueType == JsonValueType.String)
+            {
+                return this.ToValue(type, (JsonString)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.Number)
+            {
+                return this.ToValue(type, (JsonNumber)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.Bool)
+            {
+                return this.ToValue(type, (JsonBool)jsonValue);
+            }
+            else if (jsonValue.ValueType == JsonValueType.Nullable)
+            {
+                return this.ToValue(type, (JsonNullable)jsonValue);
+            }
+
+            throw new JsonLibException("Cannot resolve object for json");
+        }
+
+        public T Resolve<T>(IJsonValue jsonValue, JsonMappingContainer mappings = null)
+        {
+            return (T)this.Resolve(typeof(T), jsonValue, mappings);
         }
     }
 }

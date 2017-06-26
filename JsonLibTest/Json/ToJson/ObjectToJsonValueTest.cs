@@ -747,6 +747,129 @@ namespace JsonLibTest
             Assert.AreEqual(JsonValueType.String, ((JsonObject)((JsonArray)result).Values[1]).Values["email"].ValueType);
             Assert.AreEqual("pat@domain.com", ((JsonString)((JsonObject)((JsonArray)result).Values[1]).Values["email"]).Value);
         }
+
+        // dictionary
+
+        [TestMethod]
+        public void TestDictionaryIntString()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<int, string>
+            {
+                { 10,  "value 1" },
+                { 20,  "value 2" }
+            };
+
+            var result = service.ToJsonValue(value);
+
+            Assert.AreEqual(JsonValueType.Object, result.ValueType);
+
+            Assert.AreEqual(2, ((JsonObject)result).Values.Count);
+
+            Assert.AreEqual(JsonValueType.String, ((JsonObject)result).Values["10"].ValueType);
+            Assert.AreEqual("value 1", ((JsonString) ((JsonObject)result).Values["10"]).Value);
+
+            Assert.AreEqual(JsonValueType.String, ((JsonObject)result).Values["20"].ValueType);
+            Assert.AreEqual("value 2", ((JsonString)((JsonObject)result).Values["20"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionaryStringString()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, string>
+            {
+                { "key1",  "value 1" },
+                { "key2",  "value 2" }
+            };
+
+            var result = service.ToJsonValue(value);
+
+            Assert.AreEqual(JsonValueType.Object, result.ValueType);
+
+            Assert.AreEqual(2, ((JsonObject)result).Values.Count);
+
+            Assert.AreEqual(JsonValueType.String, ((JsonObject)result).Values["key1"].ValueType);
+            Assert.AreEqual("value 1", ((JsonString)((JsonObject)result).Values["key1"]).Value);
+
+            Assert.AreEqual(JsonValueType.String, ((JsonObject)result).Values["key2"].ValueType);
+            Assert.AreEqual("value 2", ((JsonString)((JsonObject)result).Values["key2"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionaryStringBool()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, bool>
+            {
+                { "key1",  true },
+                { "key2",  false }
+            };
+
+            var result = service.ToJsonValue(value);
+
+            Assert.AreEqual(JsonValueType.Object, result.ValueType);
+
+            Assert.AreEqual(2, ((JsonObject)result).Values.Count);
+
+            Assert.AreEqual(JsonValueType.Bool, ((JsonObject)result).Values["key1"].ValueType);
+            Assert.AreEqual(true, ((JsonBool)((JsonObject)result).Values["key1"]).Value);
+
+            Assert.AreEqual(JsonValueType.Bool, ((JsonObject)result).Values["key2"].ValueType);
+            Assert.AreEqual(false, ((JsonBool)((JsonObject)result).Values["key2"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionaryStringEnum()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, MyEnum>
+            {
+                { "key1",  MyEnum.Other },
+                { "key2",  MyEnum.Default }
+            };
+
+            var result = service.ToJsonValue(value);
+
+            Assert.AreEqual(JsonValueType.Object, result.ValueType);
+
+            Assert.AreEqual(2, ((JsonObject)result).Values.Count);
+
+            Assert.AreEqual(JsonValueType.Number, ((JsonObject)result).Values["key1"].ValueType);
+            Assert.AreEqual(1, ((JsonNumber)((JsonObject)result).Values["key1"]).Value);
+
+            Assert.AreEqual(JsonValueType.Number, ((JsonObject)result).Values["key2"].ValueType);
+            Assert.AreEqual(0, ((JsonNumber)((JsonObject)result).Values["key2"]).Value);
+        }
+
+        [TestMethod]
+        public void TestDictionaryStringDateTime()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<string, DateTime>
+            {
+                { "key1",  new DateTime(1990,12,12) },
+                { "key2",  new DateTime(1990,10,12) }
+            };
+
+            var result = service.ToJsonValue(value);
+
+            Assert.AreEqual(JsonValueType.Object, result.ValueType);
+
+            Assert.AreEqual(2, ((JsonObject)result).Values.Count);
+
+            Assert.AreEqual(JsonValueType.String, ((JsonObject)result).Values["key1"].ValueType);
+            Assert.AreEqual("12/12/1990 00:00:00", ((JsonString)((JsonObject)result).Values["key1"]).Value);
+
+            Assert.AreEqual(JsonValueType.String, ((JsonObject)result).Values["key2"].ValueType);
+            Assert.AreEqual("12/10/1990 00:00:00", ((JsonString)((JsonObject)result).Values["key2"]).Value);
+        }
+
     }
 
 

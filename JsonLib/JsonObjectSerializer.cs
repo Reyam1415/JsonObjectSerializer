@@ -19,14 +19,14 @@ namespace JsonLib
             serializationService.ActiveCache(value);
         }
 
-        public static string Stringify(object value, JsonMappingContainer mappings = null)
+        public static string Stringify<T>(T value, JsonMappingContainer mappings = null)
         {
-            return serializationService.Stringify(value, mappings);
+            return serializationService.Stringify<T>(value, mappings);
         }
 
-        public static string StringifyAndBeautify(object value, JsonMappingContainer mappings = null)
+        public static string StringifyAndBeautify<T>(T value, JsonMappingContainer mappings = null)
         {
-            return serializationService.StringifyAndBeautify(value, mappings);
+            return serializationService.StringifyAndBeautify<T>(value, mappings);
         }
 
         public static T Parse<T>(string json, JsonMappingContainer mappings = null)

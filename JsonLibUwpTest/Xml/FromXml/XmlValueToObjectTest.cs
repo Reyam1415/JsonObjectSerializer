@@ -768,7 +768,7 @@ namespace JsonLibTest.Xml.FromXml
             var service = this.GetService();
 
             var xmlArray = new XmlArray("ArrayOfString");
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
@@ -784,7 +784,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlString("MyItem", "value 1"));
             try
             {
-                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+                var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
             }
             catch (Exception)
             {
@@ -804,7 +804,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlBool("MyItem", true));
             try
             {
-                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+                var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
             }
             catch (Exception)
             {
@@ -824,7 +824,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlArray("MyArray"));
             try
             {
-                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+                var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
             }
             catch (Exception)
             {
@@ -844,7 +844,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem").AddNumber("Int32",10));
             try
             {
-                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+                var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
             }
             catch (Exception)
             {
@@ -864,7 +864,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem").AddString("MyString", "10").AddString("String","value 1"));
             try
             {
-                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+                var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
             }
             catch (Exception)
             {
@@ -884,7 +884,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem").AddNumber("Int32", 10).AddString("String", "value 1"));
             try
             {
-                var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+                var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
             }
             catch (Exception)
             {
@@ -904,7 +904,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Int32", 20).AddString("String", "value 2"));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
 
             Assert.AreEqual("value 1",result[10]);
             Assert.AreEqual("value 2", result[20]);
@@ -920,7 +920,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddString("Key", "key2").AddString("String", "value 2"));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
+            var result = service.ToDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
 
             Assert.AreEqual("value 1", result["key1"]);
             Assert.AreEqual("value 2", result["key2"]);
@@ -936,7 +936,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Int32", 20).AddNumber("Value", 200));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, int>), xmlArray) as Dictionary<int, int>;
+            var result = service.ToDictionary(typeof(Dictionary<int, int>), xmlArray) as Dictionary<int, int>;
 
             Assert.AreEqual(100, result[10]);
             Assert.AreEqual(200, result[20]);
@@ -952,7 +952,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Int32", 20).AddNumber("Value", 200));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
 
             Assert.AreEqual("100", result[10]);
             Assert.AreEqual("200", result[20]);
@@ -968,7 +968,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Int32", 20).AddNumber("Value", 2.5));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
 
             Assert.AreEqual("1.5", result[10]);
             Assert.AreEqual("2.5", result[20]);
@@ -984,7 +984,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Int32", 20).AddBool("Value", false));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, bool>), xmlArray) as Dictionary<int, bool>;
+            var result = service.ToDictionary(typeof(Dictionary<int, bool>), xmlArray) as Dictionary<int, bool>;
 
             Assert.AreEqual(true, result[10]);
             Assert.AreEqual(false, result[20]);
@@ -1000,7 +1000,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Int32", 20).AddBool("Value", false));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
+            var result = service.ToDictionary(typeof(Dictionary<int, string>), xmlArray) as Dictionary<int, string>;
 
             Assert.AreEqual("true", result[10]);
             Assert.AreEqual("false", result[20]);
@@ -1016,7 +1016,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddString("Key", "key2").AddString("Value", "12/10/1990 00:00:00"));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, DateTime>), xmlArray) as Dictionary<string, DateTime>;
+            var result = service.ToDictionary(typeof(Dictionary<string, DateTime>), xmlArray) as Dictionary<string, DateTime>;
 
             Assert.AreEqual(new DateTime(1990,12,12), result["key1"]);
             Assert.AreEqual(new DateTime(1990, 10, 12), result["key2"]);
@@ -1032,7 +1032,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddString("Key", "key2").AddString("Value", "344ac1a2-9613-44d7-b64c-8d45b4585178"));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, Guid>), xmlArray) as Dictionary<string, Guid>;
+            var result = service.ToDictionary(typeof(Dictionary<string, Guid>), xmlArray) as Dictionary<string, Guid>;
 
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585176"), result["key1"]);
             Assert.AreEqual(new Guid("344ac1a2-9613-44d7-b64c-8d45b4585178"), result["key2"]);
@@ -1047,7 +1047,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddString("Key", "key2").AddString("Value", "Default"));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, MyEnum>), xmlArray) as Dictionary<string, MyEnum>;
+            var result = service.ToDictionary(typeof(Dictionary<string, MyEnum>), xmlArray) as Dictionary<string, MyEnum>;
 
             Assert.AreEqual(MyEnum.Other, result["key1"]);
             Assert.AreEqual(MyEnum.Default, result["key2"]);
@@ -1063,7 +1063,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Int32", 20).AddString("Value", "value 2"));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
+            var result = service.ToDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
 
             Assert.AreEqual("value 1", result["10"]);
             Assert.AreEqual("value 2", result["20"]);
@@ -1079,7 +1079,7 @@ namespace JsonLibTest.Xml.FromXml
                 .Add(new XmlObject("MyItem")
                     .AddNumber("Key", 2.5).AddString("Value", "value 2"));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
+            var result = service.ToDictionary(typeof(Dictionary<string, string>), xmlArray) as Dictionary<string, string>;
 
             Assert.AreEqual("value 1", result["1.5"]);
             Assert.AreEqual("value 2", result["2.5"]);
@@ -1097,7 +1097,7 @@ namespace JsonLibTest.Xml.FromXml
                     .AddString("Key", "key2")
                    .AddObject("User", new XmlObject("User").AddNumber("Id", 2).AddString("UserName", "Pat").AddNumber("Age", 20).AddString("Email", "pat@domain.com")));
 
-            var result = service.ToXmlArray_FromDictionary(typeof(Dictionary<string, User>), xmlArray) as Dictionary<string, User>;
+            var result = service.ToDictionary(typeof(Dictionary<string, User>), xmlArray) as Dictionary<string, User>;
 
             Assert.AreEqual(1, result["key1"].Id);
             Assert.AreEqual("Marie", result["key1"].UserName);

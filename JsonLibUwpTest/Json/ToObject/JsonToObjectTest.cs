@@ -948,5 +948,121 @@ namespace JsonLibTest.ToObject
             Assert.AreEqual("y2", result2.MyArray[0]);
             Assert.AreEqual("z2", result2.MyArray[1]);
         }
+
+
+        // dictionary
+
+        [TestMethod]
+        public void TestDictionaryIntString()
+        {
+            var service = this.GetService();
+
+            var json = "{\"10\":\"value 1\",\"20\":\"value 2\"}";
+
+            var result = service.ToObject<Dictionary<int, string>>(json);
+
+            Assert.AreEqual("value 1", result[10]);
+            Assert.AreEqual("value 2", result[20]);
+        }
+
+        [TestMethod]
+        public void TestDictionaryStringString()
+        {
+            var service = this.GetService();
+
+            var json = "{\"key1\":\"value 1\",\"key2\":\"value 2\"}";
+
+            var result = service.ToObject<Dictionary<string, string>>(json);
+
+            Assert.AreEqual("value 1", result["key1"]);
+            Assert.AreEqual("value 2", result["key2"]);
+        }
+
+        [TestMethod]
+        public void TestDictionaryStringString_WithKeyNumber()
+        {
+            var service = this.GetService();
+
+            var json = "{\"10\":\"value 1\",\"20\":\"value 2\"}";
+
+            var result = service.ToObject<Dictionary<string, string>>(json);
+
+            Assert.AreEqual("value 1", result["10"]);
+            Assert.AreEqual("value 2", result["20"]);
+        }
+
+        [TestMethod]
+        public void TestDictionaryIntObject()
+        {
+            var service = this.GetService();
+
+            var json = "{\"10\":{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null},\"20\":{\"Id\":2,\"UserName\":\"Pat\",\"Age\":20,\"Email\":\"pat@domain.com\"}}";
+
+            var result = service.ToObject<Dictionary<int, User>>(json);
+
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual(1, result[10].Id);
+            Assert.AreEqual("Marie", result[10].UserName);
+            Assert.AreEqual(null, result[10].Age);
+            Assert.AreEqual(null, result[10].Email);
+
+            Assert.AreEqual(2, result[20].Id);
+            Assert.AreEqual("Pat", result[20].UserName);
+            Assert.AreEqual(20, result[20].Age);
+            Assert.AreEqual("pat@domain.com", result[20].Email);
+        }
+
+        [TestMethod]
+        public void TestDictionaryIntObject_WithAllLower()
+        {
+            var service = this.GetService();
+
+            var mappings = new JsonMappingContainer().SetLowerStrategyForAllTypes();
+
+
+            var json = "{\"10\":{\"id\":1,\"username\":\"Marie\",\"age\":null,\"email\":null},\"20\":{\"id\":2,\"username\":\"Pat\",\"age\":20,\"email\":\"pat@domain.com\"}}";
+
+            var result = service.ToObject<Dictionary<int, User>>(json, mappings);
+
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual(1, result[10].Id);
+            Assert.AreEqual("Marie", result[10].UserName);
+            Assert.AreEqual(null, result[10].Age);
+            Assert.AreEqual(null, result[10].Email);
+
+            Assert.AreEqual(2, result[20].Id);
+            Assert.AreEqual("Pat", result[20].UserName);
+            Assert.AreEqual(20, result[20].Age);
+            Assert.AreEqual("pat@domain.com", result[20].Email);
+        }
+
+        [TestMethod]
+        public void TestDictionaryIntObject_WithMapping()
+        {
+            var service = this.GetService();
+
+            var mappings = new JsonMappingContainer();
+            mappings.SetType<User>().SetProperty("Id", "MapId")
+                .SetProperty("UserName","MapUserName")
+                .SetProperty("Email", "MapEmail");
+
+            var json = "{\"10\":{\"MapId\":1,\"MapUserName\":\"Marie\",\"Age\":null,\"MapEmail\":null},\"20\":{\"MapId\":2,\"MapUserName\":\"Pat\",\"Age\":20,\"MapEmail\":\"pat@domain.com\"}}";
+
+            var result = service.ToObject<Dictionary<int, User>>(json, mappings);
+
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual(1, result[10].Id);
+            Assert.AreEqual("Marie", result[10].UserName);
+            Assert.AreEqual(null, result[10].Age);
+            Assert.AreEqual(null, result[10].Email);
+
+            Assert.AreEqual(2, result[20].Id);
+            Assert.AreEqual("Pat", result[20].UserName);
+            Assert.AreEqual(20, result[20].Age);
+            Assert.AreEqual("pat@domain.com", result[20].Email);
+        }
     }
 }

@@ -151,7 +151,7 @@ namespace JsonLib.Xml
                 return Convert.ToString(key, CultureInfo.InvariantCulture);
             }
 
-            throw new JsonLibException("Unsupported type in xml for dictionary key");
+            throw new JsonLibException("Unsupported type for dictionary key");
         }
 
         public XmlArray DoToXmlArray_FromDictionary(Type type, Type keyType, Type valueType, IDictionary dictionary, string mainNodeName, XmlMappingContainer mappings = null)

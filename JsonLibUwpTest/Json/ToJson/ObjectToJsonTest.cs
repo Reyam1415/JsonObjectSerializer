@@ -622,6 +622,39 @@ namespace JsonLibTest
             Assert.AreEqual("[{\"id\":1,\"username\":\"Marie\",\"age\":null,\"email\":null},{\"id\":2,\"username\":\"Pat\",\"age\":20,\"email\":\"pat@domain.com\"}]", result);
         }
 
+        // dictionary
+
+        [TestMethod]
+        public void TestDictionaryIntString()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<int, string>
+            {
+                { 10,  "value 1" },
+                { 20,  "value 2" }
+            };
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("{\"10\":\"value 1\",\"20\":\"value 2\"}", result);
+        }
+
+        [TestMethod]
+        public void TestDictionaryIntObject()
+        {
+            var service = this.GetService();
+
+            var value = new Dictionary<int, User>
+            {
+                { 10,  new User{ Id=1, UserName="Marie"} },
+                { 20,  new User{ Id=2, UserName="Pat", Age=20, Email="pat@domain.com"} }
+            };
+
+            var result = service.ToJson(value);
+
+            Assert.AreEqual("{\"10\":{\"Id\":1,\"UserName\":\"Marie\",\"Age\":null,\"Email\":null},\"20\":{\"Id\":2,\"UserName\":\"Pat\",\"Age\":20,\"Email\":\"pat@domain.com\"}}", result);
+        }
 
 
     }

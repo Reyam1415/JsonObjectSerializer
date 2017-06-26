@@ -54,6 +54,7 @@
     <Compile Include="JsonLibException.cs" />
     <Compile Include="JsonObjectSerializer.cs" />
     <Compile Include="JsonObjectSerializerService.cs" />
+    <Compile Include="Json\ToObject\IJsonValueToObject.cs" />
     <Compile Include="Json\Values\IJsonValue.cs" />
     <Compile Include="Json\Values\JsonArray.cs" />
     <Compile Include="Json\Values\JsonBool.cs" />
@@ -86,7 +87,6 @@
     <Compile Include="Json\ToJson\JsonValueToJson.cs" />
     <Compile Include="Json\ToJson\ObjectToJson.cs" />
     <Compile Include="Json\ToJson\ObjectToJsonValue.cs" />
-    <Compile Include="Json\ToObject\IJsonValueToObject.cs" />
     <Compile Include="Json\ToObject\JsonToJsonValue.cs" />
     <Compile Include="Json\ToObject\JsonToObject.cs" />
     <Compile Include="Json\ToObject\JsonValueToObject.cs" />

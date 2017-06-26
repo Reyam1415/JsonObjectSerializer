@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace JsonLibTest
 {
     [TestClass]
-    public class JsonObjectSerializerServiceUwpTest
+    public class JsonObjectSerializerServiceTest
     {
         public JsonObjectSerializerService GetService()
         {
