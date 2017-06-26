@@ -294,6 +294,67 @@ var json = JsonObjectSerializer.Stringify(user, mappings);
 var user = JsonObjectSerializer.Parse<User>(json, mappings);
 ```
 
+### With Dictionaries
+
+#### Object => Json
+
+_Examples:_
+
+```cs
+ var value = new Dictionary<int, string>
+            {
+                { 10,  "value 1" },
+                { 20,  "value 2" }
+            };
+
+var json = JsonObjectSerializer.Stringify(value);
+```
+
+_output:_
+
+```json
+{
+  "10": "value 1",
+  "20": "value 2"
+}
+```
+
+... Other example
+
+```cs
+ var value = new Dictionary<int, User>
+            {
+                { 10,  new User{ Id=1, UserName="Marie"} },
+                { 20,  new User{ Id=2, UserName="Pat", Age=20, Email="pat@domain.com"} }
+            };
+
+var json = JsonObjectSerializer.Stringify(value);
+```
+_output:_
+
+```json
+{
+  "10": {
+    "Id": 1,
+    "UserName": "Marie",
+    "Age": null,
+    "Email": null
+  },
+  "20": {
+    "Id": 2,
+    "UserName": "Pat",
+    "Age": 20,
+    "Email": "pat@domain.com"
+  }
+}
+```
+
+#### Json => Object
+
+```cs
+var users = JsonObjectSerializer.Parse<Dictionary<int,User>>(json);
+```
+
 ## Xml
 
 ### Object => Xml
