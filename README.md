@@ -98,7 +98,7 @@ Object to Json Value
         };
 
 var service = new ObjectToJsonValue();
-var jsonValue = service.ToJsonObject(user);
+var jsonValue = service.ToJsonValue(user);
 ```
 
 JsonValue to Json
@@ -115,7 +115,7 @@ var jsonValue = JsonValue
         .AddObject("Role", JsonValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
         .AddArray("Hobbies", JsonValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 
-var json = service.ToObject(jsonValue);
+var json = service.Resolve(jsonValue);
 ```
 
 _output:_
