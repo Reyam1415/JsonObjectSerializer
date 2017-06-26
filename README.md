@@ -246,11 +246,11 @@ var myInt = JsonObjectSerializer.Parse<int?>(json); // => null
 _Examples:_
 
 ```cs
- var value = new Dictionary<int, string>
-            {
-                { 10,  "value 1" },
-                { 20,  "value 2" }
-            };
+var value = new Dictionary<int, string>
+{
+    { 10,  "value 1" },
+    { 20,  "value 2" }
+};
 
 var json = JsonObjectSerializer.Stringify(value);
 ```
@@ -267,11 +267,11 @@ _output:_
 ... Other example
 
 ```cs
- var value = new Dictionary<int, User>
-            {
-                { 10,  new User{ Id=1, UserName="Marie"} },
-                { 20,  new User{ Id=2, UserName="Pat", Age=20, Email="pat@domain.com"} }
-            };
+var value = new Dictionary<int, User>
+{
+    { 10,  new User{ Id=1, UserName="Marie"} },
+    { 20,  new User{ Id=2, UserName="Pat", Age=20, Email="pat@domain.com"} }
+};
 
 var json = JsonObjectSerializer.Stringify(value);
 ```
