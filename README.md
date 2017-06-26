@@ -53,13 +53,12 @@ var jsonValue = JsonValue.CreateString("my string value");
 
 With Object
 ```cs
-var jsonValue = JsonValue
-    .CreateObject()
-    .AddNumber("Id",1)
-    .AddString("UserName","Marie")
+var jsonValue = JsonValue.CreateObject()
+    .AddNumber("Id", 1)
+    .AddString("UserName", "Marie")
     .AddNullable("Age", null)
     .AddString("Email", null)
-    .AddObject("Role", JsonValue.CreateObject().AddNumber("RoleId",2).AddString("Name","Admin"))
+    .AddObject("Role", JsonValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
     .AddArray("Hobbies", JsonValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 ```
 
@@ -106,14 +105,13 @@ JsonValue to Json
 ```cs
 var service = new JsonValueToJson();
 
-var jsonValue = JsonValue
-        .CreateObject()
-        .AddNumber("Id", 1)
-        .AddString("UserName", "Marie")
-        .AddNullable("Age", null)
-        .AddString("Email", null)
-        .AddObject("Role", JsonValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
-        .AddArray("Hobbies", JsonValue.CreateArray().AddString("Shopping").AddString("Cooking"));
+var jsonValue = JsonValue.CreateObject()
+    .AddNumber("Id", 1)
+    .AddString("UserName", "Marie")
+    .AddNullable("Age", null)
+    .AddString("Email", null)
+    .AddObject("Role", JsonValue.CreateObject().AddNumber("RoleId", 2).AddString("Name", "Admin"))
+    .AddArray("Hobbies", JsonValue.CreateArray().AddString("Shopping").AddString("Cooking"));
 
 var json = service.Resolve(jsonValue);
 ```
