@@ -1,5 +1,0 @@
-c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib\bin\Debug\JsonLib.dll
-c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib\bin\Debug\JsonLib.pdb
-c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib\obj\Debug\JsonLib.csprojResolveAssemblyReference.cache
-c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib\obj\Debug\JsonLib.dll
-c:\users\romag\documents\visual studio 2017\Projects\JsonLib\JsonLib\obj\Debug\JsonLib.pdb

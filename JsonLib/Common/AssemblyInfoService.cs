@@ -137,7 +137,7 @@ namespace JsonLib.Common
 
         public PropertyInfo[] GetProperties(object obj)
         {
-            return obj.GetType().GetProperties();
+            return obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
         }
 
         public PropertyInfo GetProperty(Type type, string name)

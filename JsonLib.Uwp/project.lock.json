@@ -22015,10 +22015,10 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLib.Uwp\\JsonLib.Uwp.csproj",
+      "projectUniqueName": "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonObjectSerializer\\JsonLib.Uwp\\JsonLib.Uwp.csproj",
       "projectName": "JsonLib.Uwp",
-      "projectPath": "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLib.Uwp\\JsonLib.Uwp.csproj",
-      "projectJsonPath": "C:\\Users\\romag\\documents\\visual studio 2017\\Projects\\JsonLib\\JsonLib.Uwp\\project.json",
+      "projectPath": "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonObjectSerializer\\JsonLib.Uwp\\JsonLib.Uwp.csproj",
+      "projectJsonPath": "C:\\Users\\romag\\Documents\\Visual Studio 2017\\Projects\\JsonObjectSerializer\\JsonLib.Uwp\\project.json",
       "projectStyle": "ProjectJson"
     },
     "dependencies": {

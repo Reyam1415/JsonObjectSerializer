@@ -52,7 +52,7 @@ namespace JsonLibPerfTest
                 ListView.Items.Add($"[JsonObject] [Total:{watcher.Elapsed.Milliseconds.ToString()}ms] [Stringify:{stringifyWatcher.Elapsed.Milliseconds.ToString()}ms] [Parse:{parseWatcher.Elapsed.Milliseconds.ToString()}ms]");
                 if (CheckBox.IsChecked.HasValue && CheckBox.IsChecked == true) DataListView.ItemsSource = r.Result;
                 else DataListView.ItemsSource = null;
-            }, TaskScheduler.FromCurrentSynchronizationContext()) ;
+            }, TaskScheduler.FromCurrentSynchronizationContext());
 
         }
 

@@ -157,7 +157,7 @@ namespace JsonLibTest.Services
             Assert.IsFalse(service.IsDictionary(typeof(MyItemGeneric<string>)));
         }
 
-        // get sinlgle tiem
+        // get sinlgle item
 
         [TestMethod]
         public void TestGetSingleItemType()
@@ -330,6 +330,22 @@ namespace JsonLibTest.Services
 
             Assert.AreEqual(typeof(string[]), properties[10].PropertyType);
             Assert.AreEqual("MyArray", properties[10].Name);
+        }
+
+        [TestMethod]
+        public void TestGetProperties_DoNotGetStatic()
+        {
+            var service = this.GetService();
+
+            MyClassWithStatic.MyStaticString = "my static value";
+            var myClass = new MyClassWithStatic { MyString = " my value" };
+
+            var properties = service.GetProperties(myClass);
+
+            Assert.AreEqual(1, properties.Count());
+
+            Assert.AreEqual(typeof(string), properties[0].PropertyType);
+            Assert.AreEqual("MyString", properties[0].Name);
         }
 
         // get property

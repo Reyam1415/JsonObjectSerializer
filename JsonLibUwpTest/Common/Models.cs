@@ -209,4 +209,32 @@ namespace JsonLibTest
         public string Name { get; set; }
         public int? Status { get; set; }
     }
+
+    public class MyClassWithStatic
+    {
+        public string MyString { get; set; }
+        public static string MyStaticString { get; set; }
+    }
+
+
+    public class MySingleton
+    {
+        private static MySingleton instance;
+
+        public static MySingleton Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new MySingleton();
+                }
+                return instance;
+            }
+        }
+
+        private MySingleton() { }
+
+        public string MyString;
+    }
 }
